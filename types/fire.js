@@ -1,8 +1,8 @@
 const { Pokemon } = require('../pokemon.js')
 
 class Fire extends Pokemon {
-    constructor(name, hitPoints, attackDamage, type='fire', move='tackle') {
-        super(name, hitPoints, attackDamage, type, move)
+    constructor(name, hitPoints, attackDamage, move='tackle') {
+        super(name, hitPoints, attackDamage, 'fire', move)
     }
 
     isEffectiveAgainst(pokemon) {
