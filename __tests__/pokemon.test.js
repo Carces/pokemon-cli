@@ -1,6 +1,6 @@
 const {
     Pokemon,
- } = require('./pokemon.js')
+ } = require('../pokemon.js')
 
 
 describe('pokemon class', () => {

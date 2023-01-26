@@ -45,5 +45,3 @@ class Pokemon {
 module.exports = {
     Pokemon,
 }
-
-const bill = new Pokemon('Bill',10,10,'fire')
