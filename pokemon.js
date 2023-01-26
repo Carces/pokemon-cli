@@ -2,6 +2,7 @@ class Pokemon {
     constructor(name, hitPoints, attackDamage, type = 'normal', move = 'tackle') {
         this.name = name;
         this.hitPoints = hitPoints;
+        this.health = hitPoints;
         this.attackDamage = attackDamage;
         this.type = type;
         this.move = move;
