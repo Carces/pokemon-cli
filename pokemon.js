@@ -30,7 +30,7 @@ class Pokemon {
     }
 
     takeDamage(damage) {
-        this.hitPoints = Math.max(0, this.hitPoints - damage)
+        this.health = Math.max(0, this.health - damage)
     }
 
     useMove() {
@@ -39,7 +39,7 @@ class Pokemon {
     }
 
     hasFainted() {
-        return this.hitPoints === 0
+        return this.health === 0
     }
 }
 

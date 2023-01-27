@@ -32,7 +32,7 @@ describe('Trainer', () => {
             }
             harold.catch(jemima)
     
-            expect(consoleSpy).toHaveBeenCalledWith('No empty balls, the pokemon gave you a judgemental look and walked away')
+            expect(consoleSpy).toHaveBeenCalledWith('Harold has no empty balls, Jemima ran away!')
             consoleSpy.mockRestore()
         })
     })
@@ -57,7 +57,7 @@ describe('Trainer', () => {
 
             harold.getPokemon('Jemima')
     
-            expect(consoleSpy).toHaveBeenCalledWith('No such pokemon in your belt!')
+            expect(consoleSpy).toHaveBeenCalledWith("Harold doesn't have a pokemon called Jemima")
             consoleSpy.mockRestore()
         })
     })

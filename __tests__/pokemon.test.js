@@ -51,21 +51,21 @@ describe('pokemon class', () => {
         })
 
         describe('takeDamage()', () => {
-            test('when called with a number, reduces the hitPoints of the pokemon takeDamage was called on by number passed as argument', () => {
+            test('when called with a number, reduces the health of the pokemon takeDamage was called on by number passed as argument', () => {
                 const bill = new Pokemon('Bill',10,10,'fire')
 
                 bill.takeDamage(5)
 
-                expect(bill.hitPoints).toBe(5)
+                expect(bill.health).toBe(5)
 
             })
 
-            test('does not reduce hitPoints below 0', () => {
+            test('does not reduce health below 0', () => {
                 const bill = new Pokemon('Bill',10,10,'fire')
 
                 bill.takeDamage(12)
 
-                expect(bill.hitPoints).toBe(0)
+                expect(bill.health).toBe(0)
             })
         })
 
@@ -91,7 +91,7 @@ describe('pokemon class', () => {
         })
         
         describe('hasFainted()', () => {
-            test('returns true if hitPoints is 0, otherwise returns false', () => {
+            test('returns true if health is 0, otherwise returns false', () => {
                 const bill = new Pokemon('Bill',10,10,'fire')
 
                 expect(bill.hasFainted()).toBe(false)
