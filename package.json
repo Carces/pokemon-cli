@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/g-vernon/fun-pokemon-battler/issues"
   },
-  "homepage": "https://github.com/g-vernon/fun-pokemon-battler#readme"
+  "homepage": "https://github.com/g-vernon/fun-pokemon-battler#readme",
+  "dependencies": {
+    "inquirer": "^8.0.0"
+  }
 }

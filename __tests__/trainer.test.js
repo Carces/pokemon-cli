@@ -3,11 +3,22 @@ const { Pokeball } = require('../pokeball.js')
 const { Bulbasaur } = require('../species/bulbasaur.js')
 
 describe('Trainer', () => {
-    test('Belt should contain 6 pokeballs', () => {
-        const harold = new Trainer('Harold')
-
-        expect(harold.belt.length).toBe(6)
-        expect(harold.belt[0] instanceof Pokeball).toBe(true)
+    describe('constructor', () => {
+        test('Belt should contain 6 pokeballs', () => {
+            const harold = new Trainer('Harold')
+    
+            expect(harold.belt.length).toBe(6)
+            expect(harold.belt[0] instanceof Pokeball).toBe(true)
+        })
+        test('Passing three pokemon as extra parameters after trainer name gives the trainer those pokemon', () => {
+            const ivor = new Bulbasaur('Ivor', 10, 10);
+            const ingrid = new Bulbasaur('Ingrid', 10, 10);
+            const ingmar = new Bulbasaur('Ingmar', 10, 10);
+            const igor = new Trainer('Igor', ivor, ingrid, ingmar);
+            expect(igor.getPokemon('Ivor')).toBe(ivor);
+            expect(igor.getPokemon('Ingrid')).toBe(ingrid);
+            expect(igor.getPokemon('Ingmar')).toBe(ingmar);
+        })
     })
 
     describe('catch method', () => {
