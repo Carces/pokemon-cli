@@ -15,6 +15,7 @@ class Battle {
     }
 
     doBattle() {
+        this.setCurrentPokeballs();
         while (!this.battleOver) {
             this.inBetweenTurns();
             this.fight(
@@ -28,35 +29,47 @@ class Battle {
                     this.otherTrainer.currentPokeball.storage, 
                 );
             }
-            this.checkIfFightOver(this.currentTrainer, this.otherTrainer);
-            this.checkIfFightOver(this.otherTrainer, this.currentTrainer);
+            this.checkIfBattleOver();
             this.turnNumber++
+            this.changeCurrentTrainer();
         }
         this.doEndOfBattle()
+    }
+
+    setCurrentPokeballs(trainer) {
+        setCurrentPokeballsHelper(trainer || this.currentTrainer)
+        if (!trainer) { //set current pokeball for second trainer only if method called with no params
+            return setCurrentPokeballsHelper(this.otherTrainer)
+        } 
+        function setCurrentPokeballsHelper(trainer) {
+            for (let i = 0; i < trainer.belt.length; i++) {
+                const pokeball = trainer.belt[i]
+                if (pokeball.storage && pokeball.storage.health) {
+                    trainer.currentPokeball = trainer.belt[i];
+                    trainer.currentPokeball.throw();
+                    return 
+                }
+            }
+        }
     }
 
     doEndOfBattle() {
         console.log(`${this.victor.name} defeated ${this.loser.name}!`);
     }
 
-    checkIfFightOver(trainerA, trainerB) {
-        if (!trainerA.currentPokeball.storage.health) {
-            const trainerBelt = trainerA.belt
-
-            for (let i = 0; i < trainerBelt.length; i++) {
-                const pokeball = trainerBelt[i]
-                if (pokeball.storage && pokeball.storage.health) {
-                    trainerA.currentPokeball = 
-                    trainerBelt[i]
-                    trainerA.currentPokeball.throw()
-                    return;
+    checkIfBattleOver() {
+        checkIfBattleOverHelper(this.currentTrainer, this.otherTrainer, this);
+        checkIfBattleOverHelper(this.otherTrainer, this.currentTrainer, this);
+        function checkIfBattleOverHelper(trainerA, trainerB, battle) {
+            //trainerA.currentPokeball.storage prevents errors if checkIfBattleOver is called and setCurrentPokeballs has not correctly initialized, only possible in dev / testing environment eg. if setCurrentPokeballs is invoked only after a trainer's pokemon are all fainted and there is no pokemon in the default current pokeball
+            if (trainerA.currentPokeball.storage && !trainerA.currentPokeball.storage.health) { 
+                battle.setCurrentPokeballs(trainerA);
+                if(! trainerA.currentPokeball.storage.health){
+                    battle.victor = trainerB;
+                    battle.loser = trainerA;
+                    battle.battleOver = true;
                 }
             }
-
-            this.victor = trainerB;
-            this.loser = trainerA;
-            this.battleOver = true;
-            return;
         }
     }
 
@@ -66,6 +79,9 @@ class Battle {
         console.log('-------')
     }
 
+    getCriticalHit() {
+        return Math.floor((Math.random() + 0.2))
+    }
 
 
     fight(attackingPokemon, defendingPokemon) {
@@ -77,10 +93,13 @@ class Battle {
 
         // Calculate attacking pokemon's damage,
         const baseDamage = attackingPokemon.useMove();
-        const damage = attackingPokemon.isEffectiveAgainst(defendingPokemon) ?
+        let damage = attackingPokemon.isEffectiveAgainst(defendingPokemon) ?
         1.25 * baseDamage : attackingPokemon.isWeakTo(defendingPokemon) ? 
         0.75 * baseDamage : baseDamage;
         // accounting for type weaknesses
+
+        const isCriticalHit = this.getCriticalHit();
+        damage += (isCriticalHit * 2 * damage);
 
         if (isTarget){
             // Deal damage to defending pokemon
@@ -88,8 +107,9 @@ class Battle {
             const defendingHealthRatio  = defendingPokemon.health / defendingPokemon.hitPoints;
             // and calculate how badly damaged it is now
 
-            if (damage > baseDamage) console.log ("It's super effective!");
-            if (damage < baseDamage) console.log ("It's not very effective...");
+            if (attackingPokemon.isEffectiveAgainst(defendingPokemon)) console.log ("It's super effective!");
+            if (attackingPokemon.isWeakTo(defendingPokemon)) console.log ("It's not very effective...");
+            if (isCriticalHit) console.log("It's a critical hit!")
             
             // Separator for clearer output
             console.log('...')
@@ -119,20 +139,20 @@ class Battle {
 
 
 
-const jeb = new Trainer('Jebediah')
-const butch = new Trainer('Butch')
+// const jeb = new Trainer('Jebediah')
+// const butch = new Trainer('Butch')
 
 
-const phil = new Charmander('Phil', 10, 2)
-const paula = new Charmander('Paula', 2, 2)  
-const gerty = new Squirtle('Gerty', 10, 3)
+// const phil = new Charmander('Phil', 10, 2)
+// const paula = new Charmander('Paula', 2, 2)  
+// const gerty = new Squirtle('Gerty', 10, 3)
 
-jeb.catch(gerty)
-butch.catch(phil)
-butch.catch(paula)
+// jeb.catch(gerty)
+// butch.catch(phil)
+// butch.catch(paula)
 
-const testBattle = new Battle(jeb, butch)
+// const testBattle = new Battle(jeb, butch)
 
-testBattle.doBattle()
+// testBattle.doBattle()
 
-
+module.exports = { Battle }
