@@ -13,6 +13,7 @@ class Pokeball {
         }
         else if(this.storage) {
             console.log(`Go, ${this.storage.name}!`)
+            console.log(this.storage.art)
             return this.storage;
         }
         else console.log('Your ball is empty and you are a numpty.')

@@ -1,6 +1,8 @@
+const inquirer = require('inquirer');
 const { Trainer } = require('./trainer.js');
 const { Charmander } = require('./species/charmander.js');
 const { Squirtle } = require('./species/squirtle.js');
+const { Bulbasaur } = require('./species/bulbasaur.js');
 
 class Battle {
     constructor(trainerOne, trainerTwo) {
@@ -15,9 +17,17 @@ class Battle {
     }
 
     doBattle() {
+        console.log('\n');
+        console.log(`${this.trainerTwo.name} wants to fight!`);
+        console.log('\n');
+        console.log('-------')
+        console.log(`Turn ${this.turnNumber}`)
+        console.log('-------')
+
         this.setCurrentPokeballs();
         while (!this.battleOver) {
             this.inBetweenTurns();
+            this.playerChoice();
             this.fight(
                 this.currentTrainer.currentPokeball.storage, 
                 this.otherTrainer.currentPokeball.storage, 
@@ -74,9 +84,22 @@ class Battle {
     }
 
     inBetweenTurns() {
-        console.log('-------')
+        console.log('\n-------')
         console.log(`Turn ${this.turnNumber}`)
-        console.log('-------')
+        console.log('-------\n')
+    }
+
+    playerChoice() {
+        // const options = [{
+        //     type: 'list',
+        //     name: 'action',
+        //     message: `${this.trainerOne.name}'s turn!`,
+        //     choices: ['Fight', 'Pokemon', 'Item', 'Run'],
+        // }];
+
+        // inquirer.prompt(options).then((answers) => {
+        //     console.log(`You chose ${answers}!`);
+        // });
     }
 
     getCriticalHit() {
@@ -112,11 +135,13 @@ class Battle {
             if (isCriticalHit) console.log("It's a critical hit!")
             
             // Separator for clearer output
-            console.log('...')
+            console.log('\n')
             //////////////////////////////
 
             console.log(`${this.currentTrainer.name}'s pokemon ${attacker} dealt ${damage} damage`)
             console.log(`${this.currentTrainer.name}'s pokemon ${defender} has ${defendingPokemon.health} hit points remaining`)
+
+            console.log('\n')
 
             console.log( 
                 !defendingPokemon.health ? `${defender} fainted!`
@@ -139,20 +164,21 @@ class Battle {
 
 
 
-// const jeb = new Trainer('Jebediah')
-// const butch = new Trainer('Butch')
+const jeb = new Trainer('Jebediah')
+const butch = new Trainer('Butch')
 
 
-// const phil = new Charmander('Phil', 10, 2)
-// const paula = new Charmander('Paula', 2, 2)  
-// const gerty = new Squirtle('Gerty', 10, 3)
+const phil = new Charmander('Phil', 10, 2)
+const paula = new Charmander('Paula', 2, 2)  
+const gerty = new Squirtle('Gerty', 10, 3)
 
-// jeb.catch(gerty)
-// butch.catch(phil)
-// butch.catch(paula)
+jeb.catch(gerty)
+butch.catch(phil)
+butch.catch(paula)
 
-// const testBattle = new Battle(jeb, butch)
 
-// testBattle.doBattle()
+const testBattle = new Battle(jeb, butch)
+
+testBattle.doBattle()
 
 module.exports = { Battle }
