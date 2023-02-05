@@ -20,7 +20,7 @@ class Trainer {
         for (const pokeball of this.belt) {
             if (pokeball.isEmpty()) {
                 pokeball.throw(pokemon)
-                this.pokemonList.push(`${pokemon.name}: ${pokemon.health}/${pokemon.hitPoints}`)
+                this.pokemonList.push(`${pokemon.name}`)
                 flag = 1
                 break
             }
@@ -29,14 +29,14 @@ class Trainer {
     }
 
     getPokemon(pokeName) {
-        for (const pokeball of this.belt) {
-            if (pokeball.storage && pokeball.storage.name === pokeName) {
-                this.currentPokeball = pokeball
-                return
+        for (let i = 0; i < this.belt.length; i++) {
+            if (this.belt[i].storage && this.belt[i].storage.name === pokeName) {
+                // console.log({pokemonObj: this.belt[i].storage, index: i})
+                return {pokemonObj: this.belt[i].storage, index: i}
             }
         }
 
-        console.log(`${this.name} doesn't have a pokemon called ${pokeName}`)
+        // console.log(`${this.name} doesn't have a pokemon called ${pokeName}`)
     }
 }
 

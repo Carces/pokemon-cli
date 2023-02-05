@@ -33,34 +33,46 @@ class Battle {
                 this.otherTrainer.currentPokeball.storage, 
             );
         }
-        this.checkIfBattleOver().then(() => {
-            this.turnNumber++
-            this.changeCurrentTrainer();
-            if (!this.battleOver) this.doBattle()
-            else this.doEndOfBattle()
+        this.checkIfBattleOver(this.currentTrainer, this.otherTrainer).then(() => {
+            this.checkIfBattleOver(this.otherTrainer, this.currentTrainer).then(() => {
+                this.turnNumber++
+                this.changeCurrentTrainer();
+                if (!this.battleOver) this.doBattle()
+                else this.doEndOfBattle()
+            })
         })
     }
     choosePokemon(trainer) {
         if (!trainer instanceof Player) {
             setNextPokemon(trainer)
             trainer.currentPokeball.throw()
+            return new Promise(resolve => {
+                resolve()
+            })
+
         }
         else {
             return inquirer.prompt([{
                 type: 'list',
                 name: 'pokemonChoice',
                 message: `Choose a Pokemon to send out...`,
-                choices: this.currentTrainer.pokemonList,
+                choices: trainer.pokemonList.map(pokeName => {
+                    const pokemon = trainer.getPokemon(pokeName).pokemonObj
+                    return `${pokeName}: ${pokemon.health}/${pokemon.hitPoints}`
+                }),
             }])
             .then((answers) => {
-                const selectedPokemonName = answers.pokemonChoice.split(':')[0]
-                const selectedPokemon = trainer.getPokemon(selectedPokemonName) // sets current pokeball to chosen pokemon, doesn't throw yet
-                if (!trainer.currentPokeball.storage.health) {
-                    console.log(`${selectedPokemonName} is unconscious!`)
+                const selectedPokemon = answers.pokemonChoice.split(':')[0]
+                const selectedPokemonIndex = trainer.getPokemon(selectedPokemon).index
+                if (!trainer.belt[selectedPokemonIndex].storage.health) {
+                    console.log(`${selectedPokemon} is unconscious!`)
                     this.choosePokemon(trainer)
                 } 
+                else if (selectedPokemon === trainer.currentPokeball.storage.name) {
+                    console.log(`${selectedPokemon} is already out!`)
+                }
                 else {
-                    trainer.getPokemon(selectedPokemonName)
+                    trainer.currentPokeball = trainer.belt[selectedPokemonIndex]
                     trainer.currentPokeball.throw()
                 }
             })
@@ -110,12 +122,8 @@ class Battle {
 
             // If trainer does have remaining pokemon, let them choose one to throw out
             if (hasRemainingPokemon) {
-                console.log("does have remaining pokemon, returning choosePokemon promise")
                 return this.choosePokemon(trainer)
             }
-            // else {
-
-            // }
         } 
     }
 
@@ -123,25 +131,21 @@ class Battle {
         console.log(`${this.victor.name} defeated ${this.loser.name}!`);
     }
 
-    checkIfBattleOver() {
-        return checkIfBattleOverHelper(this.currentTrainer, this.otherTrainer, this)
-        .then(() => {
-            checkIfBattleOverHelper(this.otherTrainer, this.currentTrainer, this);
-        })
-        
-        console.log("second Check over")
-        function checkIfBattleOverHelper(trainerA, trainerB, battle) {
-            //trainerA.currentPokeball.storage prevents errors if checkIfBattleOver is called and setCurrentPokeballs has not correctly initialized, only possible in dev / testing environment eg. if setCurrentPokeballs is invoked only after a trainer's pokemon are all fainted and there is no pokemon in the default current pokeball
-            if (trainerA.currentPokeball.storage && !trainerA.currentPokeball.storage.health) { 
-                console.log("CHECKIF")
-                return battle.setCurrentPokeballs(trainerA).then(() => {
-                    if(!trainerA.currentPokeball.storage.health){
-                        battle.victor = trainerB;
-                        battle.loser = trainerA;
-                        battle.battleOver = true;
-                    }
-                })
-            }
+    checkIfBattleOver(trainerA, trainerB) {
+        //trainerA.currentPokeball.storage prevents errors if checkIfBattleOver is called and setCurrentPokeballs has not correctly initialized, only possible in dev / testing environment eg. if setCurrentPokeballs is invoked only after a trainer's pokemon are all fainted and there is no pokemon in the default current pokeball
+        if (trainerA.currentPokeball.storage && !trainerA.currentPokeball.storage.health) { 
+            return this.setCurrentPokeballs(trainerA).then(() => {
+                if(!trainerA.currentPokeball.storage.health){
+                    this.victor = trainerB;
+                    this.loser = trainerA;
+                    this.battleOver = true;
+                }
+            })
+        }
+        else { // If pokemon still has health, return an empty promise so that the function that called checkIfBattleOver can use .then on whatever checkIfBattleOver returns without errors
+            return new Promise(resolve => {
+                resolve()
+            })
         }
     }
 
@@ -227,7 +231,9 @@ jeb.catch(maude)
 butch.catch(phil)
 butch.catch(paula)
 
-console.log(jeb.pokemonList)
+// console.log(jeb.pokemonList)
+// console.log(jeb.getPokemon('Gerty'))
+
 const testBattle = new Battle(jeb, butch)
 
 testBattle.startBattle()
