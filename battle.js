@@ -52,29 +52,41 @@ class Battle {
 
         }
         else {
+            const pokemonListWithHP = trainer.pokemonList.map(pokeName => {
+                const pokemon = trainer.getPokemon(pokeName).pokemonObj
+                return `${pokeName}: ${pokemon.health}/${pokemon.hitPoints}`
+            })
+            
+            const pokemonChoices = pokemonListWithHP.map(pokemonWithHp => {
+                const pokemonObj = trainer.getPokemon(pokemonWithHp.split(':')[0]).pokemonObj
+                return !pokemonObj.health ? 
+                    { name: pokemonWithHp, disabled: 'unconscious'}
+                : pokemonObj.name === trainer.currentPokeball.storage.name ?
+                    { name: pokemonWithHp, disabled: 'already out'}
+                : pokemonWithHp
+            })
+                
             return inquirer.prompt([{
                 type: 'list',
                 name: 'pokemonChoice',
                 message: `Choose a Pokemon to send out...`,
-                choices: trainer.pokemonList.map(pokeName => {
-                    const pokemon = trainer.getPokemon(pokeName).pokemonObj
-                    return `${pokeName}: ${pokemon.health}/${pokemon.hitPoints}`
-                }),
+                choices: pokemonChoices
             }])
             .then((answers) => {
                 const selectedPokemon = answers.pokemonChoice.split(':')[0]
                 const selectedPokemonIndex = trainer.getPokemon(selectedPokemon).index
-                if (!trainer.belt[selectedPokemonIndex].storage.health) {
-                    console.log(`${selectedPokemon} is unconscious!`)
-                    this.choosePokemon(trainer)
-                } 
-                else if (selectedPokemon === trainer.currentPokeball.storage.name) {
-                    console.log(`${selectedPokemon} is already out!`)
-                }
-                else {
+                // if (!trainer.belt[selectedPokemonIndex].storage.health) {
+                //     console.log(`${selectedPokemon} is unconscious!`)
+                //     this.choosePokemon(trainer)
+                // } 
+                // else if (selectedPokemon === trainer.currentPokeball.storage.name) {
+                //     console.log(`${selectedPokemon} is already out!`)
+                //     this.choosePokemon(trainer)
+                // }
+                // else {
                     trainer.currentPokeball = trainer.belt[selectedPokemonIndex]
                     trainer.currentPokeball.throw()
-                }
+                // }
             })
         }
     }
@@ -118,7 +130,9 @@ class Battle {
             this.otherTrainer.currentPokeball.throw();
         } 
         else {  // when called with one specific trainer in checkIfBattleOver, check if that trainer has any pokemon with health
+            const currentPokeballIndex = trainer.belt.indexOf(trainer.currentPokeball)
             const hasRemainingPokemon = setNextPokemon(trainer)
+            trainer.currentPokeball = trainer.belt[currentPokeballIndex] // Quick and dirty solution, maybe a better way to refactor this later. This was causing problems with choosing pokemon because setNextPokemon changes currentPokeball - first available pokemon is set as currentPokeball before player chooses a pokemon to send out, so one of their choices is incorrectly shown as 'already out'
 
             // If trainer does have remaining pokemon, let them choose one to throw out
             if (hasRemainingPokemon) {
