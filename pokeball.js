@@ -1,22 +1,37 @@
 class Pokeball {
-    constructor() {
+    constructor(owner, ballType = {name: 'Poke', catchRate: 1}) {
         this.storage = null;
+        this.ballType = ballType
+        this.owner = owner
     }
 
     throw(pokemon) {
         if(pokemon && ! this.storage) {
-            console.log(`You caught ${pokemon.name}!`)
-            this.storage = pokemon;
+            const healthRatio = pokemon.hitPoints / pokemon.health;
+            const random = Math.random()*2.5
+            const ballRate = this.ballType.catchRate
+            const catchChance = (random+ballRate)*healthRatio
+
+            if (catchChance >= pokemon.catchDifficulty) {
+                console.log(`You caught ${pokemon.name}!`)
+                this.storage = pokemon;
+                // TO ADD: remove ball from inv
+            }
+            else {
+                console.log(`Oh no! The Pokemon broke free!`)
+                // TO ADD: remove ball from inv
+            }
         }
         else if(pokemon && this.storage) {
-            console.log('There is already a pokemon in this ball!')
+            console.log(`There is already a Pokemon in the ${this.ballType.name} Ball!`)
         }
         else if(this.storage) {
-            console.log(`Go, ${this.storage.name}!`)
+            console.log(this.owner.isPlayer ? `Go, ${this.storage.name}!`
+                    : `${this.owner.name} sent out ${this.storage.name}!`)
             console.log(this.storage.art)
             return this.storage;
         }
-        else console.log('Your ball is empty and you are a numpty.')
+        else console.log(`The ${this.ballType.name} Ball is empty!`)
     }
 
     isEmpty() {
