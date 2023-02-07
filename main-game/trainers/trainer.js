@@ -1,10 +1,10 @@
-const { Pokeball } = require('../../items/balls/pokeball.js')
+const { PokeBall } = require('../../items/balls/poke-ball.js')
 
 class Trainer {
     constructor(name, ...pokemon) {
         this.name = name
         this.belt = []
-        while (this.belt.length < 6) this.belt.push(new Pokeball(this))
+        while (this.belt.length < 6) this.belt.push(new PokeBall(this))
         for(let i = 0; i < [...pokemon].length; i++) {
             this.belt[i].storage = [...pokemon][i];
         }
