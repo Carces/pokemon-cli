@@ -1,10 +1,11 @@
 const inquirer = require('inquirer');
-const { Trainer } = require('./trainer.js');
-const { Player } = require('./player.js')
-const { Charmander } = require('./species/charmander.js');
-const { Squirtle } = require('./species/squirtle.js');
-const { Bulbasaur } = require('./species/bulbasaur.js');
-const { Rattata } = require('./species/rattata.js')
+const { Pokemon } = require('../pokemon/pokemon.js')
+const { Trainer } = require('./trainers/trainer.js');
+const { Player } = require('./trainers/player.js')
+const { Charmander } = require('../pokemon/species/charmander.js');
+const { Squirtle } = require('../pokemon/species/squirtle.js');
+const { Bulbasaur } = require('../pokemon/species/bulbasaur.js');
+const { Rattata } = require('../pokemon/species/rattata.js')
 
 class Battle {
     constructor(trainerOne, trainerTwo) {
@@ -43,8 +44,8 @@ class Battle {
         })
     }
     choosePokemon(trainer) {
-        if (!trainer instanceof Player) {
-            setNextPokemon(trainer)
+        if (!trainer.isPlayer) {
+            this.setNextPokemon(trainer)
             trainer.currentPokeball.throw()
             return new Promise(resolve => {
                 resolve()
@@ -111,34 +112,39 @@ class Battle {
         });
     }
 
+    setNextPokemon(trainer) {
+      for (let i = 0; i < trainer.belt.length; i++) {
+          const pokeball = trainer.belt[i]
+          if (pokeball.storage && pokeball.storage.health) {
+              trainer.currentPokeball = trainer.belt[i];
+              return true // tells setCurrentPokeballs that this trainer hasValidPokemon (i.e. with > 0 health)
+          }
+      }
+      return false // otherwise tells setCurrentPokeballs false
+    }
     setCurrentPokeballs(trainer) {
-        function setNextPokemon(trainer) {
-            for (let i = 0; i < trainer.belt.length; i++) {
-                const pokeball = trainer.belt[i]
-                if (pokeball.storage && pokeball.storage.health) {
-                    trainer.currentPokeball = trainer.belt[i];
-                    return true // tells setCurrentPokeballs that this trainer hasValidPokemon (i.e. with > 0 health)
-                }
-                return false // otherwise tells setCurrentPokeballs false
-            }
-        }
 
-        if (!trainer) { // when called with no arguments in startBattle, throw out first pokemon with health for each trainer
-            setNextPokemon(this.currentTrainer)
-            setNextPokemon(this.otherTrainer)
-            this.currentTrainer.currentPokeball.throw();
-            this.otherTrainer.currentPokeball.throw();
-        } 
-        else {  // when called with one specific trainer in checkIfBattleOver, check if that trainer has any pokemon with health
-            const currentPokeballIndex = trainer.belt.indexOf(trainer.currentPokeball)
-            const hasRemainingPokemon = setNextPokemon(trainer)
-            trainer.currentPokeball = trainer.belt[currentPokeballIndex] // Quick and dirty solution, maybe a better way to refactor this later. This was causing problems with choosing pokemon because setNextPokemon changes currentPokeball - first available pokemon is set as currentPokeball before player chooses a pokemon to send out, so one of their choices is incorrectly shown as 'already out'
+      if (!trainer) { // when called with no arguments in startBattle, throw out first pokemon with health for each trainer
+          this.setNextPokemon(this.currentTrainer)
+          this.setNextPokemon(this.otherTrainer)
+          this.currentTrainer.currentPokeball.throw();
+          this.otherTrainer.currentPokeball.throw();
+      } 
+      else {  // when called with one specific trainer in checkIfBattleOver, check if that trainer has any pokemon with health
+          const currentPokeballIndex = trainer.belt.indexOf(trainer.currentPokeball)
+          const hasRemainingPokemon = this.setNextPokemon(trainer)
+          trainer.currentPokeball = trainer.belt[currentPokeballIndex] // Quick and dirty solution, maybe a better way to refactor this later. This was causing problems with choosing pokemon because setNextPokemon changes currentPokeball - first available pokemon is set as currentPokeball before player chooses a pokemon to send out, so one of their choices is incorrectly shown as 'already out'
 
-            // If trainer does have remaining pokemon, let them choose one to throw out
-            if (hasRemainingPokemon) {
-                return this.choosePokemon(trainer)
-            }
-        } 
+          // If trainer does have remaining pokemon, let them choose one to throw out
+          if (hasRemainingPokemon) {
+              return this.choosePokemon(trainer)
+          }
+          else {
+              return new Promise(resolve => {
+                  resolve()
+              })
+          }
+      } 
     }
 
     doEndOfBattle() {
@@ -182,18 +188,20 @@ class Battle {
 
 
         // Calculate attacking pokemon's damage,
-        const baseDamage = attackingPokemon.useMove();
+        const baseDamage = attackingPokemon.useMove(defendingPokemon);
         let damage = attackingPokemon.isEffectiveAgainst(defendingPokemon) ?
         1.25 * baseDamage : attackingPokemon.isWeakTo(defendingPokemon) ? 
         0.75 * baseDamage : baseDamage;
         // accounting for type weaknesses
 
         const isCriticalHit = this.getCriticalHit();
-        damage += (isCriticalHit * 2 * damage);
+        damage += (isCriticalHit * 2);
+
+        const finalDamage = damage.toFixed(2)
 
         if (isTarget){
             // Deal damage to defending pokemon
-            defendingPokemon.takeDamage(damage);
+            defendingPokemon.takeDamage(finalDamage);
             const defendingHealthRatio  = defendingPokemon.health / defendingPokemon.hitPoints;
             // and calculate how badly damaged it is now
 
@@ -205,7 +213,7 @@ class Battle {
             console.log('\n')
             //////////////////////////////
 
-            console.log(`${this.currentTrainer.name}'s pokemon ${attacker} dealt ${damage} damage`)
+            console.log(`${this.currentTrainer.name}'s pokemon ${attacker} dealt ${finalDamage} damage`)
             console.log(`${this.otherTrainer.name}'s pokemon ${defender} has ${defendingPokemon.health} hit points remaining`)
 
             console.log('\n')
@@ -231,21 +239,31 @@ class Battle {
 
 
 
-const jeb = new Trainer('Jebediah')
-const gerty = new Squirtle('Gerty', 10, 3)
-const maude = new Bulbasaur('Maude', 6, 2)
+const jeb = new Player('Jebediah')
+const gerty = new Squirtle('Gerty', 1)
+const maude = new Bulbasaur('Maude', 1)
 
 const butch = new Trainer('Butch')
-const phil = new Charmander('Phil', 10, 2)
-const paula = new Charmander('Paula', 2, 2)  
+const phil = new Charmander('Phil', 1)
+const paula = new Charmander('Paula', 1) 
 
-
+gerty.takeDamage(7)
+maude.takeDamage(7)
+phil.takeDamage(7)
+paula.takeDamage(7)
+// console.log(gerty)
 jeb.catch(gerty)
 jeb.catch(maude)
 butch.catch(phil)
 butch.catch(paula)
 
+gerty.health = gerty.hitPoints
+maude.health = maude.hitPoints
+phil.health = phil.hitPoints
+paula.health = paula.hitPoints
+
 // console.log(jeb.pokemonList)
+// console.log(jeb.belt)
 // console.log(jeb.getPokemon('Gerty'))
 
 const testBattle = new Battle(jeb, butch)

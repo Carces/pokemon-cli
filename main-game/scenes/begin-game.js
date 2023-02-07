@@ -1,8 +1,8 @@
 const inquirer = require('inquirer');
-const { Bulbasaur } = require('./species/bulbasaur');
-const { Charmander } = require('./species/charmander');
-const { Squirtle } = require('./species/squirtle');
-const { PlayerData } = require('./player-data.js');
+const { Bulbasaur } = require('../../species/bulbasaur');
+const { Charmander } = require('../../species/charmander');
+const { Squirtle } = require('../../species/squirtle');
+const { PlayerData } = require('./player-data.js.js');
 
 const startingData = new PlayerData();
 

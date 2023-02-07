@@ -1,4 +1,4 @@
-const { Pokeball } = require('./pokeball.js')
+const { Pokeball } = require('../../items/balls/pokeball.js')
 
 class Trainer {
     constructor(name, ...pokemon) {

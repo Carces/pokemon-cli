@@ -1,7 +1,7 @@
-const { Battle } = require('./battle.js')
-const { Trainer } = require('./trainer.js')
-const { Bulbasaur } = require('./species/bulbasaur.js')
-const { Squirtle } = require('./species/squirtle.js')
+const { Battle } = require('../battle.js')
+const { Trainer } = require('../trainers/trainer.js')
+const { Bulbasaur } = require('../../pokemon/species/bulbasaur.js')
+const { Squirtle } = require('../../pokemon/species/squirtle.js')
 const inquirer = require('inquirer') //called commonsjs syntax, c.f. native esm more modern
 
 const player = new Trainer('Albert');
