@@ -1,8 +1,8 @@
 const { Water } = require('../types/water')
 
 class Squirtle extends Water {
-    constructor(name, hitPoints, attackDamage) {
-        super(name, hitPoints, attackDamage, 'water gun');
+    constructor(name = 'Squirtle', level = 1, catchDifficulty = 5, hitPoints = level*7.5, attack = level*5, defence = level*5 ) {
+        super(name, level = 1, 'water gun', catchDifficulty = 5, hitPoints = level*7.5, attack = level*5, defence = level*5 );
         this.art = `
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣴⣶⣿⣿⣿⣶⣴⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣻⣿⢿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀

@@ -1,8 +1,8 @@
 const { Fire } = require('../types/fire')
 
 class Charmander extends Fire {
-    constructor(name, hitPoints, attackDamage) {
-        super(name, hitPoints, attackDamage, 'ember')
+    constructor(name = 'Charmander', level = 1, catchDifficulty = 5, hitPoints = level*7.5, attack = level*5, defence = level*5 ) {
+        super(name, level = 1, 'ember', catchDifficulty = 5, hitPoints = level*7.5, attack = level*5, defence = level*5 );
         this.art = `
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣶⣶⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀

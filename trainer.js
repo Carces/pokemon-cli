@@ -4,7 +4,7 @@ class Trainer {
     constructor(name, ...pokemon) {
         this.name = name
         this.belt = []
-        while (this.belt.length < 6) this.belt.push(new Pokeball())
+        while (this.belt.length < 6) this.belt.push(new Pokeball(this))
         for(let i = 0; i < [...pokemon].length; i++) {
             this.belt[i].storage = [...pokemon][i];
         }

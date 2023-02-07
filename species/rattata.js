@@ -1,8 +1,8 @@
 const { Pokemon } = require('../pokemon')
 
 class Rattata extends Pokemon {
-    constructor(name, hitPoints, attackDamage, move) {
-        super(name, hitPoints, attackDamage, move);
+    constructor(name = 'Rattata', level = 1, move = 'tackle', catchDifficulty = 5, hitPoints = level*7.5, attack = level*5, defence = level*5 ) {
+        super(name, level = 1, 'normal', move, catchDifficulty = 5, hitPoints = level*7.5, attack = level*5, defence = level*5 );
         this.art = `
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⣦⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⡯⣭⣟⢿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀

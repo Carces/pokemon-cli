@@ -11,6 +11,7 @@ class Pokeball {
             const random = Math.random()*2.5
             const ballRate = this.ballType.catchRate
             const catchChance = (random+ballRate)*healthRatio
+            console.log("CATCH: ", catchChance, "DIFF: ", pokemon.catchDifficulty)
 
             if (catchChance >= pokemon.catchDifficulty) {
                 console.log(`You caught ${pokemon.name}!`)
