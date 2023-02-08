@@ -47,10 +47,7 @@ class Battle {
         if (!trainer.isPlayer) {
             this.setNextPokemon(trainer)
             trainer.currentPokeball.throw()
-            return new Promise(resolve => {
-                resolve()
-            })
-
+            return Promise.resolve()
         }
         else {
             const pokemonListWithHP = trainer.pokemonList.map(pokeName => {
@@ -76,18 +73,8 @@ class Battle {
             .then((answers) => {
                 const selectedPokemon = answers.pokemonChoice.split(':')[0]
                 const selectedPokemonIndex = trainer.getPokemon(selectedPokemon).index
-                // if (!trainer.belt[selectedPokemonIndex].storage.health) {
-                //     console.log(`${selectedPokemon} is unconscious!`)
-                //     this.choosePokemon(trainer)
-                // } 
-                // else if (selectedPokemon === trainer.currentPokeball.storage.name) {
-                //     console.log(`${selectedPokemon} is already out!`)
-                //     this.choosePokemon(trainer)
-                // }
-                // else {
-                    trainer.currentPokeball = trainer.belt[selectedPokemonIndex]
-                    trainer.currentPokeball.throw()
-                // }
+                trainer.currentPokeball = trainer.belt[selectedPokemonIndex]
+                trainer.currentPokeball.throw()
             })
         }
     }
@@ -154,6 +141,7 @@ class Battle {
     checkIfBattleOver(trainerA, trainerB) {
         //trainerA.currentPokeball.storage prevents errors if checkIfBattleOver is called and setCurrentPokeballs has not correctly initialized, only possible in dev / testing environment eg. if setCurrentPokeballs is invoked only after a trainer's pokemon are all fainted and there is no pokemon in the default current pokeball
         if (trainerA.currentPokeball.storage && !trainerA.currentPokeball.storage.health) { 
+            
             return this.setCurrentPokeballs(trainerA).then(() => {
                 if(!trainerA.currentPokeball.storage.health){
                     this.victor = trainerB;
@@ -163,9 +151,7 @@ class Battle {
             })
         }
         else { // If pokemon still has health, return an empty promise so that the function that called checkIfBattleOver can use .then on whatever checkIfBattleOver returns without errors
-            return new Promise(resolve => {
-                resolve()
-            })
+            return Promise.resolve()
         }
     }
 
@@ -184,8 +170,7 @@ class Battle {
         const attacker = attackingPokemon.name;
         const defender = defendingPokemon.name;
 
-        let isTarget = defendingPokemon.health > 0
-
+        let hasValidTarget = defendingPokemon.health > 0
 
         // Calculate attacking pokemon's damage,
         const baseDamage = attackingPokemon.useMove(defendingPokemon);
@@ -199,7 +184,7 @@ class Battle {
 
         const finalDamage = damage.toFixed(2)
 
-        if (isTarget){
+        if (hasValidTarget){
             // Deal damage to defending pokemon
             defendingPokemon.takeDamage(finalDamage);
             const defendingHealthRatio  = defendingPokemon.health / defendingPokemon.hitPoints;
@@ -265,6 +250,11 @@ paula.health = paula.hitPoints
 // console.log(jeb.pokemonList)
 // console.log(jeb.belt)
 // console.log(jeb.getPokemon('Gerty'))
+
+// console.log(gerty)
+
+gerty.addXp(4)
+// console.log(gerty)
 
 const testBattle = new Battle(jeb, butch)
 
