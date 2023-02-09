@@ -184,6 +184,12 @@ class Battle {
         console.log('\n-------')
         console.log(`Turn ${this.turnNumber}`)
         console.log('-------\n')
+
+        
+///////////////////
+        console.log("atk:", this.playerPokemon.attack, this.opponentPokemon.attack)
+        console.log("def:", this.playerPokemon.defence, this.opponentPokemon.defence)
+        ////////////
     }
 
     getCriticalHit() {
@@ -191,10 +197,47 @@ class Battle {
     }
 
 
+    resolveStatusMove(move, user, target) {
+        function modBy50(stat, stagesToModBy) {
+            const stageOfStat = stat / 4
+            return stat + (stageOfStat * stagesToModBy)
+        }
+
+        const targetsSelf = target === user
+        const effect = targetsSelf ? move.effectOnSelf 
+        : move.effectOnTarget
+        const effectMessage = effect.modifier === 1 ? 'rose!'
+        : effect.modifier > 1 ? 'rose sharply!'
+        : effect.modifier === -1 ? 'fell!'
+        : 'fell sharply!'
+        const statAfterMod = +modBy50(target[effect.stat].current, effect.modifier).toFixed(2)
+
+        user.useMove(move)
+
+        if (statAfterMod <= target[effect.stat] * 0.25 || statAfterMod <= 1) {
+            console.log (`${target.name}'s ${effect.stat} is already too low. ${move.name} had no effect!`)
+            return
+        }
+        if (statAfterMod >= target[effect.stat] * 1.75 || statAfterMod >= 500) {
+            console.log (`${target.name}'s ${effect.stat} is already too high. ${move.name} had no effect!`)
+            return
+        }
+      
+        target[effect.stat].current = statAfterMod
+        target.activeEffects[move.name] = effect
+        console.log(`${target.name}'s ${effect.stat} ${effectMessage}`)
+    }
+
     fight(move, attackingPokemon, defendingPokemon) {
         const attacker = attackingPokemon.name;
         const defender = defendingPokemon.name;
         let hasValidTarget = defendingPokemon.hitPoints.current > 0
+
+        if (!move.doesDamage) {
+            if (move.effectOnSelf) this.resolveStatusMove(move, attackingPokemon, attackingPokemon)
+            if (move.effectOnTarget) this.resolveStatusMove(move, attackingPokemon, defendingPokemon)
+            return
+        }
 
         // Calculate attacking pokemon's damage,
         const baseDamage = attackingPokemon.useMove(move, defendingPokemon);
@@ -224,7 +267,9 @@ class Battle {
             console.log(`${attacker} dealt ${finalDamage} damage`)
             console.log(`${defender} has ${defendingPokemon.hitPoints.current} hit points remaining`)
 
+            // Separator for clearer output
             console.log('\n')
+            //////////////////////////////
 
             console.log( 
                 !defendingPokemon.hitPoints.current ? `${defender} fainted!`
@@ -265,10 +310,10 @@ const paula = new Charmander('Paula', 1)
 
 // console.log(gerty)
 
-gerty.takeDamage(11)
-maude.takeDamage(11)
-phil.takeDamage(11)
-paula.takeDamage(11)
+gerty.takeDamage(20)
+maude.takeDamage(20)
+phil.takeDamage(20)
+paula.takeDamage(20)
 
 console.log(gerty)
 
