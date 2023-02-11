@@ -1,16 +1,17 @@
 const { PokeBall } = require('../../items/balls/poke-ball.js')
 
 class Trainer {
-    constructor(name, ...pokemon) {
+    constructor(name, pokemonArr) {
         this.name = name
         this.belt = []
-        while (this.belt.length < 6) this.belt.push(new PokeBall(this))
-        for(let i = 0; i < [...pokemon].length; i++) {
-            this.belt[i].storage = [...pokemon][i];
+        this.pokemonArr = pokemonArr
+        for(let i = 0; i < this.pokemonArr.length; i++) {
+            this.belt.push(new PokeBall())
+            this.belt[i].storage = this.pokemonArr[i];
         }
         this.currentPokeball = this.belt[0]
         this.isPlayer = false;
-        this.pokemonList = []
+        this.pokemonList = pokemonArr.map(pokemon => pokemon.name)
     }
 
     catch(pokemon) {

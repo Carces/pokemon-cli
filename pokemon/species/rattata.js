@@ -1,8 +1,21 @@
-const { Pokemon } = require('../../pokemon/pokemon')
+const { Normal } = require('../../pokemon/types/normal.js')
+const { movesData } = require('../../main-game/data/moves-data.js')
 
-class Rattata extends Pokemon {
-    constructor(name = 'Rattata', level, catchDifficulty, hitPoints, attack, defence) {
-        super(name, level, 'tackle', catchDifficulty, hitPoints, attack, defence);
+class Rattata extends Normal {
+    constructor(
+        name = 'Rattata', 
+        level,
+        moves = ['Tackle', 'Tail Whip'], 
+        catchDifficulty, 
+        hitPoints, 
+        attack, 
+        defence,
+    ) {
+        super(name, level, moves, catchDifficulty, hitPoints, attack, defence)
+        this.species = 'Rattata';
+        this.moveTable = {
+            l4: ['Quick Attack']
+        }
         this.art = `
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⣦⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⡯⣭⣟⢿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀

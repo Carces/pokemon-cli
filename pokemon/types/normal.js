@@ -1,6 +1,6 @@
 const { Pokemon } = require('../pokemon.js')
 
-class Fire extends Pokemon {
+class Normal extends Pokemon {
     constructor(
         name, 
         level,
@@ -11,8 +11,8 @@ class Fire extends Pokemon {
         defence,
                 ) 
         {
-            super(name, level, 'fire', moves, catchDifficulty, hitPoints, attack, defence)
+            super(name, level, 'normal', moves, catchDifficulty, hitPoints, attack, defence)
         }
 }
 
-module.exports = {Fire, }
+module.exports = { Normal, }

@@ -1,12 +1,14 @@
 const inquirer = require('inquirer');
-const { Pokemon } = require('../pokemon/pokemon.js')
-const { Trainer } = require('./trainers/trainer.js');
-const { Player } = require('./trainers/player.js')
-const { Charmander } = require('../pokemon/species/charmander.js');
-const { Squirtle } = require('../pokemon/species/squirtle.js');
-const { Bulbasaur } = require('../pokemon/species/bulbasaur.js');
-const { Rattata } = require('../pokemon/species/rattata.js')
-const { movesData } = require('../pokemon/moves-data.js')
+const fs = require('fs/promises')
+const { Pokemon } = require('../../pokemon/pokemon.js');
+const { Trainer } = require('../trainers/trainer.js');
+const { Player } = require('../trainers/player.js');
+const { Charmander } = require('../../pokemon/species/charmander.js');
+const { Squirtle } = require('../../pokemon/species/squirtle.js');
+const { Bulbasaur } = require('../../pokemon/species/bulbasaur.js');
+const { Rattata } = require('../../pokemon/species/rattata.js');
+const { movesData } = require('../data/moves-data');
+const { WildPokemon } = require('../trainers/wild-pokemon.js');
 
 class Battle {
     constructor(player, opponent) {
@@ -26,7 +28,9 @@ class Battle {
 
     startBattle() {
         console.log('\n');
-        console.log(`${this.opponent.name} wants to fight!`);
+        console.log(
+            this.opponent.isWild ? `A wild ${this.opponent.wildPokeObj.name} appeared!`
+            : `${this.opponent.name} wants to fight!`);
         console.log('\n');
         this.setCurrentPokeballs()
         this.doBattle()
@@ -62,6 +66,7 @@ class Battle {
         if (!trainer.isPlayer) {
             this.setNextPokemon(trainer)
             trainer.currentPokeball.throw()
+            console.log(`${this.opponent.name} sent out ${this.storage.name}!`)
             return Promise.resolve()
         }
         else {
@@ -90,6 +95,8 @@ class Battle {
                 const selectedPokemonIndex = trainer.getPokemon(selectedPokemon).index
                 trainer.currentPokeball = trainer.belt[selectedPokemonIndex]
                 this.playerPokemon = this.player.currentPokeball.storage
+
+                console.log(`Go, ${this.storage.name}!`)
                 trainer.currentPokeball.throw()
             })
         }
@@ -137,10 +144,14 @@ class Battle {
     setCurrentPokeballs(trainer) {
 
       if (!trainer) { // when called with no arguments in startBattle, throw out first pokemon with hitPoints for each trainer
-          this.setNextPokemon(this.player)
-          this.setNextPokemon(this.opponent)
-          this.player.currentPokeball.throw();
-          this.opponent.currentPokeball.throw();
+        this.setNextPokemon(this.opponent)
+        this.opponent.currentPokeball.throw();
+        if (!this.opponent.isWild) console.log(`${this.opponent.name} sent out ${this.storage.name}!`)
+        this.setNextPokemon(this.player)
+        console.log(`Go, ${this.storage.name}!`)
+        this.player.currentPokeball.throw();
+        
+
       } 
       else {  // when called with one specific trainer in checkIfBattleOver, check if that trainer has any pokemon with hp
           const currentPokeballIndex = trainer.belt.indexOf(trainer.currentPokeball)
@@ -160,7 +171,12 @@ class Battle {
     }
 
     doEndOfBattle() {
-        console.log(`${this.winner.name} defeated ${this.loser.name}!`);
+        if (this.loser.isWild) console.log('You won!')
+        else if (this.loser.isPlayer) {
+            console.log(`${this.loser.name} is out of useable Pokemon!`)
+            console.log(`${this.loser.name} blacked out!`)
+        }
+        else console.log(`${this.winner.name} defeated ${this.loser.name}!`);
     }
 
     checkIfBattleOver(trainer) {
@@ -297,49 +313,66 @@ class Battle {
     }
 }
 
+fs.readFile('../data/save-data.json', 'utf-8')
+.then((saveFile) => {
+    const saveData = JSON.parse(saveFile)
+    const playerData = saveData.playerData;
+    const player = playerData.player
+    const rivalData = saveData.rivalData
+    const rival = rivalData.rival
 
+    // console.log(player.currentPokeball)
+    // console.log(Object.getOwnPropertyNames(player.currentPokeball))
+    console.log(player.currentPokeball.throw())
+    // const testSaveBattle = new Battle(player, rival)
+    // testSaveBattle.startBattle()
+})
 
-
-const jeb = new Player('Jebediah')
 const gerty = new Squirtle('Gerty', 1)
 const maude = new Bulbasaur('Maude', 1)
+const jeb = new Player('Jebediah', [gerty, maude])
 
-const butch = new Trainer('Butch')
-const phil = new Charmander('Phil', 1)
-const paula = new Charmander('Paula', 1) 
+console.log(jeb.currentPokeball.throw())
+// const phil = new Charmander('Phil', 1)
+// const paula = new Charmander('Paula', 1) 
+// const butch = new Trainer('Butch', [phil, paula])
 
-// console.log(gerty)
+// const wildRatPokemon1 = new Rattata(undefined, 1)
+// const wildRatTrainer1 = new WildPokemon([wildRatPokemon1])
 
-gerty.takeDamage(20)
-maude.takeDamage(20)
-phil.takeDamage(20)
-paula.takeDamage(20)
+// Level up Gerty
+// gerty.addXp(4)
 
-console.log(gerty)
+// Test battle with AI trainer
+//-----------
+// const testBattle = new Battle(jeb, butch)
+// testBattle.startBattle()
 
-jeb.catch(gerty)
-jeb.catch(maude)
-butch.catch(phil)
-butch.catch(paula)
+// Test battle with wild pokemon
+//-----------
+// const testBattle = new Battle(jeb, wildRatTrainer1)
+// testBattle.startBattle()
 
-// console.log(gerty)
 
-gerty.hitPoints.current = gerty.hitPoints.max
-maude.hitPoints.current = maude.hitPoints.max
-phil.hitPoints.current = phil.hitPoints.max
-paula.hitPoints.current = paula.hitPoints.max
 
-// console.log(jeb.pokemonList)
-// console.log(jeb.belt)
-// console.log(jeb.getPokemon('Gerty'))
+// Next 3 blocks test catching pokemon - deal damage to leave all at 1hp, 
+// catch, then restore health
 
-// console.log(gerty)
+// -----------------------------
+// gerty.takeDamage(20)
+// maude.takeDamage(20)
+// phil.takeDamage(20)
+// paula.takeDamage(20)
 
-gerty.addXp(4)
-// console.log(gerty)
+// jeb.catch(gerty)
+// jeb.catch(maude)
+// butch.catch(phil)
+// butch.catch(paula)
 
-const testBattle = new Battle(jeb, butch)
-
-testBattle.startBattle()
+// gerty.hitPoints.current = gerty.hitPoints.max
+// maude.hitPoints.current = maude.hitPoints.max
+// phil.hitPoints.current = phil.hitPoints.max
+// paula.hitPoints.current = paula.hitPoints.max
+// -----------------------------
 
 module.exports = { Battle }

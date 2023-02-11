@@ -1,50 +1,77 @@
 class Pokemon {
-    constructor(name, level = 1, type = 'normal', move = 'tackle', catchDifficulty = 5, hitPoints = level*7.5, attack = level*5, defence = level*5 ) {
-        this.name = name;
-        this.level = level
-        this.type = type;
-        this.move = move;
-        this.catchDifficulty = catchDifficulty;
-        this.hitPoints = hitPoints;
-        this.health = hitPoints;
-        this.attack = attack;
-        this.defence = defence;
+    constructor(
+        name, 
+        level = 1,
+        type = 'normal', 
+        moves = [tackle], 
+        catchDifficulty = 5, 
+        hitPoints = 20 + (level * 1.25), 
+        attack = 10 + (level * 0.75), 
+        defence = 10 + (level * 0.75)
+    ) {
+            this.name = name;
+            this.level = level
+            this.type = type;
+            this.moves = moves;
+            this.catchDifficulty = catchDifficulty;
+            this.hitPoints = {current: hitPoints, max: hitPoints};
+            this.attack = {current: attack, max: attack};
+            this.defence = {current: defence, max: defence};
+            this.xp = this.level ** 2
+            this.xpThreshold = Math.floor((this.level + 1) ** 2.5)
+            this.activeEffects = {}
     }
 
-    isEffectiveAgainst(otherPokemon) {
+    isResistantTo(move) {
         const strengths = {
             fire: 'grass',
             grass: 'water',
             water: 'fire'
         }
-
-        return strengths[this.type] === otherPokemon.type
+        return strengths[this.type] === move.type
     }
 
-
-    isWeakTo(otherPokemon) {
+    isWeakTo(move) {
         const weaknesses = {
             grass: 'fire',
             water: 'grass',
             fire: 'water'
         }
-
-        return weaknesses[this.type] === otherPokemon.type
+        return weaknesses[this.type] === move.type
     }
 
     takeDamage(damage) {
-        this.health = Math.max(0, this.health - damage)
+        this.hitPoints.current = Math.max(0, +(this.hitPoints.current - damage).toFixed(2))
     }
 
-    useMove(target) {
-        const random = (Math.random() * -0.3) + 1.5
-        const damage = (random * this.attack) - target.defence
-        console.log(`${this.name} used ${this.move}!`)
-        return damage.toFixed(2)
+    useMove(move, target) {
+        console.log(`${this.name} used ${move.name}!`)
+        
+        if (move.doesDamage) {
+            const random = (Math.random() * -0.3) + 2
+            const damage = ((random * this.attack.current) - target.defence.current) * move.damageMultiplier
+            const damageToReturn = Math.max(1, +damage.toFixed(2))
+            return damageToReturn
+        }
+    }
+
+    addXp(num) {
+        this.xp += num;
+        if (this.xp >= this.xpThreshold) {
+            this.level++
+            this.hitPoints.max = 20 + (this.level * 1.25)
+            this.hitPoints.current += 2
+            this.attack.max = 10 + (this.level * 0.75)
+            this.attack.current += 0.5
+            this.defence.max = 10 + (this.level * 0.75)
+            this.defence.current += 0.5
+            this.xpThreshold = Math.floor((this.level + 1) ** 2.5)
+            console.log(`${this.name} grew to level ${this.level}!`)
+        }
     }
 
     hasFainted() {
-        return this.health === 0
+        return this.hitPoints.current === 0
     }
 }
 

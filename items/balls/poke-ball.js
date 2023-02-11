@@ -1,14 +1,13 @@
-class Pokeball {
-    constructor(owner, ballType = {name: 'Poke', catchRate: 1}, price = 200) {
+class PokeBall {
+    constructor(ballType = {name: 'Poke', catchRate: 1}, price = 200) {
         this.storage = null;
-        this.owner = owner
         this.ballType = ballType
         this.price = price
     }
 
     throw(pokemon) {
         if(pokemon && ! this.storage) {
-            const healthRatio = pokemon.hitPoints / pokemon.health;
+            const healthRatio = pokemon.hitPoints.max / pokemon.hitPoints.current;
             const random = Math.random()*2.5
             const ballRate = this.ballType.catchRate
             const catchChance = (random+ballRate)*healthRatio
@@ -25,11 +24,9 @@ class Pokeball {
             }
         }
         else if(pokemon && this.storage) {
-            console.log(`There is already a Pokemon in the ${this.ballType.name} Ball!`)
+            console.log(`There is already a Pokemon in this ${this.ballType.name} Ball!`)
         }
         else if(this.storage) {
-            console.log(this.owner.isPlayer ? `Go, ${this.storage.name}!`
-                    : `${this.owner.name} sent out ${this.storage.name}!`)
             console.log(this.storage.art)
             return this.storage;
         }
@@ -45,4 +42,4 @@ class Pokeball {
     }
 }
 
-module.exports = { Pokeball, }
+module.exports = { PokeBall, }

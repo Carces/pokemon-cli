@@ -1,8 +1,21 @@
 const { Grass } = require('../types/grass')
+const { movesData } = require('../../main-game/data/moves-data.js')
 
 class Bulbasaur extends Grass {
-    constructor(name = 'Buulbasaur', level, catchDifficulty, hitPoints, attack, defence) {
-        super(name, level, 'vine whip', catchDifficulty, hitPoints, attack, defence);
+    constructor(
+        name = 'Bulbasaur', 
+        level,
+        moves = ['Tackle', 'Growl'], 
+        catchDifficulty, 
+        hitPoints, 
+        attack, 
+        defence,
+    ) {
+        super(name, level, moves, catchDifficulty, hitPoints, attack, defence)
+        this.species = 'Bulbasaur';
+        this.moveTable = {
+            l3: ['Vine Whip'],
+        }
         this.art = `
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⡀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⣀⣤⣾⢠⣾⢀⡀⠀⠀⠀⠀

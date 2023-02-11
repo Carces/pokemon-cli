@@ -1,8 +1,21 @@
 const { Water } = require('../types/water')
+const { movesData } = require('../../main-game/data/moves-data.js')
 
 class Squirtle extends Water {
-    constructor(name = 'Squirtle', level, catchDifficulty, hitPoints, attack, defence) {
-        super(name, level, 'water gun', catchDifficulty, hitPoints, attack, defence);
+    constructor(
+        name = 'Squirtle', 
+        level,
+        moves = ['Tackle', 'Tail Whip'], 
+        catchDifficulty, 
+        hitPoints, 
+        attack, 
+        defence,
+    ) {
+        super(name, level, moves, catchDifficulty, hitPoints, attack, defence)
+        this.species = 'Squirtle';
+        this.moveTable = {
+            l3: 'Water Gun',
+        }
         this.art = `
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣴⣶⣿⣿⣿⣶⣴⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣻⣿⢿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀

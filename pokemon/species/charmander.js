@@ -1,8 +1,21 @@
 const { Fire } = require('../types/fire')
+const { movesData } = require('../../main-game/data/moves-data.js')
 
 class Charmander extends Fire {
-    constructor(name = 'Charmander', level, catchDifficulty, hitPoints, attack, defence) {
-        super(name, level, 'ember', catchDifficulty, hitPoints, attack, defence);
+    constructor(
+        name = 'Charmander', 
+        level,
+        moves = ['Scratch', 'Growl'], 
+        catchDifficulty, 
+        hitPoints, 
+        attack, 
+        defence,
+    ) {
+        super(name, level, moves, catchDifficulty, hitPoints, attack, defence)
+        this.species = 'Charmander';
+        this.moveTable = {
+            l3: ['Ember'],
+        }
         this.art = `
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣶⣶⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀

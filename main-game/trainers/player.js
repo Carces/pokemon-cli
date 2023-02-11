@@ -1,8 +1,8 @@
 const { Trainer } = require('./trainer.js')
 
 class Player extends Trainer {
-    constructor(name, ...pokemon) {
-        super(name, ...pokemon);
+    constructor(name, pokemonArr) {
+        super(name, pokemonArr);
         this.isPlayer = true;
     }
 }
