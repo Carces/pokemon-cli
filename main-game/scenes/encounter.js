@@ -1,9 +1,4 @@
 const inquirer = require('inquirer')
-const { Battle } = require('./battle.js')
-const { Trainer } = require('../trainers/trainer.js')
-const { Bulbasaur } = require('../../pokemon/species/bulbasaur.js')
-const { Squirtle } = require('../../pokemon/species/squirtle.js')
-const { saveData } = require('./')
 
 // const player = new Trainer('Albert');
 // const opponentTrainer = new Trainer('Norbert');

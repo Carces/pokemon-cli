@@ -59,12 +59,12 @@ class Pokemon {
         this.xp += num;
         if (this.xp >= this.xpThreshold) {
             this.level++
-            this.hitPoints.max = 20 + (this.level * 1.25)
-            this.hitPoints.current += 2
-            this.attack.max = 10 + (this.level * 0.75)
-            this.attack.current += 0.5
-            this.defence.max = 10 + (this.level * 0.75)
-            this.defence.current += 0.5
+            this.hitPoints.max += 1.25
+            this.hitPoints.current += 1.25
+            this.attack.max += 0.75
+            this.attack.current += 0.75
+            this.defence.max += 0.75
+            this.defence.current += 0.75
             this.xpThreshold = Math.floor((this.level + 1) ** 2.5)
             console.log(`${this.name} grew to level ${this.level}!`)
         }

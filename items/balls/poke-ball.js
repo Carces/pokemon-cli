@@ -8,19 +8,22 @@ class PokeBall {
     throw(pokemon) {
         if(pokemon && ! this.storage) {
             const healthRatio = pokemon.hitPoints.max / pokemon.hitPoints.current;
-            const random = Math.random()*2.5
+            const random = Math.random()*5
             const ballRate = this.ballType.catchRate
-            const catchChance = (random+ballRate)*healthRatio
-            // console.log("CATCH: ", catchChance, "DIFF: ", pokemon.catchDifficulty)
+            const catchChance = (random+healthRatio)*ballRate
+
+            //////
+            console.log("CATCH: ", catchChance, "DIFF: ", pokemon.catchDifficulty)
+            //////
 
             if (catchChance >= pokemon.catchDifficulty) {
                 console.log(`You caught ${pokemon.name}!`)
                 this.storage = pokemon;
-                // TO ADD: remove ball from inv
+                return pokemon;
             }
             else {
                 console.log(`Oh no! The Pokemon broke free!`)
-                // TO ADD: remove ball from inv
+                return null;
             }
         }
         else if(pokemon && this.storage) {

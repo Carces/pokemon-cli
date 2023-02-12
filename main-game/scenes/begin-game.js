@@ -1,10 +1,11 @@
 const inquirer = require('inquirer');
+const fs = require('fs/promises')
+const path = require('path')
 const { Bulbasaur } = require('../../pokemon/species/bulbasaur.js');
 const { Charmander } = require('../../pokemon/species/charmander.js');
 const { Squirtle } = require('../../pokemon/species/squirtle.js');
 const { PlayerData } = require('../data/player-data.js');
 const { RivalData } = require('../data/rival-data.js');
-const fs = require('fs/promises')
 
 let playerData;
 let rivalData;
@@ -159,7 +160,7 @@ function confirmAnswers() {
         playerData,
         rivalData,
       }
-      fs.writeFile('../data/save-data.json', JSON.stringify(saveData, null, 2))
+      fs.writeFile(path.join(__dirname, '..', 'data', 'save-data.json'), JSON.stringify(saveData, null, 2))
       .then(() => {
         console.log(`Saved!`)
       })

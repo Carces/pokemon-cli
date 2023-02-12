@@ -1,0 +1,27 @@
+{
+	"folders": [
+		{
+			"name": "fundamentals",
+			"path": ".."
+		},
+		{
+			"name": "test-environment",
+			"path": "../../test-environment"
+		},
+		{
+			"name": "fun-review-day",
+			"path": "../fun-review-day"
+		},
+		{
+			"name": "fun-pokemon-battler",
+			"path": "."
+		},
+		{
+			"path": "../fun-callback-heaven"
+		},
+		{
+			"path": "../fun-promises-playground"
+		}
+	],
+	"settings": {}
+}

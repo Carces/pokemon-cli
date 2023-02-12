@@ -1,14 +1,13 @@
 const inquirer = require('inquirer');
 const fs = require('fs/promises')
-const { Pokemon } = require('../../pokemon/pokemon.js');
 const { Trainer } = require('../trainers/trainer.js');
 const { Player } = require('../trainers/player.js');
-const { Charmander } = require('../../pokemon/species/charmander.js');
-const { Squirtle } = require('../../pokemon/species/squirtle.js');
-const { Bulbasaur } = require('../../pokemon/species/bulbasaur.js');
-const { Rattata } = require('../../pokemon/species/rattata.js');
-const { movesData } = require('../data/moves-data');
 const { WildPokemon } = require('../trainers/wild-pokemon.js');
+const { movesData } = require('../data/moves-data.js');
+const create = require('../data/create.js')
+// loadGame not fully implemented
+const loadGame = require('../load-game.js');
+const { itemsData } = require('../data/items-data.js');
 
 class Battle {
     constructor(player, opponent) {
@@ -33,7 +32,7 @@ class Battle {
             : `${this.opponent.name} wants to fight!`);
         console.log('\n');
         this.setCurrentPokeballs()
-        this.doBattle()
+        this.inBetweenTurns()
     }
     resolveTurn() {
         this.checkIfBattleOver(this.player).then(() => {
@@ -55,7 +54,7 @@ class Battle {
                     this.checkIfBattleOver(this.opponent).then(() => {
                         this.turnNumber++
                         // this.changeCurrentTrainer();
-                        if (!this.battleOver) this.doBattle()
+                        if (!this.battleOver) this.inBetweenTurns()
                         else this.doEndOfBattle()
                     })
                 })
@@ -66,23 +65,20 @@ class Battle {
         if (!trainer.isPlayer) {
             this.setNextPokemon(trainer)
             trainer.currentPokeball.throw()
-            console.log(`${this.opponent.name} sent out ${this.storage.name}!`)
+            console.log(`${this.opponent.name} sent out ${this.opponentPokemon.name}!`)
             return Promise.resolve()
         }
         else {
-            const pokemonListWithHP = trainer.pokemonList.map(pokeName => {
+            const pokemonChoices = trainer.pokemonList.map(pokeName => {
                 const pokemon = trainer.getPokemon(pokeName).pokemonObj
-                return `${pokeName}: ${pokemon.hitPoints.current}/${pokemon.hitPoints.max}`
-            })
-            
-            const pokemonChoices = pokemonListWithHP.map(pokemonWithHp => {
-                const pokemonObj = trainer.getPokemon(pokemonWithHp.split(':')[0]).pokemonObj
-                return !pokemonObj.hitPoints.current ? 
+                const pokemonWithHp = `${pokeName}: Level ${pokemon.level} | HP - ${pokemon.hitPoints.current}/${pokemon.hitPoints.max}`
+                return !pokemon.hitPoints.current ? 
                     { name: pokemonWithHp, disabled: 'unconscious'}
-                : pokemonObj.name === trainer.currentPokeball.storage.name ?
+                : pokemon.name === trainer.currentPokeball.storage.name ?
                     { name: pokemonWithHp, disabled: 'already out'}
                 : pokemonWithHp
             })
+            pokemonChoices.push('--CANCEL--')
                 
             return inquirer.prompt([{
                 type: 'list',
@@ -91,18 +87,35 @@ class Battle {
                 choices: pokemonChoices
             }])
             .then((answers) => {
-                const selectedPokemon = answers.pokemonChoice.split(':')[0]
-                const selectedPokemonIndex = trainer.getPokemon(selectedPokemon).index
-                trainer.currentPokeball = trainer.belt[selectedPokemonIndex]
-                this.playerPokemon = this.player.currentPokeball.storage
+                if (answers.pokemonChoice === '--CANCEL--') return false;
+                else {
+                    const selectedPokemon = answers.pokemonChoice.split(':')[0]
+                    const selectedPokemonIndex = trainer.getPokemon(selectedPokemon).index
+                    trainer.currentPokeball = trainer.belt[selectedPokemonIndex]
+                    this.playerPokemon = this.player.currentPokeball.storage
 
-                console.log(`Go, ${this.storage.name}!`)
-                trainer.currentPokeball.throw()
+                    console.log(`Go, ${this.playerPokemon.name}!`)
+                    trainer.currentPokeball.throw()
+                    return true;
+                }
             })
         }
     }
     doBattle() {
-        this.inBetweenTurns();
+        const playerInvKeys = Object.keys(this.player.inventory)
+        const battleItemKeys = playerInvKeys.filter(item => {
+            return itemsData[item].useInBattle
+        })
+        console.log(battleItemKeys)
+        const itemChoices = battleItemKeys[1] ?
+        battleItemKeys.map(itemKey => `${itemKey}: ${this.player.inventory[itemKey]}`)
+        : [{ name: ' ', disabled: 'You have no items that can be used in battle!'}]
+        itemChoices.push('--CANCEL--')
+
+        // const itemChoices = battleItemKeys[1] ?
+        // [battleItemKeys.map(itemKey => `${itemKey} - x${this.player.inventory[itemKey]}`), '--CANCEL--']
+        // : [{ name: ' ', disabled: 'You have no items that can be used in battle!'}, '--CANCEL--']
+
         inquirer.prompt([{
             type: 'list',
             name: 'action',
@@ -113,18 +126,41 @@ class Battle {
             type: 'list',
             name: 'move',
             message: `Choose your move...`,
-            choices: this.playerPokemon.moves,
+            choices: [...this.playerPokemon.moves, '--CANCEL--'],
             when: (answers) => answers.action === 'Fight'
-          }])
+        },
+        {
+            type: 'list',
+            name: 'item',
+            message: `Choose your item...`,
+            choices: itemChoices,
+            when: (answers) => answers.action === 'Item'
+        }])
         .then((answers) => {
             if (answers.action === 'Fight') {
-                this.fight(movesData[answers.move], this.playerPokemon, this.opponentPokemon);
-                this.resolveTurn()
+                if (answers.move === '--CANCEL--') this.doBattle()
+                else {
+                    this.fight(movesData[answers.move], this.playerPokemon, this.opponentPokemon);
+                    this.resolveTurn()
+                }
             }
             else if (answers.action === 'Pokemon') {
-                this.choosePokemon(this.player).then(() => {
-                    this.resolveTurn()
+                this.choosePokemon(this.player)
+                .then((choice) => {
+                    if (choice) this.resolveTurn()
+                    else this.doBattle()
                 })
+            }
+            if (answers.action === 'Item') {
+                if (answers.item === '--CANCEL--') this.doBattle()
+                else {
+                    const itemToUse = answers.item.split(':')[0]
+                    this.useItem(itemToUse, this.player)
+                    .then((choice) => {
+                        if (choice) this.resolveTurn()
+                        else this.doBattle()
+                    })
+                }
             }
         });
     }
@@ -146,9 +182,9 @@ class Battle {
       if (!trainer) { // when called with no arguments in startBattle, throw out first pokemon with hitPoints for each trainer
         this.setNextPokemon(this.opponent)
         this.opponent.currentPokeball.throw();
-        if (!this.opponent.isWild) console.log(`${this.opponent.name} sent out ${this.storage.name}!`)
+        if (!this.opponent.isWild) console.log(`${this.opponent.name} sent out ${this.opponentPokemon.name}!`)
         this.setNextPokemon(this.player)
-        console.log(`Go, ${this.storage.name}!`)
+        console.log(`Go, ${this.playerPokemon.name}!`)
         this.player.currentPokeball.throw();
         
 
@@ -163,9 +199,7 @@ class Battle {
               return this.choosePokemon(trainer)
           }
           else {
-              return new Promise(resolve => {
-                  resolve()
-              })
+            return Promise.resolve()
           }
       } 
     }
@@ -177,6 +211,13 @@ class Battle {
             console.log(`${this.loser.name} blacked out!`)
         }
         else console.log(`${this.winner.name} defeated ${this.loser.name}!`);
+
+        // For each pokemon, remove any active effects that don't persist
+        this.player.belt.forEach(ball => {
+            for (const effect in ball.storage.activeEffects) {
+                if (!effect.staysAfterBattle) delete ball.storage.activeEffects[effect]
+            }
+        })
     }
 
     checkIfBattleOver(trainer) {
@@ -200,22 +241,64 @@ class Battle {
         console.log('\n-------')
         console.log(`Turn ${this.turnNumber}`)
         console.log('-------\n')
-
-        
-///////////////////
-        console.log("atk:", this.playerPokemon.attack, this.opponentPokemon.attack)
-        console.log("def:", this.playerPokemon.defence, this.opponentPokemon.defence)
-        ////////////
+        this.doBattle()
     }
 
     getCriticalHit() {
         return Math.floor((Math.random() + 0.2))
     }
+    
+    useItem(item, trainer) {
+        const itemData = itemsData[item]
 
+        const pokemonChoices = trainer.pokemonList.map(pokeName => {
+            const pokemon = trainer.getPokemon(pokeName).pokemonObj
+            const pokemonWithHp = `${pokeName}: Level ${pokemon.level} | HP - ${pokemon.hitPoints.current}/${pokemon.hitPoints.max}`
+            return !pokemon.hitPoints.current ? 
+                `${pokemonWithHp} - unconscious`
+            : pokemon.name === this.playerPokemon.name ?
+                `${pokemonWithHp} - in battle`
+            : pokemonWithHp
+        });
+
+        const targets =
+        itemData.type === 'ball' && this.opponent.isWild ? 
+        [this.opponentPokemon]
+        : itemData.type === 'ball' ? 
+        [{ name: ' ', disabled: 'Only wild Pokemon can be caught!'}]
+        : itemData.type === 'boost' || itemData.type === 'heal' ? 
+        pokemonChoices
+        : [{ name: ' ', disabled: 'No valid targets!'}]
+        targets.push('--CANCEL--')
+
+        return inquirer.prompt([{
+            type: 'list',
+            name: 'target',
+            message: `Choose a target for your ${item}`,
+            choices: targets
+        }])
+        .then((answers) => {
+            if (answers.target === '--CANCEL--') return false;
+            else {
+                const selectedPokemon = answers.target.split(':')[0]
+                if (selectedPokemon === this.opponentPokemon.name) {
+                    console.log(`${trainer.name} used ${item} on ${selectedPokemon}!`)
+                    this.player.resolveItem(item, this.opponentPokemon)
+                    return true;
+                }
+                else {
+                    const selectedPokemonObj = trainer.getPokemon(selectedPokemon).pokemonObj
+                    console.log(`${trainer.name} used ${item} on ${selectedPokemon}!`)
+                    this.player.resolveItem(item, selectedPokemonObj)
+                    return true;
+                }
+            }
+        })
+    }
 
     resolveStatusMove(move, user, target) {
         function modBy50(stat, stagesToModBy) {
-            const stageOfStat = stat / 4
+            const stageOfStat = stat / 5
             return stat + (stageOfStat * stagesToModBy)
         }
 
@@ -226,15 +309,16 @@ class Battle {
         : effect.modifier > 1 ? 'rose sharply!'
         : effect.modifier === -1 ? 'fell!'
         : 'fell sharply!'
+
         const statAfterMod = +modBy50(target[effect.stat].current, effect.modifier).toFixed(2)
 
         user.useMove(move)
 
-        if (statAfterMod <= target[effect.stat] * 0.25 || statAfterMod <= 1) {
+        if (statAfterMod <= target[effect.stat.max] * 0.5 || statAfterMod <= target.level) {
             console.log (`${target.name}'s ${effect.stat} is already too low. ${move.name} had no effect!`)
             return
         }
-        if (statAfterMod >= target[effect.stat] * 1.75 || statAfterMod >= 500) {
+        if (statAfterMod >= target[effect.stat.max] * 1.5 || statAfterMod >= 500) {
             console.log (`${target.name}'s ${effect.stat} is already too high. ${move.name} had no effect!`)
             return
         }
@@ -242,6 +326,7 @@ class Battle {
         target[effect.stat].current = statAfterMod
         target.activeEffects[move.name] = effect
         console.log(`${target.name}'s ${effect.stat} ${effectMessage}`)
+        console.log("STAT AFTER: ", target[effect.stat], "<<<<<<<<<<<<<<<<<")
     }
 
     fight(move, attackingPokemon, defendingPokemon) {
@@ -313,40 +398,30 @@ class Battle {
     }
 }
 
-fs.readFile('../data/save-data.json', 'utf-8')
-.then((saveFile) => {
-    const saveData = JSON.parse(saveFile)
-    const playerData = saveData.playerData;
-    const player = playerData.player
-    const rivalData = saveData.rivalData
-    const rival = rivalData.rival
-
-    // console.log(player.currentPokeball)
-    // console.log(Object.getOwnPropertyNames(player.currentPokeball))
-    console.log(player.currentPokeball.throw())
-    // const testSaveBattle = new Battle(player, rival)
-    // testSaveBattle.startBattle()
-})
-
-const gerty = new Squirtle('Gerty', 1)
-const maude = new Bulbasaur('Maude', 1)
+const gerty = create.pokemon('Squirtle','Gerty', 1)
+const maude = create.pokemon('Bulbasaur','Maude', 1)
 const jeb = new Player('Jebediah', [gerty, maude])
 
-console.log(jeb.currentPokeball.throw())
-// const phil = new Charmander('Phil', 1)
-// const paula = new Charmander('Paula', 1) 
-// const butch = new Trainer('Butch', [phil, paula])
+const phil = create.pokemon('Charmander','Phil', 1)
+const paula = create.pokemon('Charmander','Paula', 1)
+const butch = new Trainer('Butch', [phil, paula])
 
-// const wildRatPokemon1 = new Rattata(undefined, 1)
+// const wildRatPokemon1 = create.pokemon('Rattata', undefined, 1)
 // const wildRatTrainer1 = new WildPokemon([wildRatPokemon1])
 
+jeb.inventory['Poke Ball'] = 3
+jeb.inventory['Great Ball'] = 1
+jeb.inventory['Potion'] = 2
+jeb.inventory['Protein'] = 1
+console.log(jeb.inventory)
+
 // Level up Gerty
-// gerty.addXp(4)
+gerty.addXp(4)
 
 // Test battle with AI trainer
 //-----------
-// const testBattle = new Battle(jeb, butch)
-// testBattle.startBattle()
+const testBattle = new Battle(jeb, butch)
+testBattle.startBattle()
 
 // Test battle with wild pokemon
 //-----------
