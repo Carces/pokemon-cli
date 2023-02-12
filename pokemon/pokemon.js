@@ -5,9 +5,9 @@ class Pokemon {
         type = 'normal', 
         moves = [tackle], 
         catchDifficulty = 5, 
-        hitPoints = 20 + (level * 1.25), 
-        attack = 10 + (level * 0.75), 
-        defence = 10 + (level * 0.75)
+        hitPoints = 10 + (level * 2), 
+        attack = 10 + (level * 2), 
+        defence = 10 + (level * 2)
     ) {
             this.name = name;
             this.level = level
@@ -48,8 +48,8 @@ class Pokemon {
         console.log(`${this.name} used ${move.name}!`)
         
         if (move.doesDamage) {
-            const random = (Math.random() * -0.3) + 2
-            const damage = ((random * this.attack.current) - target.defence.current) * move.damageMultiplier
+            const random = (Math.random() * -0.5) + 2.75
+            const damage = (random + (this.level*0.5) * (this.attack.current / target.defence.current)) * move.damageMultiplier
             const damageToReturn = Math.max(1, +damage.toFixed(2))
             return damageToReturn
         }

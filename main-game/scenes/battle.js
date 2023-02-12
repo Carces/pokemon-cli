@@ -326,7 +326,6 @@ class Battle {
         target[effect.stat].current = statAfterMod
         target.activeEffects[move.name] = effect
         console.log(`${target.name}'s ${effect.stat} ${effectMessage}`)
-        console.log("STAT AFTER: ", target[effect.stat], "<<<<<<<<<<<<<<<<<")
     }
 
     fight(move, attackingPokemon, defendingPokemon) {
