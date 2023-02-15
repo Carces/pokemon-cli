@@ -1,11 +1,8 @@
-SOLVE DAMAGE FORUMLA BALANCE:
-currently, attack affects damage much more than defence. This means that moves that lower attack by one stage are much more effective than moves that lower defence by one stage, and after just a few uses of growl, pokemon start to deal minimum damage, even with a limiter that stats can't be reduced past half of their normal value.
-This is because if the damage formula in pokemon.js>useMove(), which mutliplies attack by a random number (average of ~1.85), then subtracts defence from the total. This ensures that damage numbers scale with level, keeping up with scaling hit points, but it means that attack is almost twice as significant in the damage calculation as defence is.
-Experimented with alternative formula: random + attack - defence. This results in equal weighting for attack and defence, but for the average pokemon where their attack and defence stats are equal, they cancel each other out, meaning the only damage dealt is the ~1.85 points added by random. This damage won't scale with level, so won't keep up with scaling hitpoints.
-The perfect formula will:
-- give attack and defence equal weighting, and make attack-reducing and defence-reducing moves have a roughly equal effect on damage numbers
-- steadily increase damage as pokemon level up, in line with hitpoints (around 1.75 more per level)
-- maintain a roughly similar level of randomness to the current one
+Bring battle loop in line with games: currently, player always goes first (pending implementation of pokemon speed). Currently, switching out unconscious pokemon is handled by resolveTurn() calling checkIfBattleOver once for each trainer. If player pokemon damages itself, checkIfBattleOver(player) will call choosePokemon. Immediately after that, checkIfBattleOver(opponent) will call choosePokemon if they have remaining pokemon. That promise chain gets resolved and returned to resolveTurn(). Opponent then goes straight to selecting a random move and using it with fight()
+In the games, when a pokemon is downed, that round ends.
+The trainer whose pokemon was downed immediately chooses a pokemon to bring out. The games have two modes, shift (where the player now gets to choose to change pokemon as a free action) and set (where they have to use their turn to switch if they want to do so)
+The next round now begins. If the player had higher speed than the downed pokemon, acted first last round and downed the opponent before they could attack, and their pokemon also has higher speed than the replacement pokemon sent out, they can act twice in a row.
+It seems that if the player pokemon is slower and acts second, this won't be the case, as the round fully ends (? unconfirmed)
 
 catchDifficulty default should be set per species, as well as pokemon.js setting the overall default of 5. It should also be moved to the end of species constructor params as it will almost always just be the species default.
 at 1/4 health with a normal Poke Ball, catch ranges from ~4-11
