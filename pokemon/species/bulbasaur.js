@@ -1,22 +1,34 @@
-const { Grass } = require('../types/grass')
-const { movesData } = require('../../main-game/data/moves-data.js')
+const { Grass } = require('../types/grass');
+const { movesData } = require('../../main-game/data/moves-data.js');
 
 class Bulbasaur extends Grass {
-    constructor(
-        name = 'Bulbasaur', 
-        level,
-        moves = ['Tackle', 'Growl'], 
-        catchDifficulty, 
-        hitPoints, 
-        attack, 
-        defence,
-    ) {
-        super(name, level, moves, catchDifficulty, hitPoints, attack, defence)
-        this.species = 'Bulbasaur';
-        this.moveTable = {
-            l3: ['Vine Whip'],
+  constructor(
+    name = 'Bulbasaur',
+    level,
+    moves = ['Tackle', 'Growl'],
+    hitPoints,
+    attack,
+    defence,
+    catchDifficulty = 6
+  ) {
+    super(name, level, moves, hitPoints, attack, defence, catchDifficulty);
+    this.species = 'Bulbasaur';
+    this.moveTable = {
+      level3: ['Vine Whip'],
+    };
+    if (this.level > 1) {
+      // Give highest level moves possible
+      for (const movesArr in this.moveTable) {
+        const movesLevel = movesArr.replace('level', '');
+
+        if (this.level >= movesLevel && this.moves.length < 4) {
+          this.moveTable[movesArr].forEach((move) => {
+            if (this.moves.length < 4) this.moves.push(move);
+          });
         }
-        this.art = `
+      }
+    }
+    this.art = `
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⡀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⣀⣤⣾⢠⣾⢀⡀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣶⣿⣿⣿⣿⠿⣿⣿⣿⣿⣽⣷⣿⡟⣾⠀⠀⠀⠀⠀
@@ -34,10 +46,10 @@ class Bulbasaur extends Grass {
         ⠀⠀⠀⠀⠀⠀⠈⢱⣿⡇⣿⣿⣷⣮⡝⠛⠿⢿⣿⣗⣽⡷⣸⣿⣿⣿⣿⠟⣾⣿⣄⣀⣀⣿⣿⡟⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⣯⣶⣿⣿⣿⡟⠁⠀⠀⠒⠶⡈⠉⢑⣿⣿⣿⣿⠋⠂⢻⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠺⠟⠻⡝⠋⠀⠀⠀⠀⠀⠀⣻⢾⢿⢿⢿⠟⠁⠀⠀⠀⠝⠫⠝⢟⠻⠁⠀⠀⠀⠀
-        ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠁⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`
-    }
+        ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠁⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
+  }
 }
 
 module.exports = {
-    Bulbasaur
-}
+  Bulbasaur,
+};
