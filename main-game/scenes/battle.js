@@ -5,8 +5,7 @@ const { Player } = require('../trainers/player.js');
 const { WildPokemon } = require('../trainers/wild-pokemon.js');
 const { movesData } = require('../data/moves-data.js');
 const create = require('../data/create.js');
-// loadGame not fully implemented
-const loadGame = require('../load-game.js');
+const { loadGame } = require('../load-game.js');
 const { itemsData } = require('../data/items-data.js');
 
 class Battle {
@@ -449,40 +448,53 @@ class Battle {
   }
 }
 
-const gerty = create.pokemon('Squirtle', 'Gerty', 1);
-const maude = create.pokemon('Bulbasaur', 'Maude', 1);
-const jeb = new Player('Jebediah', [gerty, maude]);
+loadGame().then(({ playerData, rivalData }) => {
+  const { player } = playerData;
+  const { rival } = rivalData;
 
-const phil = create.pokemon('Charmander', 'Phil', 1);
-const paula = create.pokemon('Charmander', 'Paula', 1);
-const butch = new Trainer('Butch', [phil, paula]);
+  console.log(playerData);
+  console.log(rivalData);
+  console.log(player.currentPokeball.storage.attack);
+  console.log(rival.currentPokeball.storage.attack);
+
+  // const testBattle = new Battle(player, rival);
+  // testBattle.startBattle();
+});
+
+// const gerty = create.pokemon('Squirtle', 'Gerty', 1);
+// const maude = create.pokemon('Bulbasaur', 'Maude', 1);
+// const jeb = new Player('Jebediah', [gerty, maude]);
+
+// const phil = create.pokemon('Charmander', 'Phil', 1);
+// const paula = create.pokemon('Charmander', 'Paula', 1);
+// const butch = new Trainer('Butch', [phil, paula]);
 
 // const wildRatPokemon1 = create.pokemon('Rattata', undefined, 1)
 // const wildRatTrainer1 = new WildPokemon([wildRatPokemon1])
 
-jeb.inventory['Poke Ball'] = 3;
-jeb.inventory['Great Ball'] = 1;
-jeb.inventory['Potion'] = 2;
-jeb.inventory['Protein'] = 1;
+// jeb.inventory['Poke Ball'] = 3;
+// jeb.inventory['Great Ball'] = 1;
+// jeb.inventory['Potion'] = 2;
+// jeb.inventory['Protein'] = 1;
 
 // Level up Gerty to level 3
 //-----------
-console.log(`GERTY XP: ${gerty.xp} / NEXT LEVEL: ${gerty.xpThreshold}`);
-console.log('.... adding 4 xp ....');
-console.log('---------------');
-gerty
-  .addXp(2)
-  // .then(() => {
-  //   console.log(`GERTY XP: ${gerty.xp} / NEXT LEVEL: ${gerty.xpThreshold}`);
-  //   console.log('.... adding 10 xp ....');
-  //   console.log('---------------');
-  //   return gerty.addXp(10);
-  // })
-  .then(() => {
-    /*put one of the test battles here*/
-    const testBattle = new Battle(jeb, butch);
-    testBattle.startBattle();
-  });
+// console.log(`GERTY XP: ${gerty.xp} / NEXT LEVEL: ${gerty.xpThreshold}`);
+// console.log('.... adding 4 xp ....');
+// console.log('---------------');
+// gerty
+//   .addXp(2)
+//   .then(() => {
+//     console.log(`GERTY XP: ${gerty.xp} / NEXT LEVEL: ${gerty.xpThreshold}`);
+//     console.log('.... adding 10 xp ....');
+//     console.log('---------------');
+//     return gerty.addXp(10);
+//   })
+//   .then(() => {
+//     /*put one of the test battles here*/
+//     const testBattle = new Battle(jeb, butch);
+//     testBattle.startBattle();
+//   });
 //-----------
 
 //
