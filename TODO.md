@@ -1,6 +1,6 @@
-Finish implementing town.js > sell, usePC and healPokemon functions not yet written. At the end of the town loop, the last promise in the chain needs to return currentPlayerData from town so that the inventory/pokemon health etc. changes are updated back in the main game.js file
-
 Capturing: make it use balls from inventory and subtract them regardless of success. When capturing a Pokemon and party is full, give the option to send a party pokemon to PC to make room or send new one.
+
+finish implementing trainers-data.js. Link up to create.js randomTrainer function. Allow the function to specify more structured NPCs or fully randomised trainers using names and messages.
 
 > Moves have a uses property - currently uses game values which are very high (30 for tackle). useMove needs to reduce this by 1 (currently the property is only in movesData, needs storing separately. Maybe an array of length 4 where each number represents the num of uses of the move in that slot? if so, will need to be refreshed when an old move is replaced with a new one on level up)
 
