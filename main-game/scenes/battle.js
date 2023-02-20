@@ -121,10 +121,6 @@ class Battle {
         ];
     itemChoices.push('--CANCEL--');
 
-    // const itemChoices = battleItemKeys[1] ?
-    // [battleItemKeys.map(itemKey => `${itemKey} - x${this.player.inventory[itemKey]}`), '--CANCEL--']
-    // : [{ name: ' ', disabled: 'You have no items that can be used in battle!'}, '--CANCEL--']
-
     inquirer
       .prompt([
         {

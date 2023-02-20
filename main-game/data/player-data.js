@@ -5,7 +5,7 @@ class PlayerData {
     this.progressLevel = 0;
     this.townsVisited = [];
     this.player = new Player(name, [starter]);
-    this.computer = [];
+    this.PC = [];
   }
 }
 

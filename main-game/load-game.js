@@ -76,7 +76,7 @@ function loadGame() {
       loadTrainerInstance(rival);
       playerData.player = newPlayerInstance;
       rivalData.rival = newRivalInstance;
-      console.log('Loaded!');
+      console.log('Loaded!\n\n');
       return { playerData, rivalData };
     });
 }

@@ -92,10 +92,10 @@ const confirmQs = [
 
 function main() {
   console.log(
-    'Hello young person, I am professor Oak! I wonder if you have come here to begin your Pokemon journey... '
+    '\n\nHello young person, I am professor Oak! I wonder if you have come here to begin your Pokemon journey... \n\n'
   );
   return inquirer.prompt(playerNameQs).then((answers) => {
-    console.log(`\nAh, so your name is ${answers.playerName}!`);
+    console.log(`\nAh, so your name is ${answers.playerName}!\n`);
     playerName = answers.playerName;
   });
 }
@@ -103,7 +103,7 @@ function main() {
 function chooseStarter() {
   return inquirer.prompt(starterQs).then((answers) => {
     if (!answers.pokemonName) answers.pokemonName = answers.starter;
-    else console.log(`${answers.pokemonName} is a great name!`);
+    else console.log(`\n${answers.pokemonName} is a great name!\n`);
 
     createPlayerData(playerName, answers.starter, answers.pokemonName);
   });
@@ -125,11 +125,11 @@ function createPlayerData(playerName, starter, pokemonName) {
 function nameRival() {
   return inquirer.prompt(rivalQs).then((answers) => {
     console.log(
-      `That's right, I remember now! His name is ${answers.rivalName}!`
+      `\nThat's right, I remember now! His name is ${answers.rivalName}!\n`
     );
     createRivalData(answers.rivalName);
     console.log(
-      `${playerData.player.name}, your Pokemon journey is about to begin!`
+      `\n${playerData.player.name}, your Pokemon journey is about to begin!\n`
     );
   });
 }
@@ -165,7 +165,7 @@ function confirmAnswers() {
 
     if (!answers.ready) return confirmAnswers();
     else {
-      console.log(`The world of Pokemon awaits!`);
+      console.log(`\nThe world of Pokemon awaits!\n`);
       console.log(`-----`);
       console.log(`Saving...`);
       console.log(`-----`);

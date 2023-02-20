@@ -30,20 +30,23 @@ function mainMenu() {
                    ░╚════╝░╚══════╝╚═╝
 \\==========================================================/`
   );
+  const newGameText = `
+            █▄░█ █▀▀ █░█░█   █▀▀ ▄▀█ █▀▄▀█ █▀▀
+            █░▀█ ██▄ ▀▄▀▄▀   █▄█ █▀█ █░▀░█ ██▄`;
+  const loadGameText = `
+            █░░ █▀█ ▄▀█ █▀▄   █▀▀ ▄▀█ █▀▄▀█ █▀▀
+            █▄▄ █▄█ █▀█ █▄▀   █▄█ █▀█ █░▀░█ ██▄\n`;
   return inquirer
     .prompt([
       {
         type: 'list',
         name: 'mainMenu',
         message: ` `,
-        choices: [
-          '                    - New Game -',
-          '\n                     - Load Game -',
-        ],
+        choices: [newGameText, loadGameText],
       },
     ])
     .then((answers) => {
-      if (answers.mainMenu.endsWith('New Game -')) {
+      if (answers.mainMenu === newGameText) {
         return beginGame();
       } else return Promise.resolve();
     });
@@ -60,8 +63,11 @@ mainMenu()
     currentRival = currentRivalData.rival;
   })
   .then(() => {
-    return enterTown(currentPlayerData);
+    return enterTown(currentPlayerData, currentRivalData);
   })
-  .then(([promise, townVisitedName]) => {
-    currentPlayerData.townsVisited.push(townVisitedName);
+  .then(([saveSuccessful, playerData, rivalData]) => {
+    if (!saveSuccessful)
+      console.log('\n //// ERROR! Save unsuccessful //// \n');
+    currentPlayer = playerData;
+    currentRivalData = rivalData;
   });

@@ -1,3 +1,7 @@
+Finish implementing town.js > sell, usePC and healPokemon functions not yet written. At the end of the town loop, the last promise in the chain needs to return currentPlayerData from town so that the inventory/pokemon health etc. changes are updated back in the main game.js file
+
+Capturing: make it use balls from inventory and subtract them regardless of success. When capturing a Pokemon and party is full, give the option to send a party pokemon to PC to make room or send new one.
+
 > Moves have a uses property - currently uses game values which are very high (30 for tackle). useMove needs to reduce this by 1 (currently the property is only in movesData, needs storing separately. Maybe an array of length 4 where each number represents the num of uses of the move in that slot? if so, will need to be refreshed when an old move is replaced with a new one on level up)
 
 Currently, when a pokemon is created, the for...in loop in their species constructor iterates through their moveTable in reverse order and for each entry where the pokemon's starting level is equal to or greater than the required level for those moves, it pushes the moves onto their moves array until it reaches capacity at 4 moves.
