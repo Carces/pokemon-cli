@@ -2,7 +2,16 @@
   "playerData": {
     "progressLevel": 0,
     "townsVisited": [
-      "Mauville City"
+      "Mauville City",
+      "Rustboro City",
+      "Oreburgh City",
+      "Geosenge Town",
+      "Lacunosa Town",
+      "Pallet Town",
+      "Vaniville Town",
+      "Undella Town",
+      "Vermilion City",
+      "Sootopolis City"
     ],
     "player": {
       "name": "Jimbo",

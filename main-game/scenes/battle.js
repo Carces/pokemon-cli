@@ -5,6 +5,7 @@ const { Player } = require('../trainers/player.js');
 const { WildPokemon } = require('../trainers/wild-pokemon.js');
 const { movesData } = require('../data/moves-data.js');
 const create = require('../data/create.js');
+const { randomTrainer } = require('../trainers/random-trainer');
 const { loadGame } = require('../load-game.js');
 const { itemsData } = require('../data/items-data.js');
 
@@ -33,7 +34,7 @@ class Battle {
     );
     console.log('\n');
     this.setCurrentPokeballs();
-    this.inBetweenTurns();
+    return this.inBetweenTurns();
   }
   resolveTurn() {
     this.checkIfBattleOver(this.player).then(() => {
@@ -444,18 +445,15 @@ class Battle {
   }
 }
 
-loadGame().then(({ playerData, rivalData }) => {
-  const { player } = playerData;
-  const { rival } = rivalData;
+// loadGame().then(({ playerData, rivalData }) => {
+//   const { player } = playerData;
+//   const { rival } = rivalData;
 
-  console.log(playerData);
-  console.log(rivalData);
-  console.log(player.currentPokeball.storage.attack);
-  console.log(rival.currentPokeball.storage.attack);
+//   const ash = randomTrainer(3, null, true, 'Ash').battleTrainer;
 
-  // const testBattle = new Battle(player, rival);
-  // testBattle.startBattle();
-});
+//   const testBattle = new Battle(player, ash);
+//   testBattle.startBattle();
+// });
 
 // const gerty = create.pokemon('Squirtle', 'Gerty', 1);
 // const maude = create.pokemon('Bulbasaur', 'Maude', 1);
