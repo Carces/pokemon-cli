@@ -1,12 +1,12 @@
-const { Trainer } = require('./trainer.js')
+const { Trainer } = require('./trainer.js');
 
 class WildPokemon extends Trainer {
-    constructor(pokemonArr) {
-        super('Wild Pokemon', pokemonArr);
-        this.isWild = true;
-        this.pokemonArr = pokemonArr
-        this.wildPokeObj = this.pokemonArr[0]
-    }
+  constructor(name, pokemonArr) {
+    super(name, pokemonArr);
+    this.isWild = true;
+    this.pokemonArr = pokemonArr;
+    this.wildPokeObj = this.pokemonArr[0];
+  }
 }
 
-module.exports = { WildPokemon }
+module.exports = { WildPokemon };

@@ -26,13 +26,11 @@ class Battle {
   }
 
   startBattle() {
-    console.log('\n');
     console.log(
       this.opponent.isWild
         ? `A wild ${this.opponent.wildPokeObj.name} appeared!`
         : `${this.opponent.name} wants to fight!`
     );
-    console.log('\n');
     this.setCurrentPokeballs();
     return this.inBetweenTurns();
   }

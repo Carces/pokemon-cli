@@ -1,6 +1,12 @@
 Capturing: make it use balls from inventory and subtract them regardless of success. When capturing a Pokemon and party is full, give the option to send a party pokemon to PC to make room or send new one.
 
-finish implementing trainers-data.js. Link up to create.js randomTrainer function. Allow the function to specify more structured NPCs or fully randomised trainers using names and messages.
+Add secondary effects to damage moves: ember and thunder shock should have 10% chance of burning/paralyzing
+
+visited towns system - best way is probably adding townsData to saveGame and loading it in with updates. current layout means they'll all always have visited: false
+
+FINISH randomTrainer/pokemon - generate random moves based on level, account for typePreferences and typeExclusive (maybe reorganise species so they're group by type on the exports object of species-data, then have two getRandoms - one to choose type, where their preferences are added an additional time to the array chosen from to weight in their favour, and the other to choose species within that type)
+
+antidote has been added to items-data, with type remove. its effect has a .remove property which specifies the condition it removes. implement this. Also added some misc items that should console log a message when used from the menu outside of battle, they have an effect.message property for this.
 
 > Moves have a uses property - currently uses game values which are very high (30 for tackle). useMove needs to reduce this by 1 (currently the property is only in movesData, needs storing separately. Maybe an array of length 4 where each number represents the num of uses of the move in that slot? if so, will need to be refreshed when an old move is replaced with a new one on level up)
 

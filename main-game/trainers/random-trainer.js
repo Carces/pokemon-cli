@@ -1,6 +1,7 @@
 const trainersData = require('../data/trainers-data');
 const speciesData = require('../data/species-data');
 const { Trainer } = require('./trainer');
+const { WildPokemon } = require('./wild-pokemon');
 const create = require('../data/create');
 
 function getRandom(arr) {
@@ -18,11 +19,11 @@ function randomPokemon(level, typePreferences) {
   return new speciesData[randomSpecies](randomSpecies, level);
 }
 
-function fillPokemonArr(pokemonArr, level, typePreferences) {
+function fillPokemonArr(pokemonArr, level, typePreferences, pokemonCount) {
   const rand = Math.round(Math.random() * 5) + 1;
   const rand2 = Math.round(Math.random() * 5) + 1;
 
-  const randomPokemonCount = Math.min(rand, rand2);
+  const randomPokemonCount = pokemonCount || Math.min(rand, rand2);
   while (pokemonArr.length < randomPokemonCount) {
     const randomLevel = Math.max(1, level + Math.round(Math.random() * 3) - 2);
     pokemonArr.push(randomPokemon(randomLevel, typePreferences));
@@ -31,7 +32,13 @@ function fillPokemonArr(pokemonArr, level, typePreferences) {
   return pokemonArr;
 }
 
-function randomTrainer(level, typePreferences, useNPCs, NPCName) {
+function randomTrainer({
+  level,
+  typePreferences,
+  useNPCs,
+  NPCName,
+  pokemonCount,
+}) {
   const { NPCs, names, messages, defeatMessages } = trainersData;
   const NPCList = Object.values(NPCs);
   const randomNPC = getRandom(NPCList);
@@ -67,7 +74,7 @@ function randomTrainer(level, typePreferences, useNPCs, NPCName) {
     });
   }
 
-  fillPokemonArr(pokemonArr, level, typePreferences);
+  fillPokemonArr(pokemonArr, level, typePreferences, pokemonCount);
 
   return {
     trainerData: trainer,
@@ -75,4 +82,16 @@ function randomTrainer(level, typePreferences, useNPCs, NPCName) {
   };
 }
 
-module.exports = { randomTrainer };
+function randomWildPokemon({ level, typePreferences }) {
+  const pokemonArr = [];
+
+  fillPokemonArr(pokemonArr, level, typePreferences, 1);
+  const wildPokemonName = `Wild ${pokemonArr[0].name}`;
+
+  return {
+    trainerData: { name: wildPokemonName, isWild: true },
+    battleTrainer: new WildPokemon(wildPokemonName, pokemonArr),
+  };
+}
+
+module.exports = { randomTrainer, randomWildPokemon };

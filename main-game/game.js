@@ -79,11 +79,16 @@ mainMenu()
     const { trainerData, battleTrainer } = opponent;
     const randomBattle = new Battle(player, battleTrainer);
     console.log('\nYou see a trainer approaching!\n');
-    console.log(`\n- ${trainerData.name}: ${trainerData.messages[0]}\n`);
-    return Promise.all([randomBattle.startBattle(), opponent]);
+    console.log(`\n[${trainerData.name}]: ${trainerData.messages[0]}\n`);
+    return Promise.all([randomBattle.doBattle(), opponent]);
   })
   .then(({ battlePromise, opponent }) => {
     // const { trainerData, battleTrainer } = opponent;
     // console.log(`\n- ${trainerData.name}: ${trainerData.defeatMessages[0]}\n`);
+    console.log('BATTLE OVER');
+    console.log('BATTLE OVER');
+    console.log('BATTLE OVER');
+    console.log('BATTLE OVER');
+    console.log('BATTLE OVER');
     console.log('BATTLE OVER');
   });
