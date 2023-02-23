@@ -7,6 +7,8 @@ const { loadGame } = require('./load-game');
 const { itemsData } = require('./data/items-data');
 const beginGame = require('./scenes/begin-game');
 const { enterTown } = require('./scenes/town');
+const { delay, delayInit, createDelay } = require('../utils/delay');
+delayInit();
 
 let currentPlayerData;
 let currentRivalData;
@@ -14,8 +16,7 @@ let currentPlayer;
 let currentRival;
 
 function mainMenu() {
-  console.log(
-    `
+  console.log(`
 ██████╗░░█████╗░██╗░░██╗███████╗███╗░░░███╗░█████╗░███╗░░██╗
 ██╔══██╗██╔══██╗██║░██╔╝██╔════╝████╗░████║██╔══██╗████╗░██║
 ██████╔╝██║░░██║█████═╝░█████╗░░██╔████╔██║██║░░██║██╔██╗██║
@@ -23,15 +24,13 @@ function mainMenu() {
 ██║░░░░░╚█████╔╝██║░╚██╗███████╗██║░╚═╝░██║╚█████╔╝██║░╚███║
 ╚═╝░░░░░░╚════╝░╚═╝░░╚═╝╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═╝░░╚══╝
 
-
                    ░█████╗░██╗░░░░░██╗
                    ██╔══██╗██║░░░░░██║
                    ██║░░╚═╝██║░░░░░██║
                    ██║░░██╗██║░░░░░██║
                    ╚█████╔╝███████╗██║
                    ░╚════╝░╚══════╝╚═╝
-\\==========================================================/`
-  );
+\\==========================================================/`);
   const newGameText = `
             █▄░█ █▀▀ █░█░█   █▀▀ ▄▀█ █▀▄▀█ █▀▀
             █░▀█ ██▄ ▀▄▀▄▀   █▄█ █▀█ █░▀░█ ██▄`;
@@ -49,7 +48,7 @@ function mainMenu() {
     ])
     .then((answers) => {
       if (answers.mainMenu === newGameText) {
-        return beginGame();
+        return createDelay(100).then(() => beginGame());
       } else return Promise.resolve();
     });
 }
@@ -63,10 +62,9 @@ mainMenu()
     currentRivalData = rivalData;
     currentPlayer = currentPlayerData.player;
     currentRival = currentRivalData.rival;
+    return createDelay(100);
   })
-  .then(() => {
-    return enterTown(currentPlayerData, currentRivalData);
-  })
+  .then(() => enterTown(currentPlayerData, currentRivalData))
   .then(([saveSuccessful, playerData, rivalData]) => {
     if (!saveSuccessful)
       console.log('\n //// ERROR! Save unsuccessful //// \n');
@@ -80,7 +78,9 @@ mainMenu()
     const randomBattle = new Battle(player, battleTrainer);
     console.log('\nYou see a trainer approaching!\n');
     console.log(`\n[${trainerData.name}]: ${trainerData.messages[0]}\n`);
-    return Promise.all([randomBattle.doBattle(), opponent]);
+    return createDelay(2000).then(() =>
+      Promise.all([randomBattle.startBattle(), opponent])
+    );
   })
   .then(({ battlePromise, opponent }) => {
     // const { trainerData, battleTrainer } = opponent;

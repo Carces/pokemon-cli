@@ -102,7 +102,7 @@ const names = [
   'Heath',
   'Brody',
   'Alayna',
-  'Gisselle',
+  'Giselle',
   'Chana',
   'Lana',
   'Maritza',

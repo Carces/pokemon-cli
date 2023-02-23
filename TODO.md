@@ -1,3 +1,6 @@
+Lay out clearer structure for game loop: before getting to first town, battle with rival where losing doesn't matter (may need to add something in doendofbattle to skip the 'out of usable pokemon/blacked out messages on loss). Then force a guided battle with a rattata (at the moment their atk/def are equal to starters but should be lowered a couple of points) where you capture it. NOW can visit first town and heal up (maybe a firstTown param on enter town so that events in the town can work differently e.g. console log telling you to go heal, try to leave without pokemon at full doesn't work etc.)
+Finally, after that you face a couple more wild pokemon then an early trainer
+
 Capturing: make it use balls from inventory and subtract them regardless of success. When capturing a Pokemon and party is full, give the option to send a party pokemon to PC to make room or send new one.
 
 Add secondary effects to damage moves: ember and thunder shock should have 10% chance of burning/paralyzing

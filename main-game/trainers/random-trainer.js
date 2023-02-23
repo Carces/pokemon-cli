@@ -5,7 +5,7 @@ const { WildPokemon } = require('./wild-pokemon');
 const create = require('../data/create');
 
 function getRandom(arr) {
-  const randomIndex = Math.round(Math.random() * arr.length - 1);
+  const randomIndex = Math.round(Math.random() * (arr.length - 1));
   const index = Math.max(randomIndex, 0);
   return arr[index];
 }
@@ -32,13 +32,7 @@ function fillPokemonArr(pokemonArr, level, typePreferences, pokemonCount) {
   return pokemonArr;
 }
 
-function randomTrainer({
-  level,
-  typePreferences,
-  useNPCs,
-  NPCName,
-  pokemonCount,
-}) {
+function randomTrainer(level, typePreferences, useNPCs, NPCName, pokemonCount) {
   const { NPCs, names, messages, defeatMessages } = trainersData;
   const NPCList = Object.values(NPCs);
   const randomNPC = getRandom(NPCList);

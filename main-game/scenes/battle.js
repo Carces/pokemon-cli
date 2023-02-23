@@ -8,6 +8,8 @@ const create = require('../data/create.js');
 const { randomTrainer } = require('../trainers/random-trainer');
 const { loadGame } = require('../load-game.js');
 const { itemsData } = require('../data/items-data.js');
+const { delay, delayInit, createDelay } = require('../../utils/delay');
+delayInit();
 
 class Battle {
   constructor(player, opponent) {
@@ -31,12 +33,20 @@ class Battle {
         ? `A wild ${this.opponent.wildPokeObj.name} appeared!`
         : `${this.opponent.name} wants to fight!`
     );
-    this.setCurrentPokeballs();
-    return this.inBetweenTurns();
+    return createDelay(1500)
+      .then(() => {
+        return this.setCurrentPokeballs();
+      })
+      .then(() => {
+        return this.inBetweenTurns();
+      });
   }
   resolveTurn() {
-    this.checkIfBattleOver(this.player).then(() => {
-      this.checkIfBattleOver(this.opponent).then(() => {
+    return this.checkIfBattleOver(this.player)
+      .then(() => {
+        return this.checkIfBattleOver(this.opponent);
+      })
+      .then(() => {
         // this.changeCurrentTrainer();
 
         if (this.opponentPokemon.hitPoints.current) {
@@ -45,19 +55,22 @@ class Battle {
           const randomIndex = Math.floor(Math.random() * moves.length);
           const randomMove = movesData[moves[randomIndex]];
           this.fight(randomMove, this.opponentPokemon, this.playerPokemon);
+          return Promise.resolve();
         } else return this.doEndOfBattle();
-
-        this.checkIfBattleOver(this.player).then(() => {
-          this.checkIfBattleOver(this.opponent).then(() => {
-            this.turnNumber++;
-            // this.changeCurrentTrainer();
-            if (!this.battleOver) this.inBetweenTurns();
-            else this.doEndOfBattle();
-          });
-        });
+      })
+      .then(() => {
+        return this.checkIfBattleOver(this.player);
+      })
+      .then(() => {
+        return this.checkIfBattleOver(this.opponent);
+      })
+      .then(() => {
+        this.turnNumber++;
+        // this.changeCurrentTrainer();
+        return this.battleOver ? this.doEndOfBattle() : this.inBetweenTurns();
       });
-    });
   }
+
   choosePokemon(trainer) {
     if (!trainer.isPlayer) {
       this.setNextPokemon(trainer);
@@ -103,6 +116,7 @@ class Battle {
         });
     }
   }
+
   doBattle() {
     const playerInvKeys = Object.keys(this.player.inventory);
     const battleItemKeys = playerInvKeys.filter((item) => {
@@ -120,7 +134,7 @@ class Battle {
         ];
     itemChoices.push('--CANCEL--');
 
-    inquirer
+    return inquirer
       .prompt([
         {
           type: 'list',
@@ -145,28 +159,28 @@ class Battle {
       ])
       .then((answers) => {
         if (answers.action === 'Fight') {
-          if (answers.move === '--CANCEL--') this.doBattle();
+          if (answers.move === '--CANCEL--') return this.doBattle();
           else {
             this.fight(
               movesData[answers.move],
               this.playerPokemon,
               this.opponentPokemon
             );
-            this.resolveTurn();
+            return this.resolveTurn();
           }
         } else if (answers.action === 'Pokemon') {
-          this.choosePokemon(this.player).then((choice) => {
-            if (choice) this.resolveTurn();
-            else this.doBattle();
+          return this.choosePokemon(this.player).then((choice) => {
+            if (choice) return this.resolveTurn();
+            else return this.doBattle();
           });
         }
         if (answers.action === 'Item') {
-          if (answers.item === '--CANCEL--') this.doBattle();
+          if (answers.item === '--CANCEL--') return this.doBattle();
           else {
             const itemToUse = answers.item.split(':')[0];
             this.useItem(itemToUse, this.player).then((choice) => {
-              if (choice) this.resolveTurn();
-              else this.doBattle();
+              if (choice) return this.resolveTurn();
+              else return this.doBattle();
             });
           }
         }
@@ -185,6 +199,7 @@ class Battle {
     }
     return false; // otherwise tells setCurrentPokeballs false
   }
+
   setCurrentPokeballs(trainer) {
     if (!trainer) {
       // when called with no arguments in startBattle, throw out first pokemon with hitPoints for each trainer
@@ -194,9 +209,11 @@ class Battle {
         console.log(
           `${this.opponent.name} sent out ${this.opponentPokemon.name}!`
         );
-      this.setNextPokemon(this.player);
-      console.log(`Go, ${this.playerPokemon.name}!`);
-      this.player.currentPokeball.throw();
+      return createDelay(1500).then(() => {
+        this.setNextPokemon(this.player);
+        console.log(`Go, ${this.playerPokemon.name}!`);
+        this.player.currentPokeball.throw();
+      });
     } else {
       // when called with one specific trainer in checkIfBattleOver, check if that trainer has any pokemon with hp
       const currentPokeballIndex = trainer.belt.indexOf(
@@ -230,7 +247,8 @@ class Battle {
   }
 
   checkIfBattleOver(trainer) {
-    //trainer.currentPokeball.storage prevents errors if checkIfBattleOver is called and setCurrentPokeballs has not correctly initialized, only possible in dev / testing environment eg. if setCurrentPokeballs is invoked only after a trainer's pokemon are all fainted and there is no pokemon in the default current pokeball
+    //trainer.currentPokeball.storage prevents errors if checkIfBattleOver is called and setCurrentPokeballs has not correctly initialized, only possible in dev / testing environment eg. if setCurrentPokeballs is invoked only after a trainer's pokemon are all fainted and there is no pokemon in the default current pokeball#
+
     if (
       trainer.currentPokeball.storage &&
       !trainer.currentPokeball.storage.hitPoints.current
@@ -257,10 +275,12 @@ class Battle {
   }
 
   inBetweenTurns() {
-    console.log('\n-------');
-    console.log(`Turn ${this.turnNumber}`);
-    console.log('-------\n');
-    this.doBattle();
+    return createDelay(500).then(() => {
+      console.log('\n-------');
+      console.log(`Turn ${this.turnNumber}`);
+      console.log('-------\n');
+      return this.doBattle();
+    });
   }
 
   getCriticalHit() {
@@ -427,7 +447,7 @@ class Battle {
       );
     } else {
       console.log(
-        `${attacker}'s ${move} missed because there was nothing to hit!`
+        `${attacker}'s ${move.name} missed because there was nothing to hit!`
       );
     }
   }

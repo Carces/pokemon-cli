@@ -2,7 +2,7 @@ const fs = require('fs/promises');
 const path = require('path');
 
 exports.saveGame = (saveData) => {
-  console.log(`-----`);
+  console.log(`\n-----`);
   console.log(`Saving...`);
   console.log(`-----`);
   return fs
@@ -11,7 +11,7 @@ exports.saveGame = (saveData) => {
       JSON.stringify(saveData, null, 2)
     )
     .then(() => {
-      console.log(`Saved!\n\n`);
+      console.log(`\nSaved!\n`);
       return true;
     });
 };
