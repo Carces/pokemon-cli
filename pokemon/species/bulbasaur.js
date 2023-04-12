@@ -7,8 +7,8 @@ class Bulbasaur extends Grass {
     level,
     moves = ['Tackle', 'Growl'],
     hitPoints,
-    attack,
-    defence,
+    attack = 9 + level * 2,
+    defence = 11 + level * 2,
     catchDifficulty = 6
   ) {
     super(name, level, moves, hitPoints, attack, defence, catchDifficulty);

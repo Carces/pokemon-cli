@@ -42,7 +42,10 @@ class Battle {
       });
   }
   resolveTurn() {
-    return this.checkIfBattleOver(this.player)
+    return createDelay(1000)
+      .then(() => {
+        return this.checkIfBattleOver(this.player);
+      })
       .then(() => {
         return this.checkIfBattleOver(this.opponent);
       })
@@ -275,7 +278,7 @@ class Battle {
   }
 
   inBetweenTurns() {
-    return createDelay(500).then(() => {
+    return createDelay(1000).then(() => {
       console.log('\n-------');
       console.log(`Turn ${this.turnNumber}`);
       console.log('-------\n');

@@ -6,9 +6,9 @@ class Rattata extends Normal {
     name = 'Rattata',
     level,
     moves = ['Tackle', 'Tail Whip'],
-    hitPoints,
-    attack,
-    defence,
+    hitPoints = 8 + level * 2,
+    attack = 9 + level * 2,
+    defence = 8 + level * 2,
     catchDifficulty = 2
   ) {
     super(name, level, moves, hitPoints, attack, defence, catchDifficulty);

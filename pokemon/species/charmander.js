@@ -7,8 +7,8 @@ class Charmander extends Fire {
     level,
     moves = ['Scratch', 'Growl'],
     hitPoints,
-    attack,
-    defence,
+    attack = 11 + level * 2,
+    defence = 9 + level * 2,
     catchDifficulty = 6
   ) {
     super(name, level, moves, hitPoints, attack, defence, catchDifficulty);

@@ -1,13 +1,16 @@
 const inquirer = require('inquirer');
 const fs = require('fs/promises');
-const create = require('./data/create');
-const { randomTrainer } = require('./trainers/random-trainer');
-const { Battle } = require('./scenes/battle');
-const { loadGame } = require('./load-game');
-const { itemsData } = require('./data/items-data');
-const beginGame = require('./scenes/begin-game');
-const { enterTown } = require('./scenes/town');
-const { delay, delayInit, createDelay } = require('../utils/delay');
+const create = require('./main-game/data/create');
+const {
+  randomTrainer,
+  randomWildPokemon,
+} = require('./main-game/trainers/random-trainer');
+const { Battle } = require('./main-game/scenes/battle');
+const { loadGame } = require('./main-game/load-game');
+const { itemsData } = require('./main-game/data/items-data');
+const beginGame = require('./main-game/scenes/begin-game');
+const { enterTown } = require('./main-game/scenes/town');
+const { delay, delayInit, createDelay } = require('./utils/delay');
 delayInit();
 
 let currentPlayerData;
@@ -63,6 +66,14 @@ mainMenu()
     currentPlayer = currentPlayerData.player;
     currentRival = currentRivalData.rival;
     return createDelay(100);
+  })
+  .then(() => {
+    const { player } = currentPlayerData;
+    const level = player.currentPokeball.storage.level;
+    const opponent = randomWildPokemon(level, null, 'Rattata');
+    const { trainerData, battleTrainer } = opponent;
+    const randomBattle = new Battle(player, battleTrainer);
+    return randomBattle.startBattle();
   })
   .then(() => enterTown(currentPlayerData, currentRivalData))
   .then(([saveSuccessful, playerData, rivalData]) => {

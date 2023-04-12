@@ -62,6 +62,18 @@ const itemsData = {
       staysAfterBattle: true,
     },
   },
+  Antidote: {
+    name: 'Antidote',
+    type: 'remove',
+    price: 100,
+    rarity: 0,
+    description: 'Cures poisoned Pokemon.',
+    useInBattle: true,
+    useInMenu: true,
+    effect: {
+      remove: 'poisoned',
+    },
+  },
   Protein: {
     name: 'Protein',
     type: 'boost',
@@ -75,6 +87,30 @@ const itemsData = {
       modifier: 10,
       staysAfterBattle: true,
       permanent: true,
+    },
+  },
+  Shorts: {
+    name: 'Shorts',
+    type: 'misc',
+    price: 200,
+    rarity: 100,
+    description: `Apparently they're comfy and easy to wear.`,
+    useInBattle: false,
+    useInMenu: true,
+    effect: {
+      message: `You put the shorts on\n...\nHey, they are pretty comfy!`,
+    },
+  },
+  Sunglasses: {
+    name: 'Sunglasses',
+    type: 'misc',
+    price: 500,
+    rarity: 100,
+    description: `They're Squirtle-sized. Will they fit?`,
+    useInBattle: false,
+    useInMenu: true,
+    effect: {
+      message: `You've never looked cooler.`,
     },
   },
 };

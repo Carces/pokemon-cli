@@ -76,10 +76,13 @@ function randomTrainer(level, typePreferences, useNPCs, NPCName, pokemonCount) {
   };
 }
 
-function randomWildPokemon({ level, typePreferences }) {
+function randomWildPokemon(level, typePreferences, pokemonName) {
   const pokemonArr = [];
 
-  fillPokemonArr(pokemonArr, level, typePreferences, 1);
+  if (!pokemonName) {
+    fillPokemonArr(pokemonArr, level, typePreferences, 1);
+  } else pokemonArr.push(new speciesData[pokemonName](pokemonName, level));
+
   const wildPokemonName = `Wild ${pokemonArr[0].name}`;
 
   return {
