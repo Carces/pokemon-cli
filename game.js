@@ -11,6 +11,7 @@ const { itemsData } = require('./main-game/data/items-data');
 const beginGame = require('./main-game/scenes/begin-game');
 const { enterTown } = require('./main-game/scenes/town');
 const { delay, delayInit, createDelay } = require('./utils/delay');
+const { Conversation } = require('./main-game/utils/Conversation');
 delayInit();
 
 let currentPlayerData;
@@ -69,12 +70,37 @@ mainMenu()
   })
   .then(() => {
     const { player } = currentPlayerData;
-    const level = player.currentPokeball.storage.level;
-    const opponent = randomWildPokemon(level, null, 'Rattata');
-    const { trainerData, battleTrainer } = opponent;
-    const randomBattle = new Battle(player, battleTrainer);
-    return randomBattle.startBattle();
+    const { rival } = currentRivalData;
+    const messages = [
+      { npc: 0, text: `You chose that one?` },
+      { npc: 0, text: `OK, well...` },
+      { npc: 0, text: `Then I choose ${rival.pokemonList[0]}!`, delay: 1000 },
+      {
+        npc: 0,
+        text: `Your ${player.pokemonList[0]} looks weak, I bet my ${rival.pokemonList[0]} could beat it in a battle, easy!`,
+      },
+      { npc: 0, text: `I'll prove it!` },
+    ];
+    const npcs = [rival.name];
+    const introConversation = new Conversation(npcs, messages);
+    return introConversation.start();
   })
+  .then(() => {
+    const { player } = currentPlayerData;
+    const { rival } = currentRivalData;
+
+    const introBattle = new Battle(player, rival);
+    return introBattle.startBattle();
+  })
+  // ---------- RANDOM BATTLE ----------
+  // .then(() => {
+  //   const { player } = currentPlayerData;
+  //   const level = player.currentPokeball.storage.level;
+  //   const opponent = randomWildPokemon(level, null, 'Rattata');
+  //   const { trainerData, battleTrainer } = opponent;
+  //   const randomBattle = new Battle(player, battleTrainer);
+  //   return randomBattle.startBattle();
+  // })
   .then(() => enterTown(currentPlayerData, currentRivalData))
   .then(([saveSuccessful, playerData, rivalData]) => {
     if (!saveSuccessful)
@@ -88,7 +114,7 @@ mainMenu()
     const { trainerData, battleTrainer } = opponent;
     const randomBattle = new Battle(player, battleTrainer);
     console.log('\nYou see a trainer approaching!\n');
-    console.log(`\n[${trainerData.name}]: ${trainerData.messages[0]}\n`);
+    console.log(`\n[${trainerData.name}]:  ${trainerData.messages[0]}\n`);
     return createDelay(2000).then(() =>
       Promise.all([randomBattle.startBattle(), opponent])
     );
