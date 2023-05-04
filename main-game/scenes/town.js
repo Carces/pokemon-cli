@@ -459,13 +459,14 @@ function healPokemon() {
   );
   currentPlayerData.player.belt.forEach((ball) => {
     const poke = ball.storage;
-    poke.hitPoints.current = poke.hitPoints.max;
-    poke.attack.current = poke.attack.max;
-    poke.defence.current = poke.defence.max;
-    for (const effect in poke.activeEffects) {
-      if (!poke.activeEffects[effect].permanent)
-        delete poke.activeEffects[effect];
-    }
+    // poke.hitPoints.current = poke.hitPoints.max;
+    // poke.attack.current = poke.attack.max;
+    // poke.defence.current = poke.defence.max;
+    // for (const effect in poke.activeEffects) {
+    //   if (!poke.activeEffects[effect].permanent)
+    //     delete poke.activeEffects[effect];
+    // }
+    poke.healToFull();
   });
 }
 

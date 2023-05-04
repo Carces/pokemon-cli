@@ -12,9 +12,10 @@ const { delay, delayInit, createDelay } = require('../../utils/delay');
 delayInit();
 
 class Battle {
-  constructor(player, opponent) {
+  constructor(player, opponent, specialBattleType) {
     this.player = player;
     this.opponent = opponent;
+    this.specialBattleType = specialBattleType;
     this.playerPokemon = this.player.currentPokeball.storage;
     this.opponentPokemon = this.opponent.currentPokeball.storage;
     // this.currentTrainer = player;
@@ -50,16 +51,53 @@ class Battle {
         return this.checkIfBattleOver(this.opponent);
       })
       .then(() => {
-        // this.changeCurrentTrainer();
-
         if (this.opponentPokemon.hitPoints.current) {
           // TO ADD: check if hp ratio is above x% and use healing item if they have one and trainer is not wildPokemon, try and run in other situation etc.
+
+          function modBy50(stat, stagesToModBy) {
+            const stageOfStat = stat / 4;
+            return stat + stageOfStat * stagesToModBy;
+          }
+
+          // CHOOSE A RANDOM MOVE FOR THE OPPONENT'S POKEMON
           const moves = this.opponentPokemon.moves;
           const randomIndex = Math.floor(Math.random() * moves.length);
-          const randomMove = movesData[moves[randomIndex]];
+          let randomMove = movesData[moves[randomIndex]];
+          const affectedStat = randomMove.effectOnTarget
+            ? this.playerPokemon[randomMove.effectOnTarget.stat]
+            : randomMove.effectOnSelf
+            ? this.opponentPokemon[randomMove.effectOnSelf.stat]
+            : null;
+          const effectModifier = randomMove.effectOnTarget
+            ? randomMove.effectOnTarget.modifier
+            : randomMove.effectOnSelf
+            ? randomMove.effectOnSelf.modifier
+            : null;
+          //////
+
+          // If the randomly chosen move inflicts a status effect but the stat is too high or low to do anything, change to a different move
+
+          //(currently just changes the move index by 1, could be improved by eliminating the ineffective move from the pool to choose from and choosing randomly again from the shortened move list)
+          if (affectedStat) {
+            const statAfterMod = +modBy50(
+              affectedStat.current,
+              effectModifier
+            ).toFixed(2);
+            const newRandomIndex =
+              randomIndex === 0 ? randomIndex + 1 : randomIndex - 1;
+
+            if (
+              statAfterMod <= affectedStat.max * 0.3 ||
+              statAfterMod >= affectedStat.max * 1.7
+            )
+              randomMove = movesData[moves[newRandomIndex]];
+          }
+          ///////
+
+          console.log('\n----------');
           this.fight(randomMove, this.opponentPokemon, this.playerPokemon);
           return Promise.resolve();
-        } else return this.doEndOfBattle();
+        }
       })
       .then(() => {
         return this.checkIfBattleOver(this.player);
@@ -69,7 +107,6 @@ class Battle {
       })
       .then(() => {
         this.turnNumber++;
-        // this.changeCurrentTrainer();
         return this.battleOver ? this.doEndOfBattle() : this.inBetweenTurns();
       });
   }
@@ -137,6 +174,17 @@ class Battle {
         ];
     itemChoices.push('--CANCEL--');
 
+    // Intro battle dialogue
+    if (this.specialBattleType === 'introWildCatch' && this.turnNumber === 1)
+      console.log(
+        '\nProfessor Oak:  If you want to catch a wild Pokemon, you need to weaken it first. The more damage you do to it, the easier it will be to catch!\n'
+      );
+    else if (this.specialBattleType === 'introWildCatch' && this.turnNumber > 1)
+      console.log(
+        '\nProfessor Oak:  It looks weak! You can try to catch it by choosing the Pokeballs I gave you from the "Item" menu.\n'
+      );
+    /////
+
     return inquirer
       .prompt([
         {
@@ -181,10 +229,16 @@ class Battle {
           if (answers.item === '--CANCEL--') return this.doBattle();
           else {
             const itemToUse = answers.item.split(':')[0];
-            this.useItem(itemToUse, this.player).then((choice) => {
-              if (choice) return this.resolveTurn();
-              else return this.doBattle();
-            });
+            return this.useItem(itemToUse, this.player).then(
+              (captureSucces) => {
+                if (captureSucces) {
+                  this.battleOver = true;
+                  this.winner = this.player;
+                  this.loser = this.opponent;
+                  return this.doEndOfBattle();
+                } else return this.doBattle();
+              }
+            );
           }
         }
       });
@@ -235,24 +289,48 @@ class Battle {
   }
 
   doEndOfBattle() {
-    if (this.loser.isWild) console.log('You won!');
-    else if (this.loser.isPlayer) {
-      console.log(`${this.loser.name} is out of useable Pokemon!`);
-      console.log(`${this.loser.name} blacked out!`);
-    } else console.log(`${this.winner.name} defeated ${this.loser.name}!`);
-
     // For each pokemon, remove any active effects that don't persist
     this.player.belt.forEach((ball) => {
       for (const effect in ball.storage.activeEffects) {
         if (!effect.staysAfterBattle) delete ball.storage.activeEffects[effect];
       }
     });
+    //////////////
+
+    if (this.loser.isWild) {
+      console.log('\nYou won!\n');
+      return { isBlackedOut: false, player: this.player };
+    } else if (this.loser.isPlayer) {
+      if (this.specialBattleType === 'introRival') {
+        console.log(
+          `\n${this.winner.name}:  Haha, I told you I'd win! Next time we meet, I'll be even stronger!\n`
+        );
+        return {
+          isBlackedOut: false,
+          player: this.player,
+          introRivalBattleLost: true,
+        };
+      } else {
+        console.log(`${this.loser.name} is out of useable Pokemon!`);
+        console.log(`${this.loser.name} blacked out!`);
+        return { isBlackedOut: true, player: this.player };
+      }
+    } else {
+      console.log(`\n${this.winner.name} defeated ${this.loser.name}!`);
+      if (this.specialBattleType === 'introRival') {
+        console.log(
+          `\n${this.loser.name}:  Next time I won't go easy on you, so train well!\n`
+        );
+      }
+      return { isBlackedOut: false, player: this.player };
+    }
   }
 
   checkIfBattleOver(trainer) {
     //trainer.currentPokeball.storage prevents errors if checkIfBattleOver is called and setCurrentPokeballs has not correctly initialized, only possible in dev / testing environment eg. if setCurrentPokeballs is invoked only after a trainer's pokemon are all fainted and there is no pokemon in the default current pokeball#
 
     if (
+      !this.battleOver &&
       trainer.currentPokeball.storage &&
       !trainer.currentPokeball.storage.hitPoints.current
     ) {
@@ -328,14 +406,14 @@ class Battle {
           const selectedPokemon = answers.target.split(':')[0];
           if (selectedPokemon === this.opponentPokemon.name) {
             console.log(`${trainer.name} used ${item} on ${selectedPokemon}!`);
-            this.player.resolveItem(item, this.opponentPokemon);
-            return true;
+            return this.player.resolveItem(item, this.opponentPokemon);
+            // return true;
           } else {
             const selectedPokemonObj =
               trainer.getPokemon(selectedPokemon).pokemonObj;
             console.log(`${trainer.name} used ${item} on ${selectedPokemon}!`);
-            this.player.resolveItem(item, selectedPokemonObj);
-            return true;
+            return this.player.resolveItem(item, selectedPokemonObj);
+            // return true;
           }
         }
       });

@@ -61,10 +61,9 @@ class Trainer {
       const capturedPokemon = ball.throw(target);
       if (capturedPokemon) {
         let hasSpace = false;
+        let pokemonStored = false;
         if (this.belt.length < 6) {
           hasSpace = true;
-          this.belt.push(ball);
-          this.pokemonList.push(`${capturedPokemon.name}`);
         } else {
           console.log(
             `You already have 6 Pokemon! You will have to send one Pokemon to your PC storage.`
@@ -135,7 +134,9 @@ class Trainer {
                 // deal with pokemonList as detailed above
               }
             }
-            return capturedPokemon;
+            this.belt.push(ball);
+            this.pokemonList.push(`${capturedPokemon.name}`);
+            return 'pokemonCaptured';
           });
       } else return Promise.resolve(false);
     } else if (itemData.type === 'heal') {

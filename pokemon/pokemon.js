@@ -78,7 +78,7 @@ class Pokemon {
 
   addXp(num) {
     this.xp += num;
-    console.log(`${this.name} gained ${num} experience points!`);
+    console.log(`\n${this.name} gained ${num} experience points!\n`);
     this.showXpBar();
 
     if (this.xp >= this.xpThreshold) {
@@ -138,6 +138,16 @@ class Pokemon {
 
   hasFainted() {
     return this.hitPoints.current === 0;
+  }
+
+  healToFull() {
+    this.hitPoints.current = this.hitPoints.max;
+    this.attack.current = this.attack.max;
+    this.defence.current = this.defence.max;
+    for (const effect in this.activeEffects) {
+      if (!this.activeEffects[effect].permanent)
+        delete this.activeEffects[effect];
+    }
   }
 }
 
