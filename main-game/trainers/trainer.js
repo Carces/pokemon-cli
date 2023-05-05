@@ -45,7 +45,7 @@ class Trainer {
     return itemsData[item];
   }
 
-  resolveItem(item, target) {
+  resolveItem(item, target, PC) {
     function modBy50(stat, stagesToModBy) {
       const stageOfStat = stat / 5;
       return stat + stageOfStat * stagesToModBy;
@@ -69,7 +69,6 @@ class Trainer {
             `You already have 6 Pokemon! You will have to send one Pokemon to your PC storage.`
           );
         }
-
         const pokemonChoices = this.pokemonList.map((pokeName) => {
           const pokemon = this.getPokemon(pokeName).pokemonObj;
           const pokemonWithHp = `${pokeName}: Level ${pokemon.level} | HP - ${pokemon.hitPoints.current}/${pokemon.hitPoints.max}`;
@@ -122,21 +121,28 @@ class Trainer {
             if (answers.pokemonName) capturedPokemon.name = answers.pokemonName;
             if (answers.pokemonToStore) {
               const selectedPokemon = answers.pokemonToStore.split(':')[0];
-              const selectedPokemonIndex =
-                this.getPokemon(selectedPokemon).index;
+              const selectedPokemonBallIndex =
+                selectedPokemon === capturedPokemon.name
+                  ? null
+                  : this.getPokemon(selectedPokemon).index;
 
               if (selectedPokemon === capturedPokemon.name) {
-                // SEND NEWLY CAPTURED POKEMON TO PC
-                // captured pokemon name temporarily unshifted onto this.pokemonList in line 68, make sure pokemonList is updated to reflect new lineup. New pokemon should probably be last?
+                PC.push(ball);
               } else {
-                this.belt[selectedPokemonIndex].storage = capturedPokemon;
-                // SEND SELECTED POKEMON TO PC
-                // deal with pokemonList as detailed above
+                const pokemonListIndex = this.pokemonList.findIndex(
+                  (pokemonListName) => pokemonListName === selectedPokemon
+                );
+                this.pokemonList.splice(
+                  pokemonListIndex,
+                  1,
+                  capturedPokemon.name
+                );
+                const ballToReplace = this.belt[selectedPokemonBallIndex];
+                PC.push(ballToReplace);
+                this.belt.splice(selectedPokemonBallIndex, 1, ball);
               }
-            }
-            this.belt.push(ball);
-            this.pokemonList.push(`${capturedPokemon.name}`);
-            return 'pokemonCaptured';
+            } else this.belt.push(ball);
+            return 'captureSuccess';
           });
       } else return Promise.resolve(false);
     } else if (itemData.type === 'heal') {

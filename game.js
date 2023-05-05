@@ -68,32 +68,37 @@ mainMenu()
     currentRival = currentRivalData.rival;
     return createDelay(100);
   })
-  .then(() => {
-    const { player } = currentPlayerData;
-    const { rival } = currentRivalData;
-    const messages = [
-      { npc: 0, text: `You chose ${player.pokemonList[0]}?` },
-      { npc: 0, text: `OK, well...` },
-      { npc: 0, text: `Then I choose ${rival.pokemonList[0]}!`, delay: 1000 },
-      {
-        npc: 0,
-        text: `Your ${player.pokemonList[0]} looks weak, I bet my ${rival.pokemonList[0]} could beat it in a battle, easy!`,
-      },
-      { npc: 0, text: `I'll prove it!` },
-    ];
-    const npcs = [rival.name];
-    const introConversation = new Conversation(npcs, messages);
-    return introConversation.start();
-  })
+  // .then(() => {
+  //   const { player } = currentPlayerData;
+  //   const { rival } = currentRivalData;
+  //   const messages = [
+  //     { npc: 0, text: `You chose ${player.pokemonList[0]}?` },
+  //     { npc: 0, text: `OK, well...` },
+  //     { npc: 0, text: `Then I choose ${rival.pokemonList[0]}!`, delay: 1000 },
+  //     {
+  //       npc: 0,
+  //       text: `Your ${player.pokemonList[0]} looks weak, I bet my ${rival.pokemonList[0]} could beat it in a battle, easy!`,
+  //     },
+  //     { npc: 0, text: `I'll prove it!` },
+  //   ];
+  //   const npcs = [rival.name];
+  //   const introConversation = new Conversation(npcs, messages);
+  //   return introConversation.start();
+  // })
   // .then(() => {
   //   const { player } = currentPlayerData;
   //   const { rival } = currentRivalData;
 
-  //   const introBattle = new Battle(player, rival, 'introRival');
+  //   const introBattle = new Battle(
+  //     player,
+  //     rival,
+  //     currentPlayerData,
+  //     'introRival'
+  //   );
   //   return introBattle.startBattle();
   // })
   // .then((res) => {
-  //   currentPlayerData.player = res.player;
+  //   currentPlayerData = res.currentPlayerData;
 
   //   const { player } = currentPlayerData;
   //   const { rival } = currentRivalData;
@@ -165,45 +170,113 @@ mainMenu()
     const level = player.currentPokeball.storage.level;
     const opponent = randomWildPokemon(level, null, 'Rattata');
     const { trainerData, battleTrainer } = opponent;
-    const randomBattle = new Battle(player, battleTrainer, 'introWildCatch');
+    const randomBattle = new Battle(
+      player,
+      battleTrainer,
+      currentPlayerData,
+      'introWildCatch'
+    );
     return randomBattle.startBattle();
   })
-  // ---------- RANDOM BATTLE ----------
-  // .then(() => {
-  //   const { player } = currentPlayerData;
-  //   const level = player.currentPokeball.storage.level;
-  //   const opponent = randomWildPokemon(level, null, 'Rattata');
-  //   const { trainerData, battleTrainer } = opponent;
-  //   const randomBattle = new Battle(player, battleTrainer);
-  //   return randomBattle.startBattle();
-  // })
-  .then(() => {
-    enterTown(currentPlayerData, currentRivalData);
-  })
-  .then(([saveSuccessful, playerData, rivalData]) => {
-    if (!saveSuccessful)
-      console.log('\n //// ERROR! Save unsuccessful //// \n');
-    currentPlayerData = playerData;
-    currentRivalData = rivalData;
+  .then((res) => {
+    currentPlayerData = res.currentPlayerData;
 
     const { player } = currentPlayerData;
-    const level = player.currentPokeball.storage.level;
-    const opponent = randomTrainer(level, null);
-    const { trainerData, battleTrainer } = opponent;
-    const randomBattle = new Battle(player, battleTrainer);
-    console.log('\nYou see a trainer approaching!\n');
-    console.log(`\n[${trainerData.name}]:  ${trainerData.messages[0]}\n`);
-    return createDelay(2000).then(() =>
-      Promise.all([randomBattle.startBattle(), opponent])
-    );
+    const { rival } = currentRivalData;
+    const newRattataName = player.belt.find((ball) => {
+      console.log(ball.storage.species);
+      return ball.storage.species === 'Rattata';
+    }).storage.name;
+    const npcs = ['Professor Oak', 'Mum'];
+    const messages = [
+      {
+        npc: 0,
+        text: `Well done! I'm sure your new Rattata${
+          newRattataName === 'Rattata' ? '' : ` ${newRattataName}`
+        } will be very happy with you!`,
+      },
+      {
+        npc: 0,
+        text: `Just remember, other Pokemon won't be so easy to catch.`,
+      },
+      {
+        npc: 0,
+        text: `For the best chance of success, weaken the Pokemon as much as possible first.`,
+      },
+      {
+        npc: 0,
+        text: `You can also buy more advanced Poke Balls to give you an edge!`,
+      },
+      {
+        npc: 0,
+        text: `Well, I think you're ready to get out and explore the world!`,
+      },
+      {
+        npc: 0,
+        text: `You should say goodbye to your mother first though. Good luck!`,
+      },
+      {
+        text: `You tell your mum that you're leaving to go on an adventure... she looks worried.`,
+      },
+      {
+        npc: 1,
+        text: `Well, I suppose you're all grown up now, so I can't stop you...`,
+      },
+      {
+        npc: 1,
+        text: `Just be careful! And come back to visit soon!`,
+        delay: 2000,
+      },
+      {
+        npc: 1,
+        text: `Good luck!`,
+      },
+    ];
+    const goodbyeMumConversation = new Conversation(npcs, messages);
+    return goodbyeMumConversation.start();
   })
-  .then(({ battlePromise, opponent }) => {
-    // const { trainerData, battleTrainer } = opponent;
-    // console.log(`\n- ${trainerData.name}: ${trainerData.defeatMessages[0]}\n`);
-    console.log('BATTLE OVER');
-    console.log('BATTLE OVER');
-    console.log('BATTLE OVER');
-    console.log('BATTLE OVER');
-    console.log('BATTLE OVER');
-    console.log('BATTLE OVER');
+  // ---------- RANDOM BATTLE ----------
+  .then(() => {
+    console.log(
+      '\nYou leave behind your hometown and venture into the world.\n'
+    );
+    console.log('After a day of travel, you reach the next town.\n');
+    enterTown(currentPlayerData, currentRivalData);
   });
+// .then((res) => {
+//   currentPlayerData = res.currentPlayerData;
+//   console.log(currentPlayerData.PC, '<<<< PC FROM GAME.jS');
+//   const { player } = currentPlayerData;
+//   const level = player.currentPokeball.storage.level;
+//   const opponent = randomWildPokemon(level, null, 'Rattata');
+//   const { trainerData, battleTrainer } = opponent;
+//   const randomBattle = new Battle(player, battleTrainer);
+//   return randomBattle.startBattle();
+// })
+// .then(([saveSuccessful, playerData, rivalData]) => {
+//   if (!saveSuccessful)
+//     console.log('\n //// ERROR! Save unsuccessful //// \n');
+//   currentPlayerData = playerData;
+//   currentRivalData = rivalData;
+
+//   const { player } = currentPlayerData;
+//   const level = player.currentPokeball.storage.level;
+//   const opponent = randomTrainer(level, null);
+//   const { trainerData, battleTrainer } = opponent;
+//   const randomBattle = new Battle(player, battleTrainer);
+//   console.log('\nYou see a trainer approaching!\n');
+//   console.log(`\n[${trainerData.name}]:  ${trainerData.messages[0]}\n`);
+//   return createDelay(2000).then(() =>
+//     Promise.all([randomBattle.startBattle(), opponent])
+//   );
+// })
+// .then(({ battlePromise, opponent }) => {
+//   // const { trainerData, battleTrainer } = opponent;
+//   // console.log(`\n- ${trainerData.name}: ${trainerData.defeatMessages[0]}\n`);
+//   console.log('BATTLE OVER');
+//   console.log('BATTLE OVER');
+//   console.log('BATTLE OVER');
+//   console.log('BATTLE OVER');
+//   console.log('BATTLE OVER');
+//   console.log('BATTLE OVER');
+// });

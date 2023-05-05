@@ -12,9 +12,10 @@ const { delay, delayInit, createDelay } = require('../../utils/delay');
 delayInit();
 
 class Battle {
-  constructor(player, opponent, specialBattleType) {
+  constructor(player, opponent, currentPlayerData, specialBattleType) {
     this.player = player;
     this.opponent = opponent;
+    this.currentPlayerData = currentPlayerData;
     this.specialBattleType = specialBattleType;
     this.playerPokemon = this.player.currentPokeball.storage;
     this.opponentPokemon = this.opponent.currentPokeball.storage;
@@ -229,16 +230,15 @@ class Battle {
           if (answers.item === '--CANCEL--') return this.doBattle();
           else {
             const itemToUse = answers.item.split(':')[0];
-            return this.useItem(itemToUse, this.player).then(
-              (captureSucces) => {
-                if (captureSucces) {
-                  this.battleOver = true;
-                  this.winner = this.player;
-                  this.loser = this.opponent;
-                  return this.doEndOfBattle();
-                } else return this.doBattle();
-              }
-            );
+            return this.useItem(itemToUse, this.player).then((result) => {
+              if (result === 'captureSuccess') {
+                this.battleOver = true;
+                this.winner = this.player;
+                this.loser = this.opponent;
+                return this.doEndOfBattle();
+              } else if (result === 'cancel') return this.doBattle();
+              else return this.resolveTurn();
+            });
           }
         }
       });
@@ -296,10 +296,11 @@ class Battle {
       }
     });
     //////////////
-
+    console.log(this.player.pokemonList, '<<<< LIST');
+    this.currentPlayerData.player = this.player;
     if (this.loser.isWild) {
       console.log('\nYou won!\n');
-      return { isBlackedOut: false, player: this.player };
+      return { isBlackedOut: false, currentPlayerData: this.currentPlayerData };
     } else if (this.loser.isPlayer) {
       if (this.specialBattleType === 'introRival') {
         console.log(
@@ -307,13 +308,16 @@ class Battle {
         );
         return {
           isBlackedOut: false,
-          player: this.player,
+          currentPlayerData: this.currentPlayerData,
           introRivalBattleLost: true,
         };
       } else {
         console.log(`${this.loser.name} is out of useable Pokemon!`);
         console.log(`${this.loser.name} blacked out!`);
-        return { isBlackedOut: true, player: this.player };
+        return {
+          isBlackedOut: true,
+          currentPlayerData: this.currentPlayerData,
+        };
       }
     } else {
       console.log(`\n${this.winner.name} defeated ${this.loser.name}!`);
@@ -322,7 +326,7 @@ class Battle {
           `\n${this.loser.name}:  Next time I won't go easy on you, so train well!\n`
         );
       }
-      return { isBlackedOut: false, player: this.player };
+      return { isBlackedOut: false, currentPlayerData: this.currentPlayerData };
     }
   }
 
@@ -401,19 +405,25 @@ class Battle {
         },
       ])
       .then((answers) => {
-        if (answers.target === '--CANCEL--') return false;
+        if (answers.target === '--CANCEL--') return 'cancel';
         else {
           const selectedPokemon = answers.target.split(':')[0];
           if (selectedPokemon === this.opponentPokemon.name) {
             console.log(`${trainer.name} used ${item} on ${selectedPokemon}!`);
-            return this.player.resolveItem(item, this.opponentPokemon);
-            // return true;
+            return this.player.resolveItem(
+              item,
+              this.opponentPokemon,
+              this.currentPlayerData.PC
+            );
           } else {
             const selectedPokemonObj =
               trainer.getPokemon(selectedPokemon).pokemonObj;
             console.log(`${trainer.name} used ${item} on ${selectedPokemon}!`);
-            return this.player.resolveItem(item, selectedPokemonObj);
-            // return true;
+            return this.player.resolveItem(
+              item,
+              selectedPokemonObj,
+              this.currentPlayerData.PC
+            );
           }
         }
       });

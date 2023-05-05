@@ -22,6 +22,7 @@ class Pokemon {
     this.xpThreshold = Math.floor((this.level + 1) ** 2.5);
     this.xp = Math.floor(this.level ** 2.5);
     this.activeEffects = {};
+    this.id = crypto.randomUUID();
   }
 
   isResistantTo(move) {
