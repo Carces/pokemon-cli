@@ -1,3 +1,12 @@
+Implement the main loop after first town: recursion? Have a separate file that is a function with a then block of battles then town. That function recursively calls itself, passing in updated player data each time
+
+## SOLUTION FOR RECURSIVE GAME LOOP:
+
+Assign each then block in game.js and game-loops.js an ID. For gameLoop the ID is stage+block(?)
+When loading, each block in game.js passes through if not the intended stageToLoad e.g:
+if (stageToLoad !== <block_ID>) return Promise.resolve()
+Might need to account for position within a block. Town blocks can be restarted on load without any issues, but Conversation blocks and battle blocks might need to track if the save happened before or after. Maybe add a tag onto the stageToLoad ID e.g. stageToLoad = introBattle-before / stageToLoad = introBattle-after
+
 After intro battles, NOW can visit first town and heal up (maybe a firstTown param on enter town so that events in the town can work differently e.g. console log telling you to go heal, try to leave without pokemon at full doesn't work etc.)
 Finally, after that you face a couple more wild pokemon then an early trainer
 

@@ -176,11 +176,14 @@ class Battle {
     itemChoices.push('--CANCEL--');
 
     // Intro battle dialogue
-    if (this.specialBattleType === 'introWildCatch' && this.turnNumber === 1)
+    if (this.specialBattleType === 'introCatchBattle' && this.turnNumber === 1)
       console.log(
         '\nProfessor Oak:  If you want to catch a wild Pokemon, you need to weaken it first. The more damage you do to it, the easier it will be to catch!\n'
       );
-    else if (this.specialBattleType === 'introWildCatch' && this.turnNumber > 1)
+    else if (
+      this.specialBattleType === 'introCatchBattle' &&
+      this.turnNumber > 1
+    )
       console.log(
         '\nProfessor Oak:  It looks weak! You can try to catch it by choosing the Pokeballs I gave you from the "Item" menu.\n'
       );

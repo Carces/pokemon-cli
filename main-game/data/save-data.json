@@ -1,8 +1,8 @@
 {
   "playerData": {
-    "progressLevel": 0,
+    "stageToLoad": "town1",
     "townsVisited": [
-      "Violet City"
+      "Twinleaf Town"
     ],
     "player": {
       "name": "Ash",
@@ -17,7 +17,7 @@
               "Growl"
             ],
             "hitPoints": {
-              "current": 9.02,
+              "current": 7.1,
               "max": 12
             },
             "attack": {
@@ -30,9 +30,9 @@
             },
             "catchDifficulty": 6,
             "xpThreshold": 5,
-            "xp": 1,
+            "xp": 3,
             "activeEffects": {},
-            "id": "abaa9ad5-1880-4ea6-87e4-5b07c6a74711",
+            "id": "ad744c4a-2a0c-43ed-bd4f-1a54da813d61",
             "species": "Charmander",
             "moveTable": {
               "level3": [
@@ -49,7 +49,7 @@
         },
         {
           "storage": {
-            "name": "Nigel",
+            "name": "Rip",
             "level": 1,
             "type": "normal",
             "moves": [
@@ -57,7 +57,7 @@
               "Tail Whip"
             ],
             "hitPoints": {
-              "current": 5.78,
+              "current": 5.99,
               "max": 10
             },
             "attack": {
@@ -72,7 +72,7 @@
             "xpThreshold": 5,
             "xp": 1,
             "activeEffects": {},
-            "id": "91e6861a-e83a-4c45-8bac-28726ee63f00",
+            "id": "0297b6e9-6abc-4244-aa19-0dc77a479609",
             "species": "Rattata",
             "moveTable": {
               "level4": [
@@ -101,7 +101,7 @@
             "Growl"
           ],
           "hitPoints": {
-            "current": 9.02,
+            "current": 7.1,
             "max": 12
           },
           "attack": {
@@ -114,9 +114,9 @@
           },
           "catchDifficulty": 6,
           "xpThreshold": 5,
-          "xp": 1,
+          "xp": 3,
           "activeEffects": {},
-          "id": "abaa9ad5-1880-4ea6-87e4-5b07c6a74711",
+          "id": "ad744c4a-2a0c-43ed-bd4f-1a54da813d61",
           "species": "Charmander",
           "moveTable": {
             "level3": [
@@ -154,7 +154,7 @@
               "Tail Whip"
             ],
             "hitPoints": {
-              "current": 12,
+              "current": 0,
               "max": 12
             },
             "attack": {
@@ -169,7 +169,7 @@
             "xpThreshold": 5,
             "xp": 1,
             "activeEffects": {},
-            "id": "9aaff306-c20d-4a47-863b-7b269ba3e118",
+            "id": "9e526cba-841e-48fb-8c4a-4c2dff550726",
             "species": "Squirtle",
             "moveTable": {
               "level3": [
@@ -198,7 +198,7 @@
             "Tail Whip"
           ],
           "hitPoints": {
-            "current": 12,
+            "current": 0,
             "max": 12
           },
           "attack": {
@@ -213,7 +213,7 @@
           "xpThreshold": 5,
           "xp": 1,
           "activeEffects": {},
-          "id": "9aaff306-c20d-4a47-863b-7b269ba3e118",
+          "id": "9e526cba-841e-48fb-8c4a-4c2dff550726",
           "species": "Squirtle",
           "moveTable": {
             "level3": [
