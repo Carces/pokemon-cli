@@ -59,7 +59,7 @@ Use your keyboard to interact with the game when prompted, using arrow keys to h
 
 # Credits
 
-Pokémon © 2002-2023 Pokémon. © 1995-2023 Nintendo/Creatures Inc./GAME FREAK inc. TM, ® and Pokémon character names are trademarks of Nintendo.
+Pokémon © 2002-2023 Pokémon. © 1995-2023 Nintendo/Creatures Inc./GAME FREAK inc. TM, ®. Pokémon and other game content are trademarks of Nintendo.
 
 No copyright or trademark infringement is intended in using Pokémon content in this free fangame.
 
