@@ -63,9 +63,9 @@ Pokémon © 2002-2023 Pokémon. © 1995-2023 Nintendo/Creatures Inc./GAME FREAK 
 
 No copyright or trademark infringement is intended in using Pokémon content in this free fangame.
 
-<br>
+
 ---
-<br>
+
 This fangame started life as a 2-day pair-programming task for the Northcoders software development bootcamp.
 
 The original task was based on learning object-oriented-programming, and mostly consisted of creating classes and methods.
