@@ -1,80 +1,75 @@
 ## TO IMPLEMENT
 
-need chances to save game/use items/check on and rearrange pokemon out of battle:
+1. need chances to save game/use items/check on and rearrange pokemon out of battle:
 
-> add options to do all 3 manually in town
-> add a prompt between gameloop battle stages
-> more frequent auto-saves as well - should really be one after each other block
-> game-loop.js needs randomWildPokemon import
-> pokemon menu option should also allow renaming and resetting name to default
+   > add options to do all 3 manually in town
+   > add a prompt between gameloop battle stages
+   > more frequent auto-saves as well - should really be one after each other block
+   > game-loop.js needs randomWildPokemon import
+   > pokemon menu option should also allow renaming and resetting name to default
 
-status effect conditions should now be correctly applied by moves and removed by remove items, but no status conditions have actual tangible effects yet. do some kind of check at start of round to see if activeEffects includes an effect object with a status property.
+2. status effect conditions should now be correctly applied by moves and removed by remove items, but no status conditions have actual tangible effects yet. do some kind of check at start of round to see if activeEffects includes an effect object with a status property.
 
-new game save overwrite warning
+3. new game save overwrite warning - when new game is started from main menu, load in save-data.json. if it loads in successfully, prompt them to confirm if they want to overwrite. Otherwise, assume there is no save data and go to begin-game.js
 
-multiple save slots (maybe undermines roguelike concept? somehow limit to not being able to save same character/run to multiple files?)- only needs implementing for manual saves in menu.js. extra prompt when menuAction === 'save' that lists 3 slots and if they have datta or not. auto-saves would need a way to track save slot loaded in from so they auto-save to the right slot
+4. multiple save slots (maybe undermines roguelike concept? somehow limit to not being able to save same character/run to multiple files?)- only needs implementing for manual saves in menu.js. extra prompt when menuAction === 'save' that lists 3 slots and if they have datta or not. auto-saves would need a way to track save slot loaded in from so they auto-save to the right slot
 
-item type property - currently is just a string, which has been fine so far. Full Restore now added which heals AND removes condition. left it as type: 'heal' for now so it's correctly handled by useItem, but probably should be converted to an array of types to allow for multiple types like ['heal', 'remove']
+5. item type property - currently is just a string, which has been fine so far. Full Restore now added which heals AND removes condition. left it as type: 'heal' for now so it's correctly handled by useItem, but probably should be converted to an array of types to allow for multiple types like ['heal', 'remove']
 
-FINISH randomTrainer/pokemon - generate random moves based on level, account for typePreferences and typeExclusive (maybe reorganise species so they're group by type on the exports object of species-data, then have two getRandoms - one to choose type, where their preferences are added an additional time to the array chosen from to weight in their favour, and the other to choose species within that type)
+6. FINISH randomTrainer/pokemon - generate random moves based on level, account for typePreferences and typeExclusive (maybe reorganise species so they're group by type on the exports object of species-data, then have two getRandoms - one to choose type, where their preferences are added an additional time to the array chosen from to weight in their favour, and the other to choose species within that type)
 
-added some misc items that should console log a message when used from the menu outside of battle, they have an effect.message property for this.
+7. added some misc items that should console log a message when used from the menu outside of battle, they have an effect.message property for this.
 
-> Moves have a uses property - currently uses game values which are very high (30 for tackle). useMove needs to reduce this by 1 (currently the property is only in movesData, needs storing separately. Maybe an array of length 4 where each number represents the num of uses of the move in that slot? if so, will need to be refreshed when an old move is replaced with a new one on level up)
+8. Moves have a uses property - currently uses game values which are very high (30 for tackle). useMove needs to reduce this by 1 (currently the property is only in movesData, needs storing separately. Maybe an array of length 4 where each number represents the num of uses of the move in that slot? if so, will need to be refreshed when an old move is replaced with a new one on level up)
 
-Currently, when a pokemon is created, the for...in loop in their species constructor iterates through their moveTable in reverse order and for each entry where the pokemon's starting level is equal to or greater than the required level for those moves, it pushes the moves onto their moves array until it reaches capacity at 4 moves.
-However,
-The issue with this is that every pokemon will keep their level 1 starting moves, even when created at very high levels. For species with two or three level1 moves, this could mean they are quite underpowered when created at high levels. Some more complex logic might be needed to replace lower level moves with higher level ones. so....
-
-> rather than the main iteration being through moveTable, iterate through pokemon's moves array. for each slot in the moves array, check if it's null (this would mean manually declaring the moves arrays of every species with null in empty slots, and might mess up the logic of some other functions that rely on checking moves.length [pokemon.addMoves, battle.resolveTurn, maybe others]
-> If the slot is null, push the highest level move to it as with current behaviour. If not null, iterate with for...in in reverse order as happens now. Same check to see if poke is high enough level for the moves in that movesArr, but without checking length. Instead, just replace the move in the current iteration's slot within poke's moves array and move to next slot in loop. Because we iterate moveTable in reverse order, it's not possible for the move in that slot to be of a higher level than the one we replace it with, so we should end up with the 4 highest level moves the pokemon can learn at the level it was created at.
-> POTENTIAL ISSUE: depending on species and level created at, some pokemon may end up with completely sub-optimal movesets, e.g. no damage moves.
-> POTENTIAL FIXES?:
+9. Currently, when a pokemon is created, the for...in loop in their species constructor iterates through their moveTable in reverse order and for each entry where the pokemon's starting level is equal to or greater than the required level for those moves, it pushes the moves onto their moves array until it reaches capacity at 4 moves.
+   However,
+   The issue with this is that every pokemon will keep their level 1 starting moves, even when created at very high levels. For species with two or three level1 moves, this could mean they are quite underpowered when created at high levels. Some more complex logic might be needed to replace lower level moves with higher level ones. so....
+   > rather than the main iteration being through moveTable, iterate through pokemon's moves array. for each slot in the moves array, check if it's null (this would mean manually declaring the moves arrays of every species with null in empty slots, and might mess up the logic of some other functions that rely on checking moves.length [pokemon.addMoves, battle.resolveTurn, maybe others]
+   > If the slot is null, push the highest level move to it as with current behaviour. If not null, iterate with for...in in reverse order as happens now. Same check to see if poke is high enough level for the moves in that movesArr, but without checking length. Instead, just replace the move in the current iteration's slot within poke's moves array and move to next slot in loop. Because we iterate moveTable in reverse order, it's not possible for the move in that slot to be of a higher level than the one we replace it with, so we should end up with the 4 highest level moves the pokemon can learn at the level it was created at.
+   > POTENTIAL ISSUE: depending on species and level created at, some pokemon may end up with completely sub-optimal movesets, e.g. no damage moves.
+   > POTENTIAL FIXES?:
 
 - hardcoded preset movesets for pokemon of different levels? Probably the best option, just add a const movesPresets above the class declaration in each species file, add a few well-rounded, optimal movesets.
 - add some randomness to starting moves but with caveat that they have to fit specific criteria, e.g. categorise moves by pos status, neg status, damage etc. This may be the best option if the end goal of the game is a procedural roguelike, as you wouldn't want all pokemon of the same level to have the same moves
 - Another check after iterating and filling all moves slots - if no moves with doesDamage property, iterate moveTable high to low again until a move that doesDamage is found, replace one of the slots with that damage move (replacing lowest level move would be ideal but complex). Potentially good solution but lots of iteration and logic each time a pokemon is created, and may still result in suboptimal movesets, e.g. only one damage type, or multiple moves that inflict the same status
 
-Bring battle loop in line with games: currently, player always goes first (pending implementation of pokemon speed). Currently, switching out unconscious pokemon is handled by resolveTurn() calling checkIfBattleOver once for each trainer. If player pokemon damages itself, checkIfBattleOver(player) will call choosePokemon. Immediately after that, checkIfBattleOver(opponent) will call choosePokemon if they have remaining pokemon. That promise chain gets resolved and returned to resolveTurn(). Opponent then goes straight to selecting a random move and using it with fight()
-In the games, when a pokemon is downed, that round ends.
-The trainer whose pokemon was downed immediately chooses a pokemon to bring out. The games have two modes, shift (where the player now gets to choose to change pokemon as a free action) and set (where they have to use their turn to switch if they want to do so)
-The next round now begins. If the player had higher speed than the downed pokemon, acted first last round and downed the opponent before they could attack, and their pokemon also has higher speed than the replacement pokemon sent out, they can act twice in a row.
-It seems that if the player pokemon is slower and acts second, this won't be the case, as the round fully ends (? unconfirmed)
+10. Bring battle loop in line with games: currently, player always goes first (pending implementation of pokemon speed). Currently, switching out unconscious pokemon is handled by resolveTurn() calling checkIfBattleOver once for each trainer. If player pokemon damages itself, checkIfBattleOver(player) will call choosePokemon. Immediately after that, checkIfBattleOver(opponent) will call choosePokemon if they have remaining pokemon. That promise chain gets resolved and returned to resolveTurn(). Opponent then goes straight to selecting a random move and using it with fight()
+    In the games, when a pokemon is downed, that round ends.
+    The trainer whose pokemon was downed immediately chooses a pokemon to bring out. The games have two modes, shift (where the player now gets to choose to change pokemon as a free action) and set (where they have to use their turn to switch if they want to do so)
+    The next round now begins. If the player had higher speed than the downed pokemon, acted first last round and downed the opponent before they could attack, and their pokemon also has higher speed than the replacement pokemon sent out, they can act twice in a row.
+    It seems that if the player pokemon is slower and acts second, this won't be the case, as the round fully ends (? unconfirmed)
 
---- NOTE WHEN ADDING CATCHDIFFICULTY TO SPECIES: at 1/4 health with a normal Poke Ball, catch ranges from ~4-11 ---
+11. implement pokemon speed stat and move priority (e.g. quick attack)
 
-implement pokemon speed stat and move priority (e.g. quick attack)
+12. implement special/physical attacks
 
-implement special/physical attacks
+13. implement evasion - in-game, accuracy and speed always start at 100 and attacks always hit until evasion or accuracy are increased/decreased
 
-implement evasion - in-game, accuracy and speed always start at 100 and attacks always hit until evasion or accuracy are increased/decreased
+14. restructuring battle to avoid deeply nested then blocks - can checkIfBattleOver be refactored to only need calling once? It would help the nesting situation in resolveTurn if so. Can other promise-based functions be refactored to return out promises and chain .then blocks on the same level rather than nesting?
 
-restructuring battle to avoid deeply nested then blocks - can checkIfBattleOver be refactored to only need calling once? It would help the nesting situation in resolveTurn if so. Can other promise-based functions be refactored to return out promises and chain .then blocks on the same level rather than nesting?
+15. implement logic to run option - should only work on wild pokemon.
 
-implement logic to run option - should only work on wild pokemon.
+16. implement rewards for winning battles. random amount of money based on (total xp of enemies defeated? loopNum? trainer difficulty rating discussed above [factors in pokemonCount and rarity of each pokemon]?) NPCs have specific item rewards, but nothing that actually gives them to the player (I think?). In games, items are not normally gained at end of battle. When it does happen, it's in a conversation afterwards, not part of the actual battle like money reward. However, here there will be less specific scripted battles with NPCs and therefore less chance to get items as rewards. Also no items found in world or given during story. Maybe randomTrainer should have a small chance to generate item reward for defeating that trainer, like NPCs do?
 
-implement rewards for winning battles. random amount of money based on (total xp of enemies defeated? loopNum? trainer difficulty rating discussed above [factors in pokemonCount and rarity of each pokemon]?) NPCs have specific item rewards, but nothing that actually gives them to the player (I think?). In games, items are not normally gained at end of battle. When it does happen, it's in a conversation afterwards, not part of the actual battle like money reward. However, here there will be less specific scripted battles with NPCs and therefore less chance to get items as rewards. Also no items found in world or given during story. Maybe randomTrainer should have a small chance to generate item reward for defeating that trainer, like NPCs do?
+17. First dual-type pokemon added in Pidgey. Types system currently not really set up for this, so it's just a flying type currently, should be flying and normal.
 
-First dual-type pokemon added in Pidgey. Types system currently not really set up for this, so it's just a flying type currently, should be flying and normal.
+    > May be the time to take out the type classes, as all they currently do is set the type and call super
+    > Then, this.type can be an array of types
+    > Will need to then update pokemon.js isWeakTo etc., check this.types.includes(...)
+    > Any other things to change/update that make use of pokemon type directly? Will affect randomTrainer typePreferences, but those haven't been implemented yet
 
-> May be the time to take out the type classes, as all they currently do is set the type and call super
-> Then, this.type can be an array of types
-> Will need to then update pokemon.js isWeakTo etc., check this.types.includes(...)
-> Any other things to change/update that make use of pokemon type directly? Will affect randomTrainer typePreferences, but those haven't been implemented yet
+18. pokemon.js now has isImmuneTo method, but not called/checked for in battle.js fight method
 
-pokemon.js now has isImmuneTo method, but not called/checked for in battle.js fight method
+19. movesData - accuracy almost all at 100%. In games, most moves have 95% or less. Is accuracy checked/used anywhere? battle.js fight may not take it into account at all, so needs implementing. Pokemon also now all have an accuracy stat, at 100 for all species. Can be lowered by enemy moves and should be taken into account along with move base accuracy
 
-movesData - accuracy all at 100%. In games, most moves have 95% or less. Is accuracy checked/used anywhere? battle.js fight may not take it into account at all, so needs implementing. Pokemon also now all have an accuracy stat, at 100 for all species. Can be lowered by enemy moves and should be taken into account along with move base accuracy
+20. because species are completely randomised and only selector will be rarity, whereas in games it's based on area, it will be much harder to find a specific pokemon:
 
-because species are completely randomised and only selector will be rarity, whereas in games it's based on area, it will be much harder to find a specific pokemon:
+    > make one of the walk around town events finding someone who can give you a tip for finding a specific pokemon.Maybe you input species name or choose from a small selection of random species they know how to find etc.
+    > have some shops sell lures for specific types/species
+    > This method will give players choice if they want to spread xp or get one really high levelled pokemon but less of a health pool
 
-> make one of the walk around town events finding someone who can give you a tip for finding a specific pokemon.Maybe you input species name or choose from a small selection of random species they know how to find etc.
-> have some shops sell lures for specific types/species
-> This method will give players choice if they want to spread xp or get one really high levelled pokemon but less of a health pool
-
-when new game is started from main menu, load in save-data.json. if it loads in successfully, prompt them to confirm if they want to overwrite. Otherwise, assume there is no save data and go to begin-game.js
-
-Make better use of specialBattle prop of Battle - instead of just passing a unique battle name and having console logs everywhere that check the battle name, pass in an array of objects on specialBattle, where each object is a message with text: blabla and event: playerWinsBattle / battleStart etc.
+21. Make better use of specialBattle prop of Battle - instead of just passing a unique battle name and having console logs everywhere that check the battle name, pass in an array of objects on specialBattle, where each object is a message with text: blabla and event: playerWinsBattle / battleStart etc.
 
 ## STATS SYSTEM
 
