@@ -6,28 +6,27 @@ class Pikachu extends Electric {
     name = 'Pikachu',
     level,
     moves = ['Thunder Shock', 'Growl'],
-    hitPoints,
-    attack,
-    defence,
-    catchDifficulty = 7
+    hitPoints = 9 + level * 2,
+    attack = 13 + level * 2,
+    defence = 8 + level * 2,
+    speed = 20 + level * 2,
+    accuracy = 100,
+    catchDifficulty = 7,
+    isEvolving
   ) {
-    super(name, level, moves, hitPoints, attack, defence, catchDifficulty);
+    super(
+      name,
+      level,
+      moves,
+      hitPoints,
+      attack,
+      defence,
+      speed,
+      accuracy,
+      catchDifficulty,
+      isEvolving
+    );
     this.species = 'Pikachu';
-    this.moveTable = {
-      level6: ['Tail Whip'],
-    };
-    if (this.level > 1) {
-      // Give highest level moves possible
-      for (const movesArr in this.moveTable) {
-        const movesLevel = movesArr.replace('level', '');
-
-        if (this.level >= movesLevel && this.moves.length < 4) {
-          this.moveTable[movesArr].forEach((move) => {
-            if (this.moves.length < 4) this.moves.push(move);
-          });
-        }
-      }
-    }
     this.art = `
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⡆⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣿⣿⡇⠀⠀⠀
@@ -52,6 +51,9 @@ class Pikachu extends Electric {
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠛⠿⢿⡿⠿⠋⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⢧⠀⠀⠀⠀⠀`;
   }
+  static moveTable = {
+    level6: ['Tail Whip'],
+  };
 }
 
 module.exports = {

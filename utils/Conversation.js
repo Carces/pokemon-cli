@@ -8,7 +8,7 @@ class Conversation {
     this.prompts = messages.map((message, i) => {
       return {
         type: 'input',
-        name: 'i',
+        name: i.toString(),
         message:
           message.npc || message.npc === 0
             ? `${npcs[message.npc]}:  ${message.text}`

@@ -9,7 +9,10 @@ class Pokemon {
     hitPoints = 10 + level * 2,
     attack = 10 + level * 2,
     defence = 10 + level * 2,
-    catchDifficulty = 5
+    speed = 10 + level * 2,
+    accuracy = 100,
+    catchDifficulty = 5,
+    isEvolving
   ) {
     this.name = name;
     this.level = level;
@@ -18,29 +21,101 @@ class Pokemon {
     this.hitPoints = { current: hitPoints, max: hitPoints };
     this.attack = { current: attack, max: attack };
     this.defence = { current: defence, max: defence };
+    this.speed = { current: speed, max: speed };
+    this.accuracy = { current: accuracy, max: accuracy };
+
     this.catchDifficulty = catchDifficulty;
-    this.xpThreshold = Math.floor((this.level + 1) ** 2.5);
-    this.xp = Math.floor(this.level ** 2.5);
+    this.xpThreshold = Math.floor(
+      (this.level + 1) ** 2.3 * Math.pow(1.001, this.level)
+    );
+    this.xp = Math.floor(this.level ** 2.3 * Math.pow(1.001, this.level));
     this.activeEffects = {};
     this.id = crypto.randomUUID();
+    if (this.level > 1 && !isEvolving) {
+      // Give highest level moves possible
+      const reversedMoveTable = Object.entries(
+        this.constructor.moveTable
+      ).reverse();
+      reversedMoveTable.forEach((movesEntry) => {
+        const movesLevel = movesEntry[0].replace('level', '');
+        if (this.level >= movesLevel && this.moves.length < 4) {
+          movesEntry[1].forEach((move) => {
+            if (this.moves.length < 4) this.moves.push(move);
+          });
+        }
+      });
+    }
   }
 
   isResistantTo(move) {
     const strengths = {
-      fire: 'grass',
-      grass: 'water',
-      water: 'fire',
+      fighting: ['rock', 'bug', 'dark'],
+      flying: ['fighting', 'bug', 'grass'],
+      poison: ['fighting', 'poison', 'bug', 'grass', 'fairy'],
+      ground: ['poison', 'rock'],
+      rock: ['normal', 'flying', 'poison', 'fire'],
+      bug: ['fighting', 'ground', 'grass'],
+      ghost: ['poison', 'bug'],
+      steel: [
+        'steel',
+        'normal',
+        'flying',
+        'rock',
+        'bug',
+        'grass',
+        'psychic',
+        'ice',
+        'dragon',
+        'fairy',
+      ],
+      fire: ['fire', 'bug', 'steel', 'ice', 'grass', 'fairy'],
+      electric: ['electric', 'flying', 'steel'],
+      psychic: ['psychic', 'fighting'],
+      ice: ['ice'],
+      dragon: ['grass', 'water', 'fire', 'electric'],
+      dark: ['dark', 'ghost'],
+      fairy: ['fighting', 'bug', 'dark'],
+      grass: ['grass', 'water', 'ground', 'electric'],
+      water: ['water', 'fire', 'steel', 'ice'],
     };
-    return strengths[this.type] === move.type;
+    return strengths[this.type]?.includes(move.type);
+  }
+
+  isImmuneTo(move) {
+    const immunities = {
+      normal: ['ghost'],
+      flying: ['ground'],
+      ground: ['electric'],
+      ghost: ['normal', 'fighting'],
+      steel: ['poison'],
+      dark: ['psychic'],
+      fairy: ['dragon'],
+    };
+    return immunities[this.type]?.includes(move.type);
   }
 
   isWeakTo(move) {
     const weaknesses = {
-      grass: 'fire',
-      water: 'grass',
-      fire: 'water',
+      normal: ['fighting'],
+      fighting: ['psychic', 'flying', 'fairy'],
+      flying: ['rock', 'electric', 'ice'],
+      grass: ['fire', 'flying', 'poison', 'bug', 'ice'],
+      water: ['grass', 'electric'],
+      fire: ['water', 'ground', 'rock'],
+      poison: ['ground', 'psychic'],
+      ground: ['water', 'grass', 'ice'],
+      rock: ['fighting', 'ground', 'steel', 'water', 'grass'],
+      bug: ['rock', 'flying', 'fire'],
+      ghost: ['ghost', 'dark'],
+      steel: ['fighting', 'ground', 'fire'],
+      electric: ['ground'],
+      psychic: ['bug', 'ghost', 'dark'],
+      ice: ['fighting', 'rock', 'steel', 'fire'],
+      dragon: ['dragon', 'ice', 'fairy'],
+      dark: ['fighting', 'bug', 'fairy'],
+      fairy: ['poison', 'steel'],
     };
-    return weaknesses[this.type] === move.type;
+    return weaknesses[this.type]?.includes(move.type);
   }
 
   takeDamage(damage) {
@@ -66,21 +141,24 @@ class Pokemon {
 
   showXpBar() {
     const emptyBar = Array(20).fill('-');
-    const xpRatio = this.xp / this.xpThreshold;
+    const xpRatio =
+      (this.xp - Math.floor(this.level ** 2.3) * Math.pow(1.001, this.level)) /
+      (this.xpThreshold -
+        Math.floor(this.level ** 2.3) * Math.pow(1.001, this.level));
     const filledBar = emptyBar.map((dash, index) => {
-      if (index < xpRatio * 20) return '■';
+      if (index === 19 && xpRatio < 1) return '-';
+      else if (index < xpRatio * 20) return '■';
       else return '-';
     });
     const xpBar = `[${filledBar.join('')}]`;
-    console.log('---------------------------------------');
-    console.log(`Level ${this.level} |${xpBar}| Level ${this.level + 1}`);
-    console.log('---------------------------------------');
+    return `-----------------------------------------
+  Level ${this.level} |${xpBar}| Level ${this.level + 1}
+  -----------------------------------------`;
   }
 
   addXp(num) {
     this.xp += num;
     console.log(`\n${this.name} gained ${num} experience points!\n`);
-    this.showXpBar();
 
     if (this.xp >= this.xpThreshold) {
       this.level++;
@@ -90,13 +168,38 @@ class Pokemon {
       this.attack.current += 0.75;
       this.defence.max += 0.75;
       this.defence.current += 0.75;
-      this.xpThreshold = Math.floor((this.level + 1) ** 2.5);
+      this.xpThreshold = Math.floor(
+        (this.level + 1) ** 2.3 * Math.pow(1.001, this.level)
+      );
       console.log(`\n${this.name} grew to level ${this.level}!\n`);
 
       const newMoves = this.moveTable['level' + this.level];
       if (newMoves) return this.addMoves(newMoves);
+      if (this.evolvesTo.level >= this.level) return this.evolvesTo.species;
     }
-    return Promise.resolve();
+  }
+
+  evolve(specialEvolutionType) {
+    const create = require('../main-game/data/create');
+    let newSpecies;
+    if (specialEvolutionType) {
+      newSpecies = this.evolvesTo.special[specialEvolutionType];
+    }
+    const hpBelowMax = this.hitPoints.max - this.hitPoints.current;
+    const attackBelowMax = this.attack.max - this.attack.current;
+    const defenceBelowMax = this.defence.max - this.defence.current;
+    const evolvedName =
+      this.name === this.species ? this.evolvesTo.species : this.name;
+    const evolvedForm = create.pokemon(
+      this.evolvesTo.species,
+      this.name,
+      this.level,
+      this.moves
+    );
+    evolvedForm.hitPoints.current -= hpBelowMax;
+    evolvedForm.attack.current -= attackBelowMax;
+    evolvedForm.defence.current -= defenceBelowMax;
+    return evolvedForm;
   }
 
   addMoves(moves) {

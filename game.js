@@ -82,12 +82,12 @@ mainMenu()
     const { player } = currentPlayerData;
     const { rival } = currentRivalData;
     const messages = [
-      { npc: 0, text: `You chose ${player.pokemonList[0]}?` },
+      { npc: 0, text: `You chose ${player.belt[0].storage.species}?` },
       { npc: 0, text: `OK, well...` },
       { npc: 0, text: `Then I choose ${rival.pokemonList[0]}!`, delay: 1000 },
       {
         npc: 0,
-        text: `Your ${player.pokemonList[0]} looks weak, I bet my ${rival.pokemonList[0]} could beat it in a battle, easy!`,
+        text: `Your ${player.belt[0].storage.species} looks weak, I bet my ${rival.pokemonList[0]} could beat it in a battle, easy!`,
       },
       { npc: 0, text: `I'll prove it!` },
     ];
@@ -133,7 +133,7 @@ mainMenu()
         npc: 0,
         text: res.introRivalBattleLost
           ? `Oh dear, ${rival.name} started a fight again? It's OK that you lost, he's been training for a while!`
-          : `Oh, you beat ${rival.name} in a battle? I'm sure that will motivate him to work even harder!`,
+          : `Oh, you defeated ${rival.name}? He'll be really fired up now!`,
       },
       {
         npc: 0,
@@ -146,7 +146,7 @@ mainMenu()
       },
       {
         npc: 0,
-        text: `Your poor ${player.pokemonList[0]} looks tired though, let me heal it for you!`,
+        text: `Your poor ${player.belt[0].storage.species} looks tired though, let me heal it for you!`,
       },
       {
         text: `${player.pokemonList[0]} was fully healed!`,
@@ -169,7 +169,7 @@ mainMenu()
       },
       {
         npc: 0,
-        text: `Let's go catch a wild Pokemon! There's some tall grass just behind my lab...`,
+        text: `Let's go catch a wild Pokemon! There's some tall grass just behind my lab...\n`,
       },
       {
         npc: 0,
@@ -200,9 +200,7 @@ mainMenu()
     currentPlayerData.player.currentPokeball.storage.healToFull();
 
     const { player } = currentPlayerData;
-    const level = player.currentPokeball.storage.level;
-    const opponent = randomWildPokemon(level, null, 'Rattata');
-    const { trainerData, battleTrainer } = opponent;
+    const { battleTrainer } = randomWildPokemon(1, 'Rattata');
     const randomBattle = new Battle(
       player,
       battleTrainer,
@@ -215,16 +213,15 @@ mainMenu()
   // [ introGoodbyeConv ]
   .then((res) => {
     if (res) currentPlayerData = res.currentPlayerData;
+
     // skip block if loading game
     const stageID = 'introGoodbyeConv';
     const { stageToLoad } = currentPlayerData;
     if (stageToLoad !== stageID) return Promise.resolve();
     /////
-
     const { player } = currentPlayerData;
     const { rival } = currentRivalData;
     const newRattataName = player.belt.find((ball) => {
-      console.log(ball.storage.species);
       return ball.storage.species === 'Rattata';
     }).storage.name;
     const npcs = ['Professor Oak', 'Mum'];
@@ -249,7 +246,7 @@ mainMenu()
       },
       {
         npc: 0,
-        text: `Well, I think you're ready to get out and explore the world!`,
+        text: `Well, I think you're ready to get out and explore the world.`,
       },
       {
         npc: 0,
@@ -264,8 +261,8 @@ mainMenu()
       },
       {
         npc: 1,
-        text: `Just be careful! And come back to visit soon!`,
-        delay: 2000,
+        text: `Be careful! And come back to visit soon!`,
+        delay: 1000,
       },
       {
         npc: 1,
@@ -279,13 +276,11 @@ mainMenu()
   // - startGameLoop -
   .then(() => {
     const { stageToLoad } = currentPlayerData;
-    const loopNum = stageToLoad.charAt(stageToLoad.length - 1);
-    if (loopNum === '1' && stageToLoad.startsWith('town')) {
+    const loopNum = +stageToLoad.charAt(stageToLoad.length - 1);
+    if (loopNum === '1' && stageToLoad.startsWith('town'))
       console.log(
         '\nYou leave behind your hometown and venture into the world.\n'
       );
-      console.log('After a day of travel, you reach the next town.\n');
-    }
     return gameLoop(loopNum, currentPlayerData, currentRivalData);
   });
 // .then((res) => {

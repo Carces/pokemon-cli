@@ -50,7 +50,7 @@ const NPCs = {
       `I'm no Pokemon master...`,
       `Even when you lose, you have to believe!`,
     ],
-    pokemon: ['Pikachu'],
+    pokemon: ['Pikachu', 'Charizard', 'Butterfree', 'Greninja'],
     typePreferences: [],
     typeExclusive: false,
     rewards: ['Master Ball'],

@@ -6,78 +6,68 @@ const { saveGame } = require('../save-game');
 const { itemsData } = require('../data/items-data.js');
 const { townsData } = require('../data/towns-data');
 const { Player } = require('../trainers/player');
+const { showMenu } = require('./menu');
 
 let currentPlayerData;
 let currentRivalData;
 let pokeMartStock;
 let currentTownName;
 
-const welcomeMessages = [
-  'After a long journey, you finally arrive at %T.',
-  'As the sun crests over the horizon, you see the buildings of %T before you.',
-  'In the fading evening light, you can see the lights of %T blinking on, one by one.',
-  'The rumble of thunder fills the sky, and you run for the cover of %T just as rain begins to fall.',
-  'You see the Poke Mart logo ahead, and check your map. Ah, this must be %T.',
-  'The sounds of conversation drift towards on you on the wind as you approach %T.',
-  'Up ahead, you see %T.',
-  'In front of you lies %T.',
-  'At last, a chance to restock your items and heal your Pokemon! %T lies ahead.',
-  'Your feet sore from walking, you finally reach %T.',
-  'The bustling streets of %T have plenty of places to eat, rest and shop.',
-  'You see a town ahead and consult the map. Apparently, this is %T!',
-  'Here it is, %T!',
-  'Finally, %T!',
-  'You begin to lower your guard as the wilderness turns to civilisation. %T is just up the road.',
-  'The areas of long grass grow more and more infrequent as you approach %T.',
-  "Is that it? ... Yes! It's %T!",
-  'You take in the sights as you arrive in %T',
-  'Just as it feels like you might never see a town again, you reach %T',
-  'The safety of %T beckons.',
-  'At last, %T!',
-  'A distant Pokemon call echoes across the landscape as you catch your first glimpse of %T.',
-  'Here we are, %T.',
-  'As the fog clears, you catch sight of %T ahead.',
-  'Tired and hungry, you feel relieved to finally see the outskirts of %T.',
-  'The rooftops of %T provide welcome shade from the sweltering heat on the road.',
-  'First, you see drifts of smoke twisting in the sky, then %T reveals itself.',
-  'As the last of the daylight fades, the thought of a warm bed pushes you on until you reach %T.',
-  'Your first visit to %T. Exciting!',
-  "%T! Isn't it beautiful? Maybe you can send some postcards.",
-  "The pictures don't do %T justice, it's much nicer in person!",
-  "You've always wanted to visit %T, and now you're finally here!",
-  'Ah, %T at last.',
-  'Ah, %T. Just in time.',
-  "A town! let's see now, is this %T? It must be!",
-  "What's that up the road? It must be %T!",
-  'Phew, that took a while. %T here we come.',
-  "There's our destination, %T.",
-  'Oh look, %T. Your Pokemon could probably do with a break.',
-  '%T. Maybe you should have a look around the shops?',
-  'Your stomach rumbles. Hm, maybe you should stop in %T for lunch.',
-];
-
-function randomTown() {
-  const unvisitedTownNames = Object.entries(townsData)
-    .filter((town) => !town[1].visited)
-    .map((unvisitedTown) => unvisitedTown[0]);
-  const townsLength = unvisitedTownNames.length;
-  const randomTownIndex = Math.round(Math.random() * townsLength - 1);
-  const townIndex = Math.max(randomTownIndex, 0);
+function randomWelcomeMessage() {
+  const welcomeMessages = [
+    'After a long journey, you finally arrive at %T.',
+    'As the sun crests over the horizon, you see the buildings of %T before you.',
+    'In the fading evening light, you can see the lights of %T blinking on, one by one.',
+    'The rumble of thunder fills the sky, and you run for the cover of %T just as rain begins to fall.',
+    'You see the Poke Mart logo ahead, and check your map. Ah, this must be %T.',
+    'The sounds of conversation drift towards on you on the wind as you approach %T.',
+    'Up ahead, you see %T.',
+    'In front of you lies %T.',
+    'At last, a chance to restock your items and heal your Pokemon! %T lies ahead.',
+    'Your feet sore from walking, you finally reach %T.',
+    'The bustling streets of %T have plenty of places to eat, rest and shop.',
+    'You see a town ahead and consult the map. Apparently, this is %T!',
+    'Here it is, %T!',
+    'Finally, %T!',
+    'You begin to lower your guard as the wilderness turns to civilisation. %T is just up the road.',
+    'The areas of long grass grow more and more infrequent as you approach %T.',
+    "Is that it? ... Yes! It's %T!",
+    'You take in the sights as you arrive in %T',
+    'Just as it feels like you might never see a town again, you reach %T',
+    'The safety of %T beckons.',
+    'At last, %T!',
+    'A distant Pokemon call echoes across the landscape as you catch your first glimpse of %T.',
+    'Here we are, %T.',
+    'As the fog clears, you catch sight of %T ahead.',
+    'Tired and hungry, you feel relieved to finally see the outskirts of %T.',
+    'The rooftops of %T provide welcome shade from the sweltering heat on the road.',
+    'First, you see drifts of smoke twisting in the sky, then %T reveals itself.',
+    'As the last of the daylight fades, the thought of a warm bed pushes you on until you reach %T.',
+    'Your first visit to %T. Exciting!',
+    "%T! Isn't it beautiful? Maybe you can send some postcards.",
+    "The pictures don't do %T justice, it's much nicer in person!",
+    "You've always wanted to visit %T, and now you're finally here!",
+    'Ah, %T at last.',
+    'Ah, %T. Just in time.',
+    "A town! let's see now, is this %T? It must be!",
+    "What's that up the road? It must be %T!",
+    'Phew, that took a while. %T here we come.',
+    "There's our destination, %T.",
+    'Oh look, %T. Your Pokemon could probably do with a break.',
+    '%T. Maybe you should have a look around the shops?',
+    'Your stomach rumbles. Hm, maybe you should stop in %T for lunch.',
+  ];
   const welcomesLength = welcomeMessages.length;
   const randomWelcomeIndex = Math.round(Math.random() * welcomesLength - 1);
   const welcomeIndex = Math.max(randomWelcomeIndex, 0);
 
-  return {
-    townName: unvisitedTownNames[townIndex],
-    welcomeMessage: welcomeMessages[welcomeIndex],
-  };
+  return welcomeMessages[welcomeIndex];
 }
 
-function enterTown(playerData, rivalData) {
+function enterTown(playerData, rivalData, townName) {
   currentPlayerData = playerData;
   currentRivalData = rivalData;
-  const { townName, welcomeMessage } = randomTown();
-  currentTownName = townName;
+  const welcomeMessage = randomWelcomeMessage();
   const customWelcome = welcomeMessage.replace('%T', townName);
   console.log(customWelcome);
   console.log('\n', townsData[townName].nameArt, '\n');
@@ -92,7 +82,13 @@ function exploreTown() {
         type: 'list',
         name: 'townAction',
         message: `Where would you like to go?`,
-        choices: ['Walk around', 'Poke Mart', 'Pokemon Centre', '--LEAVE--'],
+        choices: [
+          'Walk around',
+          'Poke Mart',
+          'Pokemon Centre',
+          'Menu',
+          '--LEAVE--',
+        ],
       },
     ])
     .then((answers) => {
@@ -103,6 +99,10 @@ function exploreTown() {
         return pokeMart();
       } else if (answers.townAction === 'Pokemon Centre') {
         return pokemonCentre();
+      } else if (answers.townAction === 'Menu') {
+        return showMenu(currentPlayerData, currentRivalData).then(
+          (isQuitGame) => (isQuitGame ? 'quit' : exploreTown())
+        );
       } else if (answers.townAction === '--LEAVE--') {
         const playerData = currentPlayerData;
         const rivalData = currentRivalData;
@@ -175,8 +175,9 @@ function buy(alreadyBought) {
     items.forEach((item) => {
       const random = Math.round(Math.random() * 10);
       const randomQuantity = Math.max(0, random - item.rarity);
-      const quantity =
-        currentPlayerData.progressLevel >= item.rarity ? randomQuantity : 0;
+      const { stageToLoad } = currentPlayerData;
+      const loopNum = +stageToLoad.charAt(stageToLoad.length - 1);
+      const quantity = loopNum >= item.rarity ? randomQuantity : 0;
       if (quantity)
         stock.push(
           `${item.name}: x${quantity} (${item.price}₽) - ${item.description}`
@@ -212,11 +213,11 @@ You have ${inventory['Money']}₽.`,
           const itemName = item.split(':')[0];
           const playerQuantity = inventory[itemName] || 0;
           return `
-How many would you like to buy? [${item}]
 You currently have ${playerQuantity}.
-You have ${inventory['Money']}₽.`;
+You have ${inventory['Money']}₽.
+How many ${itemName}s would you like to buy? Enter quantity:`;
         },
-        when: (answers) => answers.item !== '--CANCEL--',
+        when: ({ item }) => item !== '--CANCEL--',
       },
     ])
     .then(({ item, quantity }) => {
@@ -226,7 +227,7 @@ You have ${inventory['Money']}₽.`;
       const itemQuantity = item === '--CANCEL--' ? 0 : item.match(/\d+/g)[0];
       const totalCost = quantity === '--CANCEL--' ? 0 : itemPrice * quantity;
 
-      if (item === '--CANCEL--' || quantity === '--CANCEL--') {
+      if (item === '--CANCEL--' || !quantity) {
         pokeMartStock = stock;
         console.log('\nYou leave the Poke Mart.\n');
         return exploreTown();
@@ -248,7 +249,8 @@ You have ${inventory['Money']}₽.`;
         const stockQuantity = item.match(/\d+/g)[0];
         const updatedQuantity = (+stockQuantity - quantity).toString();
         const updatedItem = item.replace(stockQuantity, updatedQuantity);
-        stock[stock.indexOf(item)] = updatedItem;
+        if (!+updatedQuantity) stock.splice(stock.indexOf(item), 1);
+        else stock[stock.indexOf(item)] = updatedItem;
         pokeMartStock = stock;
         return buy(true);
       }
@@ -406,6 +408,8 @@ You need at least one Pokemon to travel safely!\n`
         );
         pokemonList.splice(pokemonListIndex, 1);
         const ball = player.belt.splice(ballIndex, 1)[0];
+        if (ball === player.currentPokeball)
+          player.currentPokeball = player.belt.find((ball) => ball.storage);
         currentPlayerData.PC.push(ball);
         return usePC();
       }

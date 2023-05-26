@@ -6,28 +6,27 @@ class Squirtle extends Water {
     name = 'Squirtle',
     level,
     moves = ['Tackle', 'Tail Whip'],
-    hitPoints,
-    attack,
-    defence,
-    catchDifficulty = 6
+    hitPoints = 11 + level * 2,
+    attack = 12 + level * 2,
+    defence = 15 + level * 2,
+    speed = 10 + level * 2,
+    accuracy = 100,
+    catchDifficulty = 6,
+    isEvolving
   ) {
-    super(name, level, moves, hitPoints, attack, defence, catchDifficulty);
+    super(
+      name,
+      level,
+      moves,
+      hitPoints,
+      attack,
+      defence,
+      speed,
+      accuracy,
+      catchDifficulty,
+      isEvolving
+    );
     this.species = 'Squirtle';
-    this.moveTable = {
-      level3: ['Water Gun'],
-    };
-    if (this.level > 1) {
-      // Give highest level moves possible
-      for (const movesArr in this.moveTable) {
-        const movesLevel = movesArr.replace('level', '');
-
-        if (this.level >= movesLevel && this.moves.length < 4) {
-          this.moveTable[movesArr].forEach((move) => {
-            if (this.moves.length < 4) this.moves.push(move);
-          });
-        }
-      }
-    }
     this.art = `
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣴⣶⣿⣿⣿⣶⣴⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣻⣿⢿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -49,6 +48,9 @@ class Squirtle extends Water {
         ⠀⠀⠀⠀⠀⠀⠀⠉⠘⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠙⠟⠉⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
   }
+  static moveTable = {
+    level3: ['Water Gun'],
+  };
 }
 
 module.exports = {

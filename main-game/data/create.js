@@ -7,7 +7,7 @@ function ball(str) {
 }
 
 function pokemon(str, ...args) {
-  return new speciesData[str](...args);
+  return new speciesData[str].class(...args);
 }
 
 module.exports = {

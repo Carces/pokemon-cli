@@ -6,28 +6,27 @@ class Bulbasaur extends Grass {
     name = 'Bulbasaur',
     level,
     moves = ['Tackle', 'Growl'],
-    hitPoints,
-    attack = 9 + level * 2,
-    defence = 11 + level * 2,
-    catchDifficulty = 6
+    hitPoints = 11 + level * 2,
+    attack = 12 + level * 2,
+    defence = 12 + level * 2,
+    speed = 11 + level * 2,
+    accuracy = 100,
+    catchDifficulty = 6,
+    isEvolving
   ) {
-    super(name, level, moves, hitPoints, attack, defence, catchDifficulty);
+    super(
+      name,
+      level,
+      moves,
+      hitPoints,
+      attack,
+      defence,
+      speed,
+      accuracy,
+      catchDifficulty,
+      isEvolving
+    );
     this.species = 'Bulbasaur';
-    this.moveTable = {
-      level3: ['Vine Whip'],
-    };
-    if (this.level > 1) {
-      // Give highest level moves possible
-      for (const movesArr in this.moveTable) {
-        const movesLevel = movesArr.replace('level', '');
-
-        if (this.level >= movesLevel && this.moves.length < 4) {
-          this.moveTable[movesArr].forEach((move) => {
-            if (this.moves.length < 4) this.moves.push(move);
-          });
-        }
-      }
-    }
     this.art = `
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⡀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⣀⣤⣾⢠⣾⢀⡀⠀⠀⠀⠀
@@ -48,6 +47,9 @@ class Bulbasaur extends Grass {
         ⠀⠀⠀⠀⠀⠀⠀⠀⠺⠟⠻⡝⠋⠀⠀⠀⠀⠀⠀⣻⢾⢿⢿⢿⠟⠁⠀⠀⠀⠝⠫⠝⢟⠻⠁⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠁⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
   }
+  static moveTable = {
+    level3: ['Vine Whip'],
+  };
 }
 
 module.exports = {

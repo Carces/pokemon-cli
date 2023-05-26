@@ -7,27 +7,26 @@ class Rattata extends Normal {
     level,
     moves = ['Tackle', 'Tail Whip'],
     hitPoints = 8 + level * 2,
-    attack = 9 + level * 2,
-    defence = 8 + level * 2,
-    catchDifficulty = 2
+    attack = 13 + level * 2,
+    defence = 9 + level * 2,
+    speed = 16 + level * 2,
+    accuracy = 100,
+    catchDifficulty = 2,
+    isEvolving
   ) {
-    super(name, level, moves, hitPoints, attack, defence, catchDifficulty);
+    super(
+      name,
+      level,
+      moves,
+      hitPoints,
+      attack,
+      defence,
+      speed,
+      accuracy,
+      catchDifficulty,
+      isEvolving
+    );
     this.species = 'Rattata';
-    this.moveTable = {
-      level4: ['Quick Attack'],
-    };
-    if (this.level > 1) {
-      // Give highest level moves possible
-      for (const movesArr in this.moveTable) {
-        const movesLevel = movesArr.replace('level', '');
-
-        if (this.level >= movesLevel && this.moves.length < 4) {
-          this.moveTable[movesArr].forEach((move) => {
-            if (this.moves.length < 4) this.moves.push(move);
-          });
-        }
-      }
-    }
     this.art = `
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⣦⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⡯⣭⣟⢿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -48,6 +47,9 @@ class Rattata extends Normal {
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢴⣾⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⡟⢫⠟⠁⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠟⠩⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
   }
+  static moveTable = {
+    level4: ['Quick Attack'],
+  };
 }
 
 module.exports = {

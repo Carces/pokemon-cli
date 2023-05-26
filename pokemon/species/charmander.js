@@ -6,28 +6,28 @@ class Charmander extends Fire {
     name = 'Charmander',
     level,
     moves = ['Scratch', 'Growl'],
-    hitPoints,
-    attack = 11 + level * 2,
-    defence = 9 + level * 2,
-    catchDifficulty = 6
+    hitPoints = 10 + level * 2,
+    attack = 12 + level * 2,
+    defence,
+    speed = 15 + level * 2,
+    accuracy = 100,
+    catchDifficulty = 6,
+    isEvolving
   ) {
-    super(name, level, moves, hitPoints, attack, defence, catchDifficulty);
+    super(
+      name,
+      level,
+      moves,
+      hitPoints,
+      attack,
+      defence,
+      speed,
+      accuracy,
+      catchDifficulty,
+      isEvolving
+    );
     this.species = 'Charmander';
-    this.moveTable = {
-      level3: ['Ember'],
-    };
-    if (this.level > 1) {
-      // Give highest level moves possible
-      for (const movesArr in this.moveTable) {
-        const movesLevel = movesArr.replace('level', '');
-
-        if (this.level >= movesLevel && this.moves.length < 4) {
-          this.moveTable[movesArr].forEach((move) => {
-            if (this.moves.length < 4) this.moves.push(move);
-          });
-        }
-      }
-    }
+    this.evolvesTo = { species: 'Charmeleon', level: 16 };
     this.art = `
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣶⣶⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -52,6 +52,9 @@ class Charmander extends Fire {
         ⠀⠀⠀⠀⠀⠀⠀⠠⣮⣿⣦⡙⠟⠛⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⡿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠑⠮⡚⠳⡍⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
   }
+  static moveTable = {
+    level3: ['Ember'],
+  };
 }
 
 module.exports = {

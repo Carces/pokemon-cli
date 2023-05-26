@@ -1,7 +1,18 @@
 const { Pokemon } = require('../pokemon.js');
 
 class Fire extends Pokemon {
-  constructor(name, level, moves, hitPoints, attack, defence, catchDifficulty) {
+  constructor(
+    name,
+    level,
+    moves,
+    hitPoints,
+    attack,
+    defence,
+    speed,
+    accuracy,
+    catchDifficulty,
+    isEvolving
+  ) {
     super(
       name,
       level,
@@ -10,7 +21,10 @@ class Fire extends Pokemon {
       hitPoints,
       attack,
       defence,
-      catchDifficulty
+      speed,
+      accuracy,
+      catchDifficulty,
+      isEvolving
     );
   }
 }

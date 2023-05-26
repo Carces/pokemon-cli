@@ -1,7 +1,18 @@
 const { Pokemon } = require('../pokemon.js');
 
 class Water extends Pokemon {
-  constructor(name, level, moves, hitPoints, attack, defence, catchDifficulty) {
+  constructor(
+    name,
+    level,
+    moves,
+    hitPoints,
+    attack,
+    defence,
+    speed,
+    accuracy,
+    catchDifficulty,
+    isEvolving
+  ) {
     super(
       name,
       level,
@@ -10,8 +21,10 @@ class Water extends Pokemon {
       hitPoints,
       attack,
       defence,
+      speed,
+      accuracy,
       catchDifficulty,
-      catchDifficulty
+      isEvolving
     );
   }
 }

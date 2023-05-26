@@ -5,7 +5,10 @@ const { Player } = require('../trainers/player.js');
 const { WildPokemon } = require('../trainers/wild-pokemon.js');
 const { movesData } = require('../data/moves-data.js');
 const create = require('../data/create.js');
-const { randomTrainer } = require('../trainers/random-trainer');
+const {
+  randomTrainer,
+  randomWildPokemon,
+} = require('../trainers/random-trainer');
 const { loadGame } = require('../load-game.js');
 const { itemsData } = require('../data/items-data.js');
 const { delay, delayInit, createDelay } = require('../../utils/delay');
@@ -18,6 +21,9 @@ class Battle {
     this.currentPlayerData = currentPlayerData;
     this.specialBattleType = specialBattleType;
     this.playerPokemon = this.player.currentPokeball.storage;
+    this.playerPokemonIndex = this.player.belt.indexOf(
+      this.player.currentPokeball
+    );
     this.opponentPokemon = this.opponent.currentPokeball.storage;
     // this.currentTrainer = player;
     // this.currentTrainerPokemon = this.currentTrainer.currentPokeball.storage;
@@ -27,6 +33,7 @@ class Battle {
     this.battleOver = false;
     this.winner = null;
     this.loser = null;
+    this.participatingPokemon = [this.playerPokemonIndex];
   }
 
   startBattle() {
@@ -85,7 +92,11 @@ class Battle {
               effectModifier
             ).toFixed(2);
             const newRandomIndex =
-              randomIndex === 0 ? randomIndex + 1 : randomIndex - 1;
+              moves.length === 1
+                ? randomIndex
+                : randomIndex === 0
+                ? randomIndex + 1
+                : randomIndex - 1;
 
             if (
               statAfterMod <= affectedStat.max * 0.3 ||
@@ -121,15 +132,7 @@ class Battle {
       );
       return Promise.resolve();
     } else {
-      const pokemonChoices = trainer.pokemonList.map((pokeName) => {
-        const pokemon = trainer.getPokemon(pokeName).pokemonObj;
-        const pokemonWithHp = `${pokeName}: Level ${pokemon.level} | HP - ${pokemon.hitPoints.current}/${pokemon.hitPoints.max}`;
-        return !pokemon.hitPoints.current
-          ? { name: pokemonWithHp, disabled: 'unconscious' }
-          : pokemon.name === trainer.currentPokeball.storage.name
-          ? { name: pokemonWithHp, disabled: 'already out' }
-          : pokemonWithHp;
-      });
+      const pokemonChoices = trainer.getPokemonChoices(true);
       pokemonChoices.push('--CANCEL--');
 
       return inquirer
@@ -149,9 +152,14 @@ class Battle {
               trainer.getPokemon(selectedPokemon).index;
             trainer.currentPokeball = trainer.belt[selectedPokemonIndex];
             this.playerPokemon = this.player.currentPokeball.storage;
+            this.playerPokemonIndex = this.player.belt.indexOf(
+              this.player.currentPokeball
+            );
 
             console.log(`Go, ${this.playerPokemon.name}!`);
             trainer.currentPokeball.throw();
+            if (!this.participatingPokemon.includes(selectedPokemonIndex))
+              this.participatingPokemon.push(selectedPokemonIndex);
             return true;
           }
         });
@@ -233,15 +241,23 @@ class Battle {
           if (answers.item === '--CANCEL--') return this.doBattle();
           else {
             const itemToUse = answers.item.split(':')[0];
-            return this.useItem(itemToUse, this.player).then((result) => {
-              if (result === 'captureSuccess') {
-                this.battleOver = true;
-                this.winner = this.player;
-                this.loser = this.opponent;
-                return this.doEndOfBattle();
-              } else if (result === 'cancel') return this.doBattle();
-              else return this.resolveTurn();
-            });
+            return this.player
+              .useItem(
+                itemToUse,
+                this.player,
+                this.opponent,
+                this.opponentPokemon,
+                this.currentPlayerData
+              )
+              .then((result) => {
+                if (result === 'captureSuccess') {
+                  this.battleOver = true;
+                  this.winner = this.player;
+                  this.loser = this.opponent;
+                  return this.doEndOfBattle();
+                } else if (result === 'cancel') return this.doBattle();
+                else return this.resolveTurn();
+              });
           }
         }
       });
@@ -299,7 +315,6 @@ class Battle {
       }
     });
     //////////////
-    console.log(this.player.pokemonList, '<<<< LIST');
     this.currentPlayerData.player = this.player;
     if (this.loser.isWild) {
       console.log('\nYou won!\n');
@@ -333,6 +348,60 @@ class Battle {
     }
   }
 
+  awardXp(defeatedPokemon) {
+    const winningTrainer =
+      defeatedPokemon === this.opponentPokemon ? this.player : this.opponent;
+
+    if (winningTrainer === this.player) {
+      const totalXpToAward = defeatedPokemon.level * 2;
+      const shareOfXp = Math.max(
+        1,
+        Math.round(totalXpToAward / this.participatingPokemon.length)
+      );
+      const xpPrompts = [];
+      this.participatingPokemon.forEach((pokemonIndex) => {
+        const pokemonToAwardXp = this.player.belt[pokemonIndex].storage;
+        let evolving = { species: null };
+        xpPrompts.push({
+          type: 'input',
+          name: pokemonIndex.toString(),
+          message: () => pokemonToAwardXp.showXpBar(),
+          when: () => {
+            evolving.species = pokemonToAwardXp.addXp(shareOfXp);
+            return true;
+          },
+        });
+        xpPrompts.push({
+          type: 'confirm',
+          name: `${pokemonIndex.toString()}-evolving`,
+          message: `${pokemonToAwardXp.name} is trying to evolve into ${pokemonToAwardXp.evolvesTo.species}!\n\nLet it evolve?`,
+          when: () => evolving.species,
+        });
+        xpPrompts.push({
+          type: 'input',
+          name: `${pokemonIndex.toString()}-when`,
+          message: ` `,
+          when: (answers) => {
+            if (answers[`${pokemonIndex.toString()}-evolving`]) {
+              this.player.belt[pokemonIndex].storage =
+                pokemonToAwardXp.evolve();
+            }
+            return false;
+          },
+        });
+        xpPrompts.push({
+          type: 'input',
+          name: `${pokemonIndex.toString()}-doEvolution`,
+          message: () =>
+            `${pokemonToAwardXp.name} evolved into ${pokemonToAwardXp.evolvesTo.species}!\n${this.player.belt[pokemonIndex].storage.art}`,
+          when: (answers) => answers[`${pokemonIndex.toString()}-evolving`],
+        });
+      });
+
+      return inquirer.prompt(xpPrompts);
+    } else return Promise.resolve();
+  }
+
   checkIfBattleOver(trainer) {
     //trainer.currentPokeball.storage prevents errors if checkIfBattleOver is called and setCurrentPokeballs has not correctly initialized, only possible in dev / testing environment eg. if setCurrentPokeballs is invoked only after a trainer's pokemon are all fainted and there is no pokemon in the default current pokeball#
 
@@ -341,21 +410,16 @@ class Battle {
       trainer.currentPokeball.storage &&
       !trainer.currentPokeball.storage.hitPoints.current
     ) {
-      const otherTrainer =
-        trainer === this.opponent ? this.player : this.opponent;
-      const winningPokemon = otherTrainer.currentPokeball.storage;
       const defeatedPokemon = trainer.currentPokeball.storage;
-
-      if (winningPokemon === this.playerPokemon)
-        winningPokemon.addXp(defeatedPokemon.level * 2);
-
-      return this.setCurrentPokeballs(trainer).then(() => {
-        if (!trainer.currentPokeball.storage.hitPoints.current) {
-          this.winner = otherTrainer;
-          this.loser = trainer;
-          this.battleOver = true;
-        }
-      });
+      return this.awardXp(defeatedPokemon)
+        .then(() => this.setCurrentPokeballs(trainer))
+        .then(() => {
+          if (!trainer.currentPokeball.storage.hitPoints.current) {
+            this.winner = trainer === this.player ? this.opponent : this.player;
+            this.loser = trainer;
+            this.battleOver = true;
+          }
+        });
     } else {
       // If pokemon still has hp, return an empty promise so that the function that called checkIfBattleOver can use .then on whatever checkIfBattleOver returns without errors
       return Promise.resolve();
@@ -375,123 +439,80 @@ class Battle {
     return Math.floor(Math.random() + 0.2);
   }
 
-  useItem(item, trainer) {
-    const itemData = itemsData[item];
-
-    const pokemonChoices = trainer.pokemonList.map((pokeName) => {
-      const pokemon = trainer.getPokemon(pokeName).pokemonObj;
-      const pokemonWithHp = `${pokeName}: Level ${pokemon.level} | HP - ${pokemon.hitPoints.current}/${pokemon.hitPoints.max}`;
-      return !pokemon.hitPoints.current
-        ? `${pokemonWithHp} - unconscious`
-        : pokemon.name === this.playerPokemon.name
-        ? `${pokemonWithHp} - in battle`
-        : pokemonWithHp;
-    });
-
-    const targets =
-      itemData.type === 'ball' && this.opponent.isWild
-        ? [this.opponentPokemon]
-        : itemData.type === 'ball'
-        ? [{ name: ' ', disabled: 'Only wild Pokemon can be caught!' }]
-        : itemData.type === 'boost' || itemData.type === 'heal'
-        ? pokemonChoices
-        : [{ name: ' ', disabled: 'No valid targets!' }];
-    targets.push('--CANCEL--');
-
-    return inquirer
-      .prompt([
-        {
-          type: 'list',
-          name: 'target',
-          message: `Choose a target for your ${item}`,
-          choices: targets,
-        },
-      ])
-      .then((answers) => {
-        if (answers.target === '--CANCEL--') return 'cancel';
-        else {
-          const selectedPokemon = answers.target.split(':')[0];
-          if (selectedPokemon === this.opponentPokemon.name) {
-            console.log(`${trainer.name} used ${item} on ${selectedPokemon}!`);
-            return this.player.resolveItem(
-              item,
-              this.opponentPokemon,
-              this.currentPlayerData.PC
-            );
-          } else {
-            const selectedPokemonObj =
-              trainer.getPokemon(selectedPokemon).pokemonObj;
-            console.log(`${trainer.name} used ${item} on ${selectedPokemon}!`);
-            return this.player.resolveItem(
-              item,
-              selectedPokemonObj,
-              this.currentPlayerData.PC
-            );
-          }
-        }
-      });
-  }
-
   resolveStatusMove(move, user, target) {
     function modBy50(stat, stagesToModBy) {
       const stageOfStat = stat / 4;
       return stat + stageOfStat * stagesToModBy;
     }
-
     const targetsSelf = target === user;
     const effect = targetsSelf ? move.effectOnSelf : move.effectOnTarget;
-    const effectMessage =
-      effect.modifier === 1
-        ? 'rose!'
-        : effect.modifier > 1
-        ? 'rose sharply!'
-        : effect.modifier === -1
-        ? 'fell!'
-        : 'fell sharply!';
+    if (effect.stat) {
+      const effectMessage =
+        effect.modifier === 1
+          ? 'rose!'
+          : effect.modifier > 1
+          ? 'rose sharply!'
+          : effect.modifier === -1
+          ? 'fell!'
+          : 'fell sharply!';
 
-    const statAfterMod = +modBy50(
-      target[effect.stat].current,
-      effect.modifier
-    ).toFixed(2);
-
-    user.useMove(move);
-
-    if (
-      statAfterMod <= target[effect.stat].max * 0.25 ||
-      statAfterMod <= target.level
-    ) {
-      console.log(
-        `${target.name}'s ${effect.stat} is already too low. ${move.name} had no effect!`
-      );
-      return;
+      const statAfterMod = +modBy50(
+        target[effect.stat].current,
+        effect.modifier
+      ).toFixed(2);
+      if (
+        statAfterMod <= target[effect.stat].max * 0.25 ||
+        statAfterMod <= target.level
+      ) {
+        console.log(
+          `${target.name}'s ${effect.stat} is already too low. ${move.name} had no effect!`
+        );
+        return;
+      }
+      if (
+        statAfterMod >= target[effect.stat].max * 1.75 ||
+        statAfterMod >= 500
+      ) {
+        console.log(
+          `${target.name}'s ${effect.stat} is already too high. ${move.name} had no effect!`
+        );
+        return;
+      }
+      target[effect.stat].current = statAfterMod;
+      target.activeEffects[move.name] = effect;
+      console.log(`${target.name}'s ${effect.stat} ${effectMessage}`);
     }
-    if (statAfterMod >= target[effect.stat].max * 1.75 || statAfterMod >= 500) {
-      console.log(
-        `${target.name}'s ${effect.stat} is already too high. ${move.name} had no effect!`
-      );
-      return;
+    if (effect.status) {
+      if (Math.random() > effect.statusChance) {
+        if (!move.doesDamage)
+          console.log(`${user.name}'s ${move.name} failed!`);
+        return;
+      } else {
+        const alreadyAffected = Object.values(target.activeEffects).find(
+          (activeEffect) => activeEffect.status === effect.status
+        );
+        const innerMessage = alreadyAffected ? 'is already' : 'is';
+        console.log(`${target.name} ${innerMessage} ${effect.status}!`);
+        target.activeEffects[move.name] = effect;
+      }
     }
-
-    target[effect.stat].current = statAfterMod;
-    target.activeEffects[move.name] = effect;
-    console.log(`${target.name}'s ${effect.stat} ${effectMessage}`);
   }
 
   fight(move, attackingPokemon, defendingPokemon) {
     const attacker = attackingPokemon.name;
     const defender = defendingPokemon.name;
     let hasValidTarget = defendingPokemon.hitPoints.current > 0;
+    const baseDamage = attackingPokemon.useMove(move, defendingPokemon);
 
-    if (!move.doesDamage) {
-      if (move.effectOnSelf)
-        this.resolveStatusMove(move, attackingPokemon, attackingPokemon);
-      if (move.effectOnTarget)
-        this.resolveStatusMove(move, attackingPokemon, defendingPokemon);
-      return;
-    }
+    // CALCULATE HIT CHANCE HERE
+
+    if (move.effectOnSelf)
+      this.resolveStatusMove(move, attackingPokemon, attackingPokemon);
+    if (move.effectOnTarget)
+      this.resolveStatusMove(move, attackingPokemon, defendingPokemon);
+    if (!move.doesDamage) return;
 
     // Calculate attacking pokemon's damage,
-    const baseDamage = attackingPokemon.useMove(move, defendingPokemon);
     let damage = defendingPokemon.isWeakTo(move)
       ? 1.25 * baseDamage
       : defendingPokemon.isResistantTo(move)
@@ -546,15 +567,15 @@ class Battle {
     }
   }
 
-  changeCurrentTrainer() {
-    [this.currentTrainer, this.otherTrainer] = [
-      this.otherTrainer,
-      this.currentTrainer,
-    ][(this.currentTrainerPokemon, this.otherTrainerPokemon)] = [
-      this.otherTrainerPokemon,
-      this.currentTrainerPokemon,
-    ];
-  }
+  // changeCurrentTrainer() {
+  //   [this.currentTrainer, this.otherTrainer] = [
+  //     this.otherTrainer,
+  //     this.currentTrainer,
+  //   ][(this.currentTrainerPokemon, this.otherTrainerPokemon)] = [
+  //     this.otherTrainerPokemon,
+  //     this.currentTrainerPokemon,
+  //   ];
+  // }
 }
 
 // loadGame().then(({ playerData, rivalData }) => {
@@ -567,48 +588,62 @@ class Battle {
 //   testBattle.startBattle();
 // });
 
-// const gerty = create.pokemon('Squirtle', 'Gerty', 1);
-// const maude = create.pokemon('Bulbasaur', 'Maude', 1);
-// const jeb = new Player('Jebediah', [gerty, maude]);
+const gerty = create.pokemon('Butterfree', 'Gerty', 15);
+const maude = create.pokemon('Weedle', 'Maude', 6);
+const sq1 = create.pokemon('Squirtle', 'sq1', 6);
+const sq2 = create.pokemon('Squirtle', 'sq2', 6);
+const sq3 = create.pokemon('Squirtle', 'sq3', 6);
+const sq4 = create.pokemon('Squirtle', 'sq4', 6);
+const jeb = new Player('Jebediah', [gerty, maude, sq1, sq2, sq3, sq4]);
 
-// const phil = create.pokemon('Charmander', 'Phil', 1);
-// const paula = create.pokemon('Charmander', 'Paula', 1);
+// const phil = create.pokemon('Charmander', 'Phil', 5);
+// const paula = create.pokemon('Charmander', 'Paula', 5);
 // const butch = new Trainer('Butch', [phil, paula]);
 
-// const wildRatPokemon1 = create.pokemon('Rattata', undefined, 1)
-// const wildRatTrainer1 = new WildPokemon([wildRatPokemon1])
+const wild = randomWildPokemon(4, 'Rattata');
+jeb.inventory['Poke Ball'] = 3;
+jeb.inventory['Great Ball'] = 1;
+jeb.inventory['Potion'] = 2;
+jeb.inventory['Protein'] = 1;
 
-// jeb.inventory['Poke Ball'] = 3;
-// jeb.inventory['Great Ball'] = 1;
-// jeb.inventory['Potion'] = 2;
-// jeb.inventory['Protein'] = 1;
+let currentPlayerData;
+// LOAD GAME
+loadGame()
+  // INIT currentPlayerData
+  .then(({ playerData, rivalData }) => {
+    currentPlayerData = playerData;
+    currentPlayer = currentPlayerData.player;
+    return createDelay(100);
+  })
+  .then(() => {
+    const testBattle = new Battle(jeb, wild.battleTrainer, currentPlayerData);
+    testBattle.startBattle();
+  });
 
-// Level up Gerty to level 3
+// Add xp
 //-----------
-// console.log(`GERTY XP: ${gerty.xp} / NEXT LEVEL: ${gerty.xpThreshold}`);
-// console.log('.... adding 4 xp ....');
-// console.log('---------------');
-// gerty
-//   .addXp(2)
-//   .then(() => {
-//     console.log(`GERTY XP: ${gerty.xp} / NEXT LEVEL: ${gerty.xpThreshold}`);
-//     console.log('.... adding 10 xp ....');
-//     console.log('---------------');
-//     return gerty.addXp(10);
-//   })
-//   .then(() => {
-//     /*put one of the test battles here*/
-//     const testBattle = new Battle(jeb, butch);
-//     testBattle.startBattle();
-//   });
+// console.log(gerty.xp, gerty.xpThreshold);
+// console.log(maude.xp, maude.xpThreshold);
+// console.log(gerty.showXpBar());
+// gerty.addXp(82);
+// console.log(gerty.showXpBar());
+
+// console.log(maude.showXpBar());
+// maude.addXp(26);
+// console.log(maude.showXpBar());
+
+/*put one of the test battles here*/
+// const testBattle = new Battle(jeb, butch);
+// testBattle.startBattle();
+
 //-----------
 
 //
 
 // Test battle with AI trainer
 //-----------
-// const testBattle = new Battle(jeb, butch)
-// testBattle.startBattle()
+// const testBattle = new Battle(jeb, butch);
+// testBattle.startBattle();
 //-----------
 
 //
