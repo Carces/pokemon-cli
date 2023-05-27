@@ -289,6 +289,23 @@ const movesData = {
       statusChance: '1', // 100%
     },
   },
+  Fly: {
+    name: 'Fly',
+    type: 'normal',
+    uses: 15,
+    accuracy: 95,
+    doesDamage: true,
+    damageMultiplier: 1.75,
+    critMultiplier: null,
+    effectOnSelf: {
+      turn1Effect: 'fly',
+      turn2Effect: 'fly',
+    },
+    effectOnTarget: null,
+    effectOutsideBattle: {
+      lureType: 'flying',
+    },
+  },
 };
 
 module.exports = { movesData };

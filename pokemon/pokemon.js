@@ -125,10 +125,10 @@ class Pokemon {
     );
   }
 
-  useMove(move, target) {
+  useMove(move, target, outsideBattle) {
     console.log(`\n${this.name} used ${move.name}!`);
 
-    if (move.doesDamage) {
+    if (move.doesDamage && !outsideBattle) {
       const random = Math.random() * -0.5 + 2.75;
       const damage =
         (random + this.level * 0.5) *
@@ -152,8 +152,8 @@ class Pokemon {
     });
     const xpBar = `[${filledBar.join('')}]`;
     return `-----------------------------------------
-  Level ${this.level} |${xpBar}| Level ${this.level + 1}
-  -----------------------------------------`;
+Level ${this.level} |${xpBar}| Level ${this.level + 1}
+-----------------------------------------`;
   }
 
   addXp(num) {

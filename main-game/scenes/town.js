@@ -6,7 +6,7 @@ const { saveGame } = require('../save-game');
 const { itemsData } = require('../data/items-data.js');
 const { townsData } = require('../data/towns-data');
 const { Player } = require('../trainers/player');
-const { showMenu } = require('./menu');
+const { mainMenu } = require('./menu');
 
 let currentPlayerData;
 let currentRivalData;
@@ -100,9 +100,13 @@ function exploreTown() {
       } else if (answers.townAction === 'Pokemon Centre') {
         return pokemonCentre();
       } else if (answers.townAction === 'Menu') {
-        return showMenu(currentPlayerData, currentRivalData).then(
-          (isQuitGame) => (isQuitGame ? 'quit' : exploreTown())
-        );
+        return mainMenu(currentPlayerData, currentRivalData).then((res) => {
+          if (res === 'quit') return res;
+          const [playerData, rivalData] = res;
+          currentPlayerData = playerData;
+          currentRivalData = rivalData;
+          return exploreTown();
+        });
       } else if (answers.townAction === '--LEAVE--') {
         const playerData = currentPlayerData;
         const rivalData = currentRivalData;

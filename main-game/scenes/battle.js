@@ -38,6 +38,10 @@ class Battle {
 
   startBattle() {
     console.log(
+      this.player.currentPokeball,
+      '<<< CURRENT POKEBALL START OF BAT'
+    );
+    console.log(
       this.opponent.isWild
         ? `A wild ${this.opponent.wildPokeObj.name} appeared!`
         : `${this.opponent.name} wants to fight!`
@@ -160,6 +164,10 @@ class Battle {
             trainer.currentPokeball.throw();
             if (!this.participatingPokemon.includes(selectedPokemonIndex))
               this.participatingPokemon.push(selectedPokemonIndex);
+            console.log(
+              this.player.currentPokeball,
+              '<<< CURRENT POKEBALL AFTER CHOOSE'
+            );
             return true;
           }
         });
@@ -314,7 +322,13 @@ class Battle {
         if (!effect.staysAfterBattle) delete ball.storage.activeEffects[effect];
       }
     });
-    //////////////
+    /////
+    // Reset currentPokeball to first in pokemonList
+    this.player.currentPokeball = this.player.belt.findIndex(
+      (ball) => ball.storage.name === this.player.pokemonList[0]
+    );
+    /////
+    console.log(this.player.currentPokeball, '<<< CURRENT POKEBALL END OF BAT');
     this.currentPlayerData.player = this.player;
     if (this.loser.isWild) {
       console.log('\nYou won!\n');
@@ -578,101 +592,36 @@ class Battle {
   // }
 }
 
-// loadGame().then(({ playerData, rivalData }) => {
-//   const { player } = playerData;
-//   const { rival } = rivalData;
-
-//   const ash = randomTrainer(3, null, true, 'Ash').battleTrainer;
-
-//   const testBattle = new Battle(player, ash);
-//   testBattle.startBattle();
-// });
-
-const gerty = create.pokemon('Butterfree', 'Gerty', 15);
-const maude = create.pokemon('Weedle', 'Maude', 6);
-const sq1 = create.pokemon('Squirtle', 'sq1', 6);
-const sq2 = create.pokemon('Squirtle', 'sq2', 6);
-const sq3 = create.pokemon('Squirtle', 'sq3', 6);
-const sq4 = create.pokemon('Squirtle', 'sq4', 6);
-const jeb = new Player('Jebediah', [gerty, maude, sq1, sq2, sq3, sq4]);
+// const gerty = create.pokemon('Butterfree', 'Gerty', 15);
+// const maude = create.pokemon('Weedle', 'Maude', 6);
+// const sq1 = create.pokemon('Squirtle', 'sq1', 6);
+// const sq2 = create.pokemon('Squirtle', 'sq2', 6);
+// const sq3 = create.pokemon('Squirtle', 'sq3', 6);
+// const sq4 = create.pokemon('Squirtle', 'sq4', 6);
+// const jeb = new Player('Jebediah', [gerty, maude, sq1, sq2, sq3, sq4]);
 
 // const phil = create.pokemon('Charmander', 'Phil', 5);
 // const paula = create.pokemon('Charmander', 'Paula', 5);
 // const butch = new Trainer('Butch', [phil, paula]);
 
-const wild = randomWildPokemon(4, 'Rattata');
-jeb.inventory['Poke Ball'] = 3;
-jeb.inventory['Great Ball'] = 1;
-jeb.inventory['Potion'] = 2;
-jeb.inventory['Protein'] = 1;
+// const wild = randomWildPokemon(4, 'Rattata');
+// jeb.inventory['Poke Ball'] = 3;
+// jeb.inventory['Great Ball'] = 1;
+// jeb.inventory['Potion'] = 2;
+// jeb.inventory['Protein'] = 1;
 
-let currentPlayerData;
-// LOAD GAME
-loadGame()
-  // INIT currentPlayerData
-  .then(({ playerData, rivalData }) => {
-    currentPlayerData = playerData;
-    currentPlayer = currentPlayerData.player;
-    return createDelay(100);
-  })
-  .then(() => {
-    const testBattle = new Battle(jeb, wild.battleTrainer, currentPlayerData);
-    testBattle.startBattle();
-  });
-
-// Add xp
-//-----------
-// console.log(gerty.xp, gerty.xpThreshold);
-// console.log(maude.xp, maude.xpThreshold);
-// console.log(gerty.showXpBar());
-// gerty.addXp(82);
-// console.log(gerty.showXpBar());
-
-// console.log(maude.showXpBar());
-// maude.addXp(26);
-// console.log(maude.showXpBar());
-
-/*put one of the test battles here*/
-// const testBattle = new Battle(jeb, butch);
-// testBattle.startBattle();
-
-//-----------
-
-//
-
-// Test battle with AI trainer
-//-----------
-// const testBattle = new Battle(jeb, butch);
-// testBattle.startBattle();
-//-----------
-
-//
-
-// Test battle with wild pokemon
-//-----------
-// const testBattle = new Battle(jeb, wildRatTrainer1)
-// testBattle.startBattle()
-//-----------
-
-//
-
-// Next 3 blocks test catching pokemon - deal damage to leave all at 1hp,
-// catch, then restore health
-// -----------------------------
-// gerty.takeDamage(11)
-// maude.takeDamage(11)
-// phil.takeDamage(11)
-// paula.takeDamage(11)
-
-// jeb.catch(gerty)
-// jeb.catch(maude)
-// butch.catch(phil)
-// butch.catch(paula)
-
-// gerty.hitPoints.current = gerty.hitPoints.max
-// maude.hitPoints.current = maude.hitPoints.max
-// phil.hitPoints.current = phil.hitPoints.max
-// paula.hitPoints.current = paula.hitPoints.max
-// -----------------------------
+// let currentPlayerData;
+// // LOAD GAME
+// loadGame()
+//   // INIT currentPlayerData
+//   .then(({ playerData, rivalData }) => {
+//     currentPlayerData = playerData;
+//     currentPlayer = currentPlayerData.player;
+//     return createDelay(100);
+//   })
+//   .then(() => {
+//     const testBattle = new Battle(jeb, wild.battleTrainer, currentPlayerData);
+//     testBattle.startBattle();
+//   });
 
 module.exports = { Battle };

@@ -145,11 +145,7 @@ function gameLoop(
           : gameLoop(loopNum + 1, currentPlayerData, currentRivalData);
       })
       .catch((err) => {
-        console.log(
-          err.message === 'quit'
-            ? '\n\nCome back soon, your Pokemon will be waiting!'
-            : err
-        );
+        console.log(err.message === 'quit' ? '\n\nThanks for playing!' : err);
       })
   );
   /////

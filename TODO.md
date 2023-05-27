@@ -1,5 +1,9 @@
 ## TO IMPLEMENT
 
+!!!!!!!!!!!!!!
+AFTER FIXING EVOLVE, go back and test currentPokeball switching at end of battle
+!!!!!!!!!!!!!!
+
 1. need chances to save game/use items/check on and rearrange pokemon out of battle:
 
    > add options to do all 3 manually in town
@@ -58,6 +62,7 @@
     > Then, this.type can be an array of types
     > Will need to then update pokemon.js isWeakTo etc., check this.types.includes(...)
     > Any other things to change/update that make use of pokemon type directly? Will affect randomTrainer typePreferences, but those haven't been implemented yet
+    > Will affect type display in menu>pokemonDetails, will need to list multiple types
 
 18. pokemon.js now has isImmuneTo method, but not called/checked for in battle.js fight method
 
@@ -70,6 +75,12 @@
     > This method will give players choice if they want to spread xp or get one really high levelled pokemon but less of a health pool
 
 21. Make better use of specialBattle prop of Battle - instead of just passing a unique battle name and having console logs everywhere that check the battle name, pass in an array of objects on specialBattle, where each object is a message with text: blabla and event: playerWinsBattle / battleStart etc.
+
+22. Two-turn moves like fly and dig. Fly added with turn1Effect and turn2Effect properties in its effectOnSelf, is this the best way? how to implement in battle?
+
+23. outside of battle moves - usable from pokemonMenu if it has an effectOutsideBattle property. Fly has this with property lureType: 'flying'. Should make randomTrainer and randomWildPokemon invoked with typePreferences flying, dig can do ground/rock, strength fighting, surf water/ice, cut grass/bug etc. Currently these are usable anywhere from menu, including in towns, maybe should give a different message if used in town? or just say 'until the next town, battles will be with flying types etc.'
+
+24. auto-save when choosing quit from the menu to enhance roguelike feel - although very easy to just kill process with ctrl-c, probably still worth doing as gentle encouragement not to save scum, and for the convenience of not having to manually save before quitting
 
 ## STATS SYSTEM
 
@@ -151,3 +162,5 @@ antidote has been added to items-data, with type remove. its effect has a .remov
 visited towns system - best way is probably adding townsData to saveGame and loading it in with updates. current layout means they'll all always have visited: false
 
 Add secondary effects to damage moves: ember and thunder shock should have 10% chance of burning/paralyzing
+
+24. finish menu.js, implementing submenus for each action.
