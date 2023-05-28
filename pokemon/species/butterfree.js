@@ -22,10 +22,20 @@ class Butterfree extends Bug {
       defence,
       speed,
       accuracy,
-      catchDifficulty,
-      isEvolving
+      catchDifficulty
     );
     this.species = 'Butterfree';
+    this.isEvolving = isEvolving;
+    this.moveTable = {
+      level10: ['Confusion'],
+      level13: ['Poison Powder'],
+      level14: ['Stun Spore'],
+      level15: ['Sleep Powder'],
+      level18: ['Supersonic'],
+      level23: ['Whirlwind'],
+      level28: ['Gust'],
+    };
+    this.generateMoves();
     this.art = `
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣴⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀
@@ -52,15 +62,6 @@ class Butterfree extends Bug {
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠁⠹⣿⣿⠀⠈⠻⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠀⠀⠀⠈⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
   }
-  static moveTable = {
-    level10: ['Confusion'],
-    level13: ['Poison Powder'],
-    level14: ['Stun Spore'],
-    level15: ['Sleep Powder'],
-    level18: ['Supersonic'],
-    level23: ['Whirlwind'],
-    level28: ['Gust'],
-  };
 }
 
 module.exports = {

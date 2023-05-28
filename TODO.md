@@ -1,9 +1,5 @@
 ## TO IMPLEMENT
 
-!!!!!!!!!!!!!!
-AFTER FIXING EVOLVE, go back and test currentPokeball switching at end of battle
-!!!!!!!!!!!!!!
-
 1. need chances to save game/use items/check on and rearrange pokemon out of battle:
 
    > add options to do all 3 manually in town
@@ -82,31 +78,46 @@ AFTER FIXING EVOLVE, go back and test currentPokeball switching at end of battle
 
 24. auto-save when choosing quit from the menu to enhance roguelike feel - although very easy to just kill process with ctrl-c, probably still worth doing as gentle encouragement not to save scum, and for the convenience of not having to manually save before quitting
 
+25. in introCatchBattle, no handling for if you kill the rattata or lose to it somehow. In these situations, Oak should probably full heal your pokemon and restart the fight. Only obvious way to do this is make introCatchBattle a function that can recursively call itself if you don't successfully capture.
+
+26. Convert species/types/pokemon to accept an options object for most parameters that will be rarely used (stats, moves etc.) Will be particularly useful for creating pokemon with isEvolving to avoid lots of nulls before true for isEvolving at the end
+
+27. tail whip seems much more effective than growl in the introRivalBattle - will probably be true of other attack/defence reducing moves too. see if damage formula can be tweaked
+
 ## STATS SYSTEM
 
 40 is base level (10 + level \* 2), each 5 points above or below adds or subtracts 1
 
 ## BUGS
 
-> better system for randomTrainer difficulty - a trainer on loop 1 had a butterfree, which will be quite a tough fight. Might be OK if it's their only Pokemon, but if their random pokemonCount was 2 or 3 it would be a likely party wipe. Maybe calculate trainer difficulty, taking into account pokemon rarity AND count
+1.  need better system for randomTrainer difficulty - a trainer on loop 1 had a butterfree, which will be quite a tough fight. Might be OK if it's their only Pokemon, but if their random pokemonCount was 2 or 3 it would be a likely party wipe. Maybe calculate trainer difficulty, taking into account pokemon rarity AND count
 
-> charmander evolved to Charmeleon at level 2
-> charmander with no name (Defaulting to species name) evolves into charmeleon, name doesn't change. do a check on evolve when creating instance of new evolvedForm: if (this.name === this.species) nameToUse = this.evolvesTo.species
-> error that seems to imply rattata was trying to evolve. check evolvesTo logic, don't think it currently has logic to check if the pokemon evolves to anything
-> "/home/theo/northcoders/fundamentals/fun-pokemon-battler/main-game/scenes/battle.js:374
+2.  charmander evolved to Charmeleon at level 2
 
-      message: `${pokemonToAwardXp.name} is trying to evolve into ${pokemonToAwardXp.evolvesTo.species}!\n\nLet it evolve?`,
+3.  charmander with no name (Defaulting to species name) evolves into charmeleon, name doesn't change. do a check on evolve when creating instance of new evolvedForm: if (this.name === this.species) nameToUse = this.evolvesTo.species
+
+4.  error that seems to imply rattata was trying to evolve. check evolvesTo logic, don't think it currently has logic to check if the pokemon evolves to anything
+
+    > "/home/theo/northcoders/fundamentals/fun-pokemon-battler/main-game/scenes/battle.js:374
+
+          message: `${pokemonToAwardXp.name} is trying to evolve into ${pokemonToAwardXp.evolvesTo.species}!\n\nLet it evolve?`,
 
 TypeError: Cannot read properties of undefined (reading 'species')
 "
 
-setCurrentPokeballs - see comment about issue with pokemon being incorrectly marked 'already out'
+5. setCurrentPokeballs - see comment in function about issue with pokemon being incorrectly marked 'already out'
 
-charmeleon has new param added - isEvolving. if level > 1 loop that adds highest level moves, now also checks that constructor isn't invoked with isEvolving true. Ensures that moves aren't replaced without a chance to confirm when pokemon evolves, only pushed to moves array when it's a brand new pokemon.
+6. charmeleon has new param added - isEvolving. if level > 1 loop that adds highest level moves, now also checks that constructor isn't invoked with isEvolving true. Ensures that moves aren't replaced without a chance to confirm when pokemon evolves, only pushed to moves array when it's a brand new pokemon.
 
-> add this to all other evolved form species - currently, some like butterfree have higher level moves that aren't all fully implemented, so they don't have the loop at all
+   > add this to all other evolved form species - currently, some like butterfree have higher level moves that aren't all fully implemented, so they don't have the loop at all
 
-in randomTrainer, trainer.messages and trainer.defeatMessages are returned as a single item in an array. Is there any reason for this?
+7. in randomTrainer, trainer.messages and trainer.defeatMessages are returned as a single item in an array. Is there any reason for this?
+
+8. in doEndOfBattle, activeEffects that don't have staysAfterBattle property are deleted for each pokemon. However, this doesn't undo any stat changes. To undo the exact change and only that change for each move (e.g. in case multiple moves have lowered defence, each by a different amount), resolveStatusMove will need to keep track of the amount the stat was lowered by and add it to the activeEffect, so that when doEndOfBattle is iterating through activeEffects it can add that amount back on to the stat
+
+9. crashed after first town, loaded most recent save (auto-save when leaving town). Town name was correctly saved and replicated, but PokeMart stock is generated fresh. Should this be stored? maybe townsVisited array stores a copy? Quite a lot of unnecessary data to store for very little reason tbh
+
+10. tested a full game-loop, all working. However, second town I came to had the same name as the first. I thought townNames should be filtered to remove any in the townsVisited array on playerData. If that's not working, would be a huge coincidence for it to generate the same one again, so it may be the logic implemented to ensure same town is generated when reloading a town save is causing issues.
 
 =====
 DONE:

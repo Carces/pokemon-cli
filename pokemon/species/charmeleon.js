@@ -23,11 +23,16 @@ class Charmeleon extends Fire {
       defence,
       speed,
       accuracy,
-      catchDifficulty,
-      isEvolving
+      catchDifficulty
     );
     this.species = 'Charmeleon';
+    this.isEvolving = isEvolving;
     this.evolvesTo = { species: 'Charizard', level: 36 };
+    this.moveTable = {
+      level7: ['Ember'],
+      level13: ['Metal Claw'],
+    };
+    this.generateMoves();
     this.art = `
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⣷⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⣶⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -55,10 +60,6 @@ class Charmeleon extends Fire {
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠊⠩⠟⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⠿⠟⢳⣷⠝⠳⣷⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠃⠀⠀⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
   }
-  static moveTable = {
-    level7: ['Ember'],
-    level13: ['Metal Claw'],
-  };
 }
 
 module.exports = {

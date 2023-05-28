@@ -23,6 +23,7 @@ class Pokemon {
     this.defence = { current: defence, max: defence };
     this.speed = { current: speed, max: speed };
     this.accuracy = { current: accuracy, max: accuracy };
+    this.isEvolving = isEvolving;
 
     this.catchDifficulty = catchDifficulty;
     this.xpThreshold = Math.floor(
@@ -31,20 +32,6 @@ class Pokemon {
     this.xp = Math.floor(this.level ** 2.3 * Math.pow(1.001, this.level));
     this.activeEffects = {};
     this.id = crypto.randomUUID();
-    if (this.level > 1 && !isEvolving) {
-      // Give highest level moves possible
-      const reversedMoveTable = Object.entries(
-        this.constructor.moveTable
-      ).reverse();
-      reversedMoveTable.forEach((movesEntry) => {
-        const movesLevel = movesEntry[0].replace('level', '');
-        if (this.level >= movesLevel && this.moves.length < 4) {
-          movesEntry[1].forEach((move) => {
-            if (this.moves.length < 4) this.moves.push(move);
-          });
-        }
-      });
-    }
   }
 
   isResistantTo(move) {
@@ -151,17 +138,18 @@ class Pokemon {
       else return '-';
     });
     const xpBar = `[${filledBar.join('')}]`;
-    return `-----------------------------------------
+    return `---------------------------------------
 Level ${this.level} |${xpBar}| Level ${this.level + 1}
 -----------------------------------------`;
   }
 
   addXp(num) {
     this.xp += num;
-    console.log(`\n${this.name} gained ${num} experience points!\n`);
+    let isLevelUp = false;
 
     if (this.xp >= this.xpThreshold) {
       this.level++;
+      isLevelUp = true;
       this.hitPoints.max += 1.25;
       this.hitPoints.current += 1.25;
       this.attack.max += 0.75;
@@ -171,35 +159,82 @@ Level ${this.level} |${xpBar}| Level ${this.level + 1}
       this.xpThreshold = Math.floor(
         (this.level + 1) ** 2.3 * Math.pow(1.001, this.level)
       );
-      console.log(`\n${this.name} grew to level ${this.level}!\n`);
-
-      const newMoves = this.moveTable['level' + this.level];
-      if (newMoves) return this.addMoves(newMoves);
-      if (this.evolvesTo.level >= this.level) return this.evolvesTo.species;
     }
+
+    const xpPrompts = [
+      {
+        type: 'input',
+        name: 'xpMessage',
+        message: `${this.name} gained ${num} experience points!`,
+      },
+      {
+        type: 'input',
+        name: 'xpBar',
+        message: () => this.showXpBar(),
+      },
+      {
+        type: 'input',
+        name: 'levelUp',
+        message: `${this.name} grew to level ${this.level}!`,
+        when: () => isLevelUp,
+      },
+    ];
+    return inquirer.prompt(xpPrompts).then(() => {
+      const newMoves = this.moveTable['level' + this.level];
+      const returnPromise = !newMoves
+        ? Promise.resolve()
+        : this.addMoves(newMoves);
+      return returnPromise.then(() => {
+        if (this.evolvesTo && this.level >= this.evolvesTo.level)
+          return this.evolve();
+      });
+    });
   }
 
   evolve(specialEvolutionType) {
     const create = require('../main-game/data/create');
-    let newSpecies;
-    if (specialEvolutionType) {
-      newSpecies = this.evolvesTo.special[specialEvolutionType];
-    }
+    const newSpecies = specialEvolutionType
+      ? this.evolvesTo.special[specialEvolutionType]
+      : this.evolvesTo.species;
     const hpBelowMax = this.hitPoints.max - this.hitPoints.current;
     const attackBelowMax = this.attack.max - this.attack.current;
     const defenceBelowMax = this.defence.max - this.defence.current;
     const evolvedName =
       this.name === this.species ? this.evolvesTo.species : this.name;
     const evolvedForm = create.pokemon(
-      this.evolvesTo.species,
-      this.name,
+      newSpecies,
+      evolvedName,
       this.level,
-      this.moves
+      this.moves,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      true
     );
     evolvedForm.hitPoints.current -= hpBelowMax;
     evolvedForm.attack.current -= attackBelowMax;
     evolvedForm.defence.current -= defenceBelowMax;
-    return evolvedForm;
+
+    const evolvePrompts = [
+      {
+        type: 'confirm',
+        name: `confirmEvolving`,
+        message: `${this.name} is trying to evolve into ${newSpecies}!\n\nLet it evolve?`,
+      },
+      {
+        type: 'input',
+        name: `evolveMessage`,
+        message: () =>
+          `${this.name} evolved into ${newSpecies}!\n${evolvedForm.art}`,
+        when: ({ confirmEvolving }) => confirmEvolving,
+      },
+    ];
+    return inquirer.prompt(evolvePrompts).then(({ confirmEvolving }) => {
+      if (confirmEvolving) return evolvedForm;
+    });
   }
 
   addMoves(moves) {
@@ -236,7 +271,6 @@ Level ${this.level} |${xpBar}| Level ${this.level + 1}
               this.moves[indexToReplace] = move;
             }
           }
-          return answers;
         });
   }
 
@@ -251,6 +285,21 @@ Level ${this.level} |${xpBar}| Level ${this.level + 1}
     for (const effect in this.activeEffects) {
       if (!this.activeEffects[effect].permanent)
         delete this.activeEffects[effect];
+    }
+  }
+
+  generateMoves() {
+    if (this.level > 1 && !this.isEvolving) {
+      // Give highest level moves possible
+      const reversedMoveTable = Object.entries(this.moveTable).reverse();
+      reversedMoveTable.forEach((movesEntry) => {
+        const movesLevel = movesEntry[0].replace('level', '');
+        if (this.level >= movesLevel && this.moves.length < 4) {
+          movesEntry[1].forEach((move) => {
+            if (this.moves.length < 4) this.moves.push(move);
+          });
+        }
+      });
     }
   }
 }

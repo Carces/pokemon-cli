@@ -6,7 +6,7 @@ class Squirtle extends Water {
     name = 'Squirtle',
     level,
     moves = ['Tackle', 'Tail Whip'],
-    hitPoints = 11 + level * 2,
+    hitPoints = 10 + level * 2,
     attack = 12 + level * 2,
     defence = 15 + level * 2,
     speed = 10 + level * 2,
@@ -23,10 +23,14 @@ class Squirtle extends Water {
       defence,
       speed,
       accuracy,
-      catchDifficulty,
-      isEvolving
+      catchDifficulty
     );
     this.species = 'Squirtle';
+    this.isEvolving = isEvolving;
+    this.moveTable = {
+      level3: ['Water Gun'],
+    };
+    this.generateMoves();
     this.art = `
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣴⣶⣿⣿⣿⣶⣴⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣻⣿⢿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -48,9 +52,6 @@ class Squirtle extends Water {
         ⠀⠀⠀⠀⠀⠀⠀⠉⠘⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠙⠟⠉⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
   }
-  static moveTable = {
-    level3: ['Water Gun'],
-  };
 }
 
 module.exports = {

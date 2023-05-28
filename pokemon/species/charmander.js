@@ -7,7 +7,7 @@ class Charmander extends Fire {
     level,
     moves = ['Scratch', 'Growl'],
     hitPoints = 10 + level * 2,
-    attack = 12 + level * 2,
+    attack = 13 + level * 2,
     defence,
     speed = 15 + level * 2,
     accuracy = 100,
@@ -23,11 +23,15 @@ class Charmander extends Fire {
       defence,
       speed,
       accuracy,
-      catchDifficulty,
-      isEvolving
+      catchDifficulty
     );
     this.species = 'Charmander';
+    this.isEvolving = isEvolving;
     this.evolvesTo = { species: 'Charmeleon', level: 16 };
+    this.moveTable = {
+      level3: ['Ember'],
+    };
+    this.generateMoves();
     this.art = `
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣶⣶⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -52,9 +56,6 @@ class Charmander extends Fire {
         ⠀⠀⠀⠀⠀⠀⠀⠠⣮⣿⣦⡙⠟⠛⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⡿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠑⠮⡚⠳⡍⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
   }
-  static moveTable = {
-    level3: ['Ember'],
-  };
 }
 
 module.exports = {

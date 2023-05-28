@@ -38,10 +38,6 @@ class Battle {
 
   startBattle() {
     console.log(
-      this.player.currentPokeball,
-      '<<< CURRENT POKEBALL START OF BAT'
-    );
-    console.log(
       this.opponent.isWild
         ? `A wild ${this.opponent.wildPokeObj.name} appeared!`
         : `${this.opponent.name} wants to fight!`
@@ -164,10 +160,6 @@ class Battle {
             trainer.currentPokeball.throw();
             if (!this.participatingPokemon.includes(selectedPokemonIndex))
               this.participatingPokemon.push(selectedPokemonIndex);
-            console.log(
-              this.player.currentPokeball,
-              '<<< CURRENT POKEBALL AFTER CHOOSE'
-            );
             return true;
           }
         });
@@ -262,7 +254,10 @@ class Battle {
                   this.battleOver = true;
                   this.winner = this.player;
                   this.loser = this.opponent;
-                  return this.doEndOfBattle();
+                  const defeatedPokemon = this.opponent.currentPokeball.storage;
+                  return this.awardXp(defeatedPokemon).then(() =>
+                    this.doEndOfBattle()
+                  );
                 } else if (result === 'cancel') return this.doBattle();
                 else return this.resolveTurn();
               });
@@ -324,14 +319,13 @@ class Battle {
     });
     /////
     // Reset currentPokeball to first in pokemonList
-    this.player.currentPokeball = this.player.belt.findIndex(
+    this.player.currentPokeball = this.player.belt.find(
       (ball) => ball.storage.name === this.player.pokemonList[0]
     );
     /////
-    console.log(this.player.currentPokeball, '<<< CURRENT POKEBALL END OF BAT');
     this.currentPlayerData.player = this.player;
     if (this.loser.isWild) {
-      console.log('\nYou won!\n');
+      console.log('\nYou won!');
       return { isBlackedOut: false, currentPlayerData: this.currentPlayerData };
     } else if (this.loser.isPlayer) {
       if (this.specialBattleType === 'introRival') {
@@ -363,6 +357,18 @@ class Battle {
   }
 
   awardXp(defeatedPokemon) {
+    function runSequentialPromises(promises) {
+      const results = [];
+      return promises.reduce((prevPromise, nextPromise) => {
+        return prevPromise.then(() =>
+          nextPromise().then((result) => {
+            results.push(result);
+            return results;
+          })
+        );
+      }, Promise.resolve());
+    }
+
     const winningTrainer =
       defeatedPokemon === this.opponentPokemon ? this.player : this.opponent;
 
@@ -372,47 +378,23 @@ class Battle {
         1,
         Math.round(totalXpToAward / this.participatingPokemon.length)
       );
-      const xpPrompts = [];
-      this.participatingPokemon.forEach((pokemonIndex) => {
-        const pokemonToAwardXp = this.player.belt[pokemonIndex].storage;
-        let evolving = { species: null };
-        xpPrompts.push({
-          type: 'input',
-          name: pokemonIndex.toString(),
-          message: () => pokemonToAwardXp.showXpBar(),
-          when: () => {
-            evolving.species = pokemonToAwardXp.addXp(shareOfXp);
-            return true;
-          },
-        });
-        xpPrompts.push({
-          type: 'confirm',
-          name: `${pokemonIndex.toString()}-evolving`,
-          message: `${pokemonToAwardXp.name} is trying to evolve into ${pokemonToAwardXp.evolvesTo.species}!\n\nLet it evolve?`,
-          when: () => evolving.species,
-        });
-        xpPrompts.push({
-          type: 'input',
-          name: `${pokemonIndex.toString()}-when`,
-          message: ` `,
-          when: (answers) => {
-            if (answers[`${pokemonIndex.toString()}-evolving`]) {
-              this.player.belt[pokemonIndex].storage =
-                pokemonToAwardXp.evolve();
-            }
-            return false;
-          },
-        });
-        xpPrompts.push({
-          type: 'input',
-          name: `${pokemonIndex.toString()}-doEvolution`,
-          message: () =>
-            `${pokemonToAwardXp.name} evolved into ${pokemonToAwardXp.evolvesTo.species}!\n${this.player.belt[pokemonIndex].storage.art}`,
-          when: (answers) => answers[`${pokemonIndex.toString()}-evolving`],
+      const xpPromises = this.participatingPokemon.map(
+        (pokemonIndex) => () =>
+          this.player.belt[pokemonIndex].storage.addXp(shareOfXp)
+      );
+      return runSequentialPromises(xpPromises).then((evolutions) => {
+        evolutions.forEach((evolvedForm, index) => {
+          if (evolvedForm) {
+            const beltIndex = this.participatingPokemon[index];
+            const pokemonListIndex = this.player.pokemonList.findIndex(
+              (pokeName) =>
+                pokeName === this.player.belt[beltIndex].storage.name
+            );
+            this.player.pokemonList[pokemonListIndex] = evolvedForm.name;
+            this.player.belt[beltIndex].storage = evolvedForm;
+          }
         });
       });
-
-      return inquirer.prompt(xpPrompts);
     } else return Promise.resolve();
   }
 
@@ -580,20 +562,25 @@ class Battle {
       );
     }
   }
-
-  // changeCurrentTrainer() {
-  //   [this.currentTrainer, this.otherTrainer] = [
-  //     this.otherTrainer,
-  //     this.currentTrainer,
-  //   ][(this.currentTrainerPokemon, this.otherTrainerPokemon)] = [
-  //     this.otherTrainerPokemon,
-  //     this.currentTrainerPokemon,
-  //   ];
-  // }
 }
 
-// const gerty = create.pokemon('Butterfree', 'Gerty', 15);
+// const gerty = create.pokemon('Charmander', 'Charmander', 15);
 // const maude = create.pokemon('Weedle', 'Maude', 6);
+// console.log(
+//   'GERTY | current XP:',
+//   gerty.xp,
+//   'needed for next level:',
+//   gerty.xpThreshold - gerty.xp
+// );
+// console.log(
+//   'MAUDE | current XP:',
+//   maude.xp,
+//   'needed for next level:',
+//   maude.xpThreshold - maude.xp
+// );
+// gerty.xp = 595;
+// maude.xp = 85;
+
 // const sq1 = create.pokemon('Squirtle', 'sq1', 6);
 // const sq2 = create.pokemon('Squirtle', 'sq2', 6);
 // const sq3 = create.pokemon('Squirtle', 'sq3', 6);
@@ -604,7 +591,7 @@ class Battle {
 // const paula = create.pokemon('Charmander', 'Paula', 5);
 // const butch = new Trainer('Butch', [phil, paula]);
 
-// const wild = randomWildPokemon(4, 'Rattata');
+// const wild = randomWildPokemon(10, 'Rattata');
 // jeb.inventory['Poke Ball'] = 3;
 // jeb.inventory['Great Ball'] = 1;
 // jeb.inventory['Potion'] = 2;
@@ -621,7 +608,8 @@ class Battle {
 //   })
 //   .then(() => {
 //     const testBattle = new Battle(jeb, wild.battleTrainer, currentPlayerData);
-//     testBattle.startBattle();
-//   });
+//     return testBattle.startBattle();
+//   })
+//   .then(({ currentPlayerData }) => {});
 
 module.exports = { Battle };

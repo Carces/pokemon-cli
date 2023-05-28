@@ -46,7 +46,7 @@ class Trainer {
   }
 
   getPokemonChoices(isBattleChoose, isSendingToPC, capturedPokemon) {
-    const nameList = this.pokemonList;
+    const nameList = [...this.pokemonList];
     if (isSendingToPC) nameList.unshift(capturedPokemon.name);
     const namePadding = [...nameList].sort((a, b) => b.length - a.length)[0]
       .length;
@@ -91,10 +91,6 @@ class Trainer {
         ? `${pokemonChoice} (${pokemonConditions})`
         : pokemonChoice;
     });
-    // if (isSendingToPC)
-    //   pokemonChoices.unshift(
-    //     `${capturedPokemon.name}: Level ${capturedPokemon.level} | HP - ${capturedPokemon.hitPoints.current}/${capturedPokemon.hitPoints.max} - new`
-    //   );
     return pokemonChoices;
   }
 
@@ -169,7 +165,6 @@ class Trainer {
           );
         }
         let pokemonChoices = [];
-
         return inquirer
           .prompt([
             {

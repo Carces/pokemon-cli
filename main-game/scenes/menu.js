@@ -28,7 +28,7 @@ function mainMenu(playerData, rivalData) {
     } else if (menuAction === 'Pokemon') {
       return pokemonMenu();
     } else if (menuAction === 'Save') {
-      return saveGame(currentPlayerData, currentRivalData).then(() =>
+      return saveGame({ currentPlayerData, currentRivalData }).then(() =>
         mainMenu()
       );
     } else if (menuAction === 'Quit') {

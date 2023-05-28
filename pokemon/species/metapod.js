@@ -22,11 +22,13 @@ class Metapod extends Bug {
       defence,
       speed,
       accuracy,
-      catchDifficulty,
-      isEvolving
+      catchDifficulty
     );
     this.species = 'Metapod';
+    this.isEvolving = isEvolving;
     this.evolvesTo = { species: 'Butterfree', level: 10 };
+    this.moveTable = {};
+    this.generateMoves();
     this.art = `
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -48,7 +50,6 @@ class Metapod extends Bug {
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠁⠩⢤⣚⣛⠿⠿⣂⣤⣝⣟⢃⣿⣷⡆⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠒⠊⠉⠉⠁⠚⠛⠉⠀⠀⠀⠀⠀`;
   }
-  static moveTable = {};
 }
 
 module.exports = {

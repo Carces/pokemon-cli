@@ -22,11 +22,13 @@ class Caterpie extends Bug {
       defence,
       speed,
       accuracy,
-      catchDifficulty,
-      isEvolving
+      catchDifficulty
     );
     this.species = 'Caterpie';
+    this.isEvolving = isEvolving;
     this.evolvesTo = { species: 'Metapod', level: 7 };
+    this.moveTable = {};
+    this.generateMoves();
     this.art = `
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣤⣤⣦⠤⠤⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⣶⣶⣦⣀⠀⣀⣴⣾⣿⡿⣟⣯⣶⣿⠟⠁⢹⣶⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -47,7 +49,6 @@ class Caterpie extends Bug {
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠛⢛⣯⣵⣾⣷⣶⡦⣠⣬⣭⠌⠂⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠁⠈⠉⠁⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
   }
-  static moveTable = {};
 }
 
 module.exports = {

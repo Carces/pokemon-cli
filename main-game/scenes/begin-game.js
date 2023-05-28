@@ -85,7 +85,7 @@ const confirmQs = [
   {
     type: 'confirm',
     name: 'ready',
-    message: `Are you ready?`,
+    message: `Begin game?`,
     default: true,
   },
 ];

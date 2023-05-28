@@ -23,10 +23,19 @@ class Pidgey extends Flying {
       defence,
       speed,
       accuracy,
-      catchDifficulty,
-      isEvolving
+      catchDifficulty
     );
     this.species = 'Pidgey';
+    this.isEvolving = isEvolving;
+    this.moveTable = {
+      level5: ['Sand Attack'],
+      level9: ['Gust'],
+      level13: ['Quick Attack'],
+      level19: ['Whirlwind'],
+      level25: ['Wing Attack'],
+      // ... more
+    };
+    this.generateMoves();
     this.art = `
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣴⠖⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⡀⣴⠄⣠⣾⣿⣿⣶⡖⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -51,14 +60,6 @@ class Pidgey extends Flying {
 ⠀⠀⠀⠀⠀⠀⠉⠀⠀⠸⠋⢁⣴⣿⠿⠿⣏⣻⣷⣾⡿⠋⠁⠈⠉⠉⠉⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠁⠀⠀⢸⠟⠛⠉⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
   }
-  static moveTable = {
-    level5: ['Sand Attack'],
-    level9: ['Gust'],
-    level13: ['Quick Attack'],
-    level19: ['Whirlwind'],
-    level25: ['Wing Attack'],
-    // ... more
-  };
 }
 
 module.exports = {
