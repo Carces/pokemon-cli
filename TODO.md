@@ -98,13 +98,11 @@
 
 5.  crashed after first town, loaded most recent save (auto-save when leaving town). Town name was correctly saved and replicated, but PokeMart stock is generated fresh. Should this be stored? maybe townsVisited array stores a copy? Quite a lot of unnecessary data to store for very little reason tbh
 
-6.  tested a full game-loop, all working. However, second town I came to had the same name as the first. I thought townNames should be filtered to remove any in the townsVisited array on playerData. If that's not working, would be a huge coincidence for it to generate the same one again, so it may be the logic implemented to ensure same town is generated when reloading a town save is causing issues.
+6.  tail whip seems much more effective than growl in the introRivalBattle - will probably be true of other attack/defence reducing moves too. see if damage formula can be tweaked
 
-7.  tail whip seems much more effective than growl in the introRivalBattle - will probably be true of other attack/defence reducing moves too. see if damage formula can be tweaked
+7.  able to use potions on fainted pokemon
 
-8.  able to use potions on fainted pokemon
-
-9.  player loss not handled in game loop
+8.  player battle loss not handled in game loop
 
 =====
 DONE:
@@ -182,3 +180,5 @@ add this to all other evolved form species - currently, some like butterfree hav
 T1. need chances to save game/use items/check on and rearrange pokemon out of battle:
 add options to do all 3 manually in town //
 add a prompt between gameloop battle stages //
+
+B5. tested a full game-loop, all working. However, second town I came to had the same name as the first. I thought townNames should be filtered to remove any in the townsVisited array on playerData. If that's not working, would be a huge coincidence for it to generate the same one again, so it may be the logic implemented to ensure same town is generated when reloading a town save is causing issues.
