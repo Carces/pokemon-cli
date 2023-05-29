@@ -47,12 +47,8 @@ function gameLoop(
         const { stageToLoad } = currentPlayerData;
         if (stageToLoad !== stageID) return Promise.resolve();
         /////
-
-        return enterTown(
-          currentPlayerData,
-          currentRivalData,
-          currentPlayerData.townsVisited[loopNum - 1]
-        );
+        const townFromLoad = currentPlayerData.townsVisited[loopNum - 1];
+        return enterTown(currentPlayerData, currentRivalData, townFromLoad);
       })
       // - load game -
       .then((res) => {

@@ -71,7 +71,8 @@ function enterTown(playerData, rivalData, townName) {
   const customWelcome = welcomeMessage.replace('%T', townName);
   console.log(customWelcome);
   console.log('\n', townsData[townName].nameArt, '\n');
-  currentPlayerData.townsVisited.push(townName);
+  if (!currentPlayerData.townsVisited.includes(townName))
+    currentPlayerData.townsVisited.push(townName);
   return exploreTown();
 }
 

@@ -3,18 +3,7 @@
     "stageToLoad": "town2",
     "townsVisited": [
       "Nacrene City",
-      "Nacrene City",
-      "Nacrene City",
-      "Nacrene City",
-      "Nacrene City",
-      "Nacrene City",
-      "Nacrene City",
-      "Nacrene City",
-      "Nacrene City",
-      "Nacrene City",
-      "Nacrene City",
-      "Nacrene City",
-      "Nacrene City"
+      "Goldenrod City"
     ],
     "player": {
       "name": "Ash",
@@ -52,7 +41,7 @@
             "xpThreshold": 12,
             "xp": 8,
             "activeEffects": {},
-            "id": "83bcc4c1-5c7d-4249-982b-7b9fcaf577de",
+            "id": "74d7303f-aadb-4fbd-afdd-f5c3bcc327db",
             "species": "Charmander",
             "evolvesTo": {
               "species": "Charmeleon",
@@ -104,7 +93,7 @@
             "xpThreshold": 4,
             "xp": 2,
             "activeEffects": {},
-            "id": "ff511541-603e-44a4-b283-449d9650a446",
+            "id": "c85cb80f-dccd-4f66-bba0-a619e5ec8b66",
             "species": "Rattata",
             "moveTable": {
               "level4": [
@@ -152,7 +141,7 @@
             "xpThreshold": 4,
             "xp": 1,
             "activeEffects": {},
-            "id": "cadf7049-487f-435d-8af2-12d7ae44d535",
+            "id": "1c799065-2bed-49fd-a70b-c938a019a2f7",
             "species": "Caterpie",
             "evolvesTo": {
               "species": "Metapod",
@@ -206,7 +195,7 @@
           "xpThreshold": 4,
           "xp": 2,
           "activeEffects": {},
-          "id": "ff511541-603e-44a4-b283-449d9650a446",
+          "id": "c85cb80f-dccd-4f66-bba0-a619e5ec8b66",
           "species": "Rattata",
           "moveTable": {
             "level4": [
@@ -273,7 +262,7 @@
                 "staysAfterBattle": false
               }
             },
-            "id": "c9e94037-1352-48d5-97dd-c4ff7e87ea2f",
+            "id": "5096377b-6e43-44b1-ae10-0829fcef3672",
             "species": "Squirtle",
             "moveTable": {
               "level3": [
@@ -331,7 +320,7 @@
               "staysAfterBattle": false
             }
           },
-          "id": "c9e94037-1352-48d5-97dd-c4ff7e87ea2f",
+          "id": "5096377b-6e43-44b1-ae10-0829fcef3672",
           "species": "Squirtle",
           "moveTable": {
             "level3": [
