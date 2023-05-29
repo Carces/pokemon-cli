@@ -100,9 +100,7 @@
 
 6.  tail whip seems much more effective than growl in the introRivalBattle - will probably be true of other attack/defence reducing moves too. see if damage formula can be tweaked
 
-7.  able to use potions on fainted pokemon
-
-8.  player battle loss not handled in game loop
+7.  player battle loss not handled in game loop
 
 =====
 DONE:
@@ -182,3 +180,5 @@ add options to do all 3 manually in town //
 add a prompt between gameloop battle stages //
 
 B5. tested a full game-loop, all working. However, second town I came to had the same name as the first. I thought townNames should be filtered to remove any in the townsVisited array on playerData. If that's not working, would be a huge coincidence for it to generate the same one again, so it may be the logic implemented to ensure same town is generated when reloading a town save is causing issues.
+
+B7. able to use potions on fainted pokemon

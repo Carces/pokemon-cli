@@ -41,7 +41,7 @@
             "xpThreshold": 12,
             "xp": 8,
             "activeEffects": {},
-            "id": "74d7303f-aadb-4fbd-afdd-f5c3bcc327db",
+            "id": "2240da1c-08f9-49b5-b307-54524a07f6fe",
             "species": "Charmander",
             "evolvesTo": {
               "species": "Charmeleon",
@@ -93,7 +93,7 @@
             "xpThreshold": 4,
             "xp": 2,
             "activeEffects": {},
-            "id": "c85cb80f-dccd-4f66-bba0-a619e5ec8b66",
+            "id": "80594951-9fd2-4664-8aa2-434f5825460b",
             "species": "Rattata",
             "moveTable": {
               "level4": [
@@ -141,7 +141,7 @@
             "xpThreshold": 4,
             "xp": 1,
             "activeEffects": {},
-            "id": "1c799065-2bed-49fd-a70b-c938a019a2f7",
+            "id": "1a863019-deb3-45e8-bea1-0788633e0315",
             "species": "Caterpie",
             "evolvesTo": {
               "species": "Metapod",
@@ -195,7 +195,7 @@
           "xpThreshold": 4,
           "xp": 2,
           "activeEffects": {},
-          "id": "c85cb80f-dccd-4f66-bba0-a619e5ec8b66",
+          "id": "80594951-9fd2-4664-8aa2-434f5825460b",
           "species": "Rattata",
           "moveTable": {
             "level4": [
@@ -262,7 +262,7 @@
                 "staysAfterBattle": false
               }
             },
-            "id": "5096377b-6e43-44b1-ae10-0829fcef3672",
+            "id": "0f03520c-59c4-4472-adb2-9005e9363c12",
             "species": "Squirtle",
             "moveTable": {
               "level3": [
@@ -320,7 +320,7 @@
               "staysAfterBattle": false
             }
           },
-          "id": "5096377b-6e43-44b1-ae10-0829fcef3672",
+          "id": "0f03520c-59c4-4472-adb2-9005e9363c12",
           "species": "Squirtle",
           "moveTable": {
             "level3": [

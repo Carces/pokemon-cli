@@ -45,7 +45,7 @@ class Trainer {
     return itemsData[item];
   }
 
-  getPokemonChoices(isBattleChoose, isSendingToPC, capturedPokemon) {
+  getPokemonChoices(isBattleChoose, isSendingToPC, capturedPokemon, itemType) {
     const nameList = [...this.pokemonList];
     if (isSendingToPC) nameList.unshift(capturedPokemon.name);
     const namePadding = [...nameList].sort((a, b) => b.length - a.length)[0]
@@ -80,7 +80,7 @@ class Trainer {
       });
       const pokemonChoice = isCapturedPoke
         ? `${pokemonWithHp} - NEW`
-        : !pokemon.hitPoints.current && isBattleChoose
+        : !pokemon.hitPoints.current && (isBattleChoose || itemType === 'heal')
         ? { name: pokemonWithHp, disabled: 'unconscious' }
         : !pokemon.hitPoints.current
         ? `${pokemonWithHp} - unconscious`
@@ -96,7 +96,10 @@ class Trainer {
 
   useItem(item, trainer, opponent, opponentPokemon, currentPlayerData) {
     const itemData = itemsData[item];
-    const pokemonChoices = this.getPokemonChoices();
+    const pokemonChoices =
+      itemData.type === 'heal'
+        ? this.getPokemonChoices(null, null, null, 'heal')
+        : this.getPokemonChoices();
     const targets =
       itemData.type === 'ball' && opponent?.isWild
         ? [opponentPokemon]

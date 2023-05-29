@@ -84,10 +84,10 @@ function exploreTown() {
         name: 'townAction',
         message: `Where would you like to go?`,
         choices: [
+          'Menu',
           'Walk around',
           'Poke Mart',
           'Pokemon Centre',
-          'Menu',
           '--LEAVE--',
         ],
       },
