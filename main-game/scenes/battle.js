@@ -267,13 +267,18 @@ class Battle {
   }
 
   setNextPokemon(trainer) {
-    for (let i = 0; i < trainer.belt.length; i++) {
-      const pokeball = trainer.belt[i];
-      if (pokeball.storage && pokeball.storage.hitPoints.current) {
-        trainer.currentPokeball = trainer.belt[i];
-        this.opponentPokemon = this.opponent.currentPokeball.storage;
-        this.playerPokemon = this.player.currentPokeball.storage;
-        return true; // tells setCurrentPokeballs that this trainer hasValidPokemon (i.e. with > 0 hitPoints)
+    if (!trainer.currentPokeball.storage.hitPoints.current) {
+      for (let i = 0; i < trainer.pokemonList.length; i++) {
+        const pokemon = trainer.getPokemon(trainer.pokemonList[i]).pokemonObj;
+        const pokeball = trainer.belt.find((ball) => {
+          return ball.storage.id === pokemon.id;
+        });
+        if (pokeball.storage && pokeball.storage.hitPoints.current) {
+          trainer.currentPokeball = trainer.belt[i];
+          this.opponentPokemon = this.opponent.currentPokeball.storage;
+          this.playerPokemon = this.player.currentPokeball.storage;
+          return true; // tells setCurrentPokeballs that this trainer hasValidPokemon (i.e. with > 0 hitPoints)
+        }
       }
     }
     return false; // otherwise tells setCurrentPokeballs false

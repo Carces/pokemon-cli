@@ -1,13 +1,5 @@
 ## TO IMPLEMENT
 
-1. need chances to save game/use items/check on and rearrange pokemon out of battle:
-
-   > add options to do all 3 manually in town
-   > add a prompt between gameloop battle stages
-   > more frequent auto-saves as well - should really be one after each other block
-   > game-loop.js needs randomWildPokemon import
-   > pokemon menu option should also allow renaming and resetting name to default
-
 2. status effect conditions should now be correctly applied by moves and removed by remove items, but no status conditions have actual tangible effects yet. do some kind of check at start of round to see if activeEffects includes an effect object with a status property.
 
 3. new game save overwrite warning - when new game is started from main menu, load in save-data.json. if it loads in successfully, prompt them to confirm if they want to overwrite. Otherwise, assume there is no save data and go to begin-game.js
@@ -82,7 +74,13 @@
 
 26. Convert species/types/pokemon to accept an options object for most parameters that will be rarely used (stats, moves etc.) Will be particularly useful for creating pokemon with isEvolving to avoid lots of nulls before true for isEvolving at the end
 
-27. tail whip seems much more effective than growl in the introRivalBattle - will probably be true of other attack/defence reducing moves too. see if damage formula can be tweaked
+27. pokemon menu option should also allow renaming and resetting name to default
+
+28. in quite a few places, currentPlayerData/playerData is returned from a function and then reset e.g. then((playerData) => {
+    currentPlayerData = playerData
+    }). This is unnecessary because currentPlayerData is an object, so the reference remains the same. When changes happen from within a menu or a battle for instance, they are made to the same playerData object using a different reference, so should automatically be reflected in other files
+
+29. add more frequent auto-saves - should really probably be one after each other block
 
 ## STATS SYSTEM
 
@@ -90,34 +88,23 @@
 
 ## BUGS
 
-1.  need better system for randomTrainer difficulty - a trainer on loop 1 had a butterfree, which will be quite a tough fight. Might be OK if it's their only Pokemon, but if their random pokemonCount was 2 or 3 it would be a likely party wipe. Maybe calculate trainer difficulty, taking into account pokemon rarity AND count
+1.  need better system for randomTrainer difficulty - a trainer on loop 1 had a butterfree, which will be quite a tough fight. Might be OK if it's their only Pokemon, but if their random pokemonCount was 2 or 3 it would be a likely party wipe. Maybe calculate trainer difficulty, taking into account pokemon rarity AND count -- ALSO encountered a charizard on loop 2. Only once in many tests, but yikes, full party wipe
 
-2.  charmander evolved to Charmeleon at level 2
+2.  setCurrentPokeballs - see comment in function about issue with pokemon being incorrectly marked 'already out'
 
-3.  charmander with no name (Defaulting to species name) evolves into charmeleon, name doesn't change. do a check on evolve when creating instance of new evolvedForm: if (this.name === this.species) nameToUse = this.evolvesTo.species
+3.  in randomTrainer, trainer.messages and trainer.defeatMessages are returned as a single item in an array. Is there any reason for this?
 
-4.  error that seems to imply rattata was trying to evolve. check evolvesTo logic, don't think it currently has logic to check if the pokemon evolves to anything
+4.  in doEndOfBattle, activeEffects that don't have staysAfterBattle property are deleted for each pokemon. However, this doesn't undo any stat changes. To undo the exact change and only that change for each move (e.g. in case multiple moves have lowered defence, each by a different amount), resolveStatusMove will need to keep track of the amount the stat was lowered by and add it to the activeEffect, so that when doEndOfBattle is iterating through activeEffects it can add that amount back on to the stat
 
-    > "/home/theo/northcoders/fundamentals/fun-pokemon-battler/main-game/scenes/battle.js:374
+5.  crashed after first town, loaded most recent save (auto-save when leaving town). Town name was correctly saved and replicated, but PokeMart stock is generated fresh. Should this be stored? maybe townsVisited array stores a copy? Quite a lot of unnecessary data to store for very little reason tbh
 
-          message: `${pokemonToAwardXp.name} is trying to evolve into ${pokemonToAwardXp.evolvesTo.species}!\n\nLet it evolve?`,
+6.  tested a full game-loop, all working. However, second town I came to had the same name as the first. I thought townNames should be filtered to remove any in the townsVisited array on playerData. If that's not working, would be a huge coincidence for it to generate the same one again, so it may be the logic implemented to ensure same town is generated when reloading a town save is causing issues.
 
-TypeError: Cannot read properties of undefined (reading 'species')
-"
+7.  tail whip seems much more effective than growl in the introRivalBattle - will probably be true of other attack/defence reducing moves too. see if damage formula can be tweaked
 
-5. setCurrentPokeballs - see comment in function about issue with pokemon being incorrectly marked 'already out'
+8.  able to use potions on fainted pokemon
 
-6. charmeleon has new param added - isEvolving. if level > 1 loop that adds highest level moves, now also checks that constructor isn't invoked with isEvolving true. Ensures that moves aren't replaced without a chance to confirm when pokemon evolves, only pushed to moves array when it's a brand new pokemon.
-
-   > add this to all other evolved form species - currently, some like butterfree have higher level moves that aren't all fully implemented, so they don't have the loop at all
-
-7. in randomTrainer, trainer.messages and trainer.defeatMessages are returned as a single item in an array. Is there any reason for this?
-
-8. in doEndOfBattle, activeEffects that don't have staysAfterBattle property are deleted for each pokemon. However, this doesn't undo any stat changes. To undo the exact change and only that change for each move (e.g. in case multiple moves have lowered defence, each by a different amount), resolveStatusMove will need to keep track of the amount the stat was lowered by and add it to the activeEffect, so that when doEndOfBattle is iterating through activeEffects it can add that amount back on to the stat
-
-9. crashed after first town, loaded most recent save (auto-save when leaving town). Town name was correctly saved and replicated, but PokeMart stock is generated fresh. Should this be stored? maybe townsVisited array stores a copy? Quite a lot of unnecessary data to store for very little reason tbh
-
-10. tested a full game-loop, all working. However, second town I came to had the same name as the first. I thought townNames should be filtered to remove any in the townsVisited array on playerData. If that's not working, would be a huge coincidence for it to generate the same one again, so it may be the logic implemented to ensure same town is generated when reloading a town save is causing issues.
+9.  player loss not handled in game loop
 
 =====
 DONE:
@@ -174,4 +161,24 @@ visited towns system - best way is probably adding townsData to saveGame and loa
 
 Add secondary effects to damage moves: ember and thunder shock should have 10% chance of burning/paralyzing
 
-24. finish menu.js, implementing submenus for each action.
+T24. finish menu.js, implementing submenus for each action.
+
+B2. charmander evolved to Charmeleon at level 2
+
+B3. charmander with no name (Defaulting to species name) evolves into charmeleon, name doesn't change. do a check on evolve when creating instance of new evolvedForm: if (this.name === this.species) nameToUse = this.evolvesTo.species
+
+B4. error that seems to imply rattata was trying to evolve. check evolvesTo logic, don't think it currently has logic to check if the pokemon evolves to anything
+
+    > "/home/theo/northcoders/fundamentals/fun-pokemon-battler/main-game/scenes/battle.js:374
+
+          message: `${pokemonToAwardXp.name} is trying to evolve into ${pokemonToAwardXp.evolvesTo.species}!\n\nLet it evolve?`,
+
+TypeError: Cannot read properties of undefined (reading 'species')
+"
+
+B6. charmeleon has new param added - isEvolving. if level > 1 loop that adds highest level moves, now also checks that constructor isn't invoked with isEvolving true. Ensures that moves aren't replaced without a chance to confirm when pokemon evolves, only pushed to moves array when it's a brand new pokemon.
+add this to all other evolved form species - currently, some like butterfree have higher level moves that aren't all fully implemented, so they don't have the loop at all
+
+T1. need chances to save game/use items/check on and rearrange pokemon out of battle:
+add options to do all 3 manually in town //
+add a prompt between gameloop battle stages //

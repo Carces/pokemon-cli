@@ -8,6 +8,7 @@ const {
   randomWildPokemon,
 } = require('./trainers/random-trainer');
 const { Battle } = require('./scenes/battle');
+const { mainMenu } = require('./scenes/menu');
 
 function gameLoop(
   loopNum,
@@ -93,7 +94,7 @@ function gameLoop(
           trainerBattle.startBattle(),
         ]);
       })
-      // ! wildBattle<loopNum> !
+      // === MENU ===
       .then(([defeatMessage]) => {
         // skip block if loading game
         const stageID = `wildBattle${loopNum}`;
@@ -102,7 +103,15 @@ function gameLoop(
         /////
 
         console.log(`\n${defeatMessage}\n`);
-
+        return mainMenu(currentPlayerData, currentRivalData);
+      })
+      // ! wildBattle<loopNum> !
+      .then(() => {
+        // skip block if loading game
+        const stageID = `wildBattle${loopNum}`;
+        const { stageToLoad } = currentPlayerData;
+        if (stageToLoad !== stageID) return Promise.resolve();
+        /////
         const { player } = currentPlayerData;
         const randomLevel = Math.max(
           1,
@@ -137,12 +146,7 @@ function gameLoop(
       .then(() => {
         // set currentPlayerData.player and currentPlayerData.PC etc.
         /////
-        return exitGame
-          ? saveGame({
-              playerData: currentPlayerData,
-              rivalData: currentRivalData,
-            })
-          : gameLoop(loopNum + 1, currentPlayerData, currentRivalData);
+        return gameLoop(loopNum + 1, currentPlayerData, currentRivalData);
       })
       .catch((err) => {
         console.log(err.message === 'quit' ? '\n\nThanks for playing!' : err);

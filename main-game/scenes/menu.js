@@ -102,12 +102,14 @@ Pokemon:`,
       const replacePokeIndex = player.pokemonList.indexOf(pokeName);
       // If one of the switched Pokemon is currentPokeball, change it
       if (replacePokeIndex === 0 || switchPokeIndex === 0) {
+        console.log('AN INDEX IS 0');
         const newCurrentPokeName =
           replacePokeIndex === 0 ? pokemonToSwitch.name : pokeName;
         const newCurrentPokeball = player.belt.find(
           (ball) => ball.storage.name === newCurrentPokeName
         );
         player.currentPokeball = newCurrentPokeball;
+        console.log(player.currentPokeball, '<<<');
       }
       // Switch positions in pokemonList
       player.pokemonList[switchPokeIndex] = pokeName;
