@@ -116,12 +116,11 @@ class Pokemon {
     console.log(`\n${this.name} used ${move.name}!`);
 
     if (move.doesDamage && !outsideBattle) {
-      const random = Math.random() * -0.5 + 2.75;
+      const random = Math.random() * 0.2 + 0.4;
       const damage =
-        (random + this.level * 0.5) *
-        (this.attack.current / target.defence.current) *
-        move.damageMultiplier;
-      const damageToReturn = Math.max(1, +damage.toFixed(2));
+        random * 5 + (this.attack.current - target.defence.current) * 0.5;
+      const moveDamage = damage * move.damageMultiplier;
+      const damageToReturn = Math.max(this.level, +moveDamage.toFixed(2));
       return damageToReturn;
     }
   }

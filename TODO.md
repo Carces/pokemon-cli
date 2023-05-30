@@ -60,7 +60,6 @@
 
     > make one of the walk around town events finding someone who can give you a tip for finding a specific pokemon.Maybe you input species name or choose from a small selection of random species they know how to find etc.
     > have some shops sell lures for specific types/species
-    > This method will give players choice if they want to spread xp or get one really high levelled pokemon but less of a health pool
 
 21. Make better use of specialBattle prop of Battle - instead of just passing a unique battle name and having console logs everywhere that check the battle name, pass in an array of objects on specialBattle, where each object is a message with text: blabla and event: playerWinsBattle / battleStart etc.
 
@@ -82,6 +81,8 @@
 
 29. add more frequent auto-saves - should really probably be one after each other block
 
+30. transition from battle1 to menu is jarring and unclear. Add some kind of message between. Maybe defeat message should be part of a Conversation to make sure player sees/acknowledges it. Could then add to that Conversation some other random message like random town messages. randomTravelMessage maybe. e.g. 'You keep walking, but after a while your stomach rumbles. Time to stop and take a break!'
+
 ## STATS SYSTEM
 
 40 is base level (10 + level \* 2), each 5 points above or below adds or subtracts 1
@@ -98,9 +99,7 @@
 
 5.  crashed after first town, loaded most recent save (auto-save when leaving town). Town name was correctly saved and replicated, but PokeMart stock is generated fresh. Should this be stored? maybe townsVisited array stores a copy? Quite a lot of unnecessary data to store for very little reason tbh
 
-6.  tail whip seems much more effective than growl in the introRivalBattle - will probably be true of other attack/defence reducing moves too. see if damage formula can be tweaked
-
-7.  player battle loss not handled in game loop
+6.  player battle loss not handled in game loop
 
 =====
 DONE:
@@ -182,3 +181,5 @@ add a prompt between gameloop battle stages //
 B5. tested a full game-loop, all working. However, second town I came to had the same name as the first. I thought townNames should be filtered to remove any in the townsVisited array on playerData. If that's not working, would be a huge coincidence for it to generate the same one again, so it may be the logic implemented to ensure same town is generated when reloading a town save is causing issues.
 
 B7. able to use potions on fainted pokemon
+
+B13. tail whip seems much more effective than growl in the introRivalBattle - will probably be true of other attack/defence reducing moves too. see if damage formula can be tweaked
