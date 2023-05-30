@@ -81,7 +81,7 @@
 
 29. add more frequent auto-saves - should really probably be one after each other block
 
-30. transition from battle1 to menu is jarring and unclear. Add some kind of message between. Maybe defeat message should be part of a Conversation to make sure player sees/acknowledges it. Could then add to that Conversation some other random message like random town messages. randomTravelMessage maybe. e.g. 'You keep walking, but after a while your stomach rumbles. Time to stop and take a break!'
+30. Convert console.logs to Conversations throughout so player controls flood of messages. transition from battle1 to menu is jarring and unclear. Add some kind of message between. Maybe defeat message should be part of a Conversation to make sure player sees/acknowledges it. Could then add to that Conversation some other random message like random town messages. randomTravelMessage maybe. e.g. 'You keep walking, but after a while your stomach rumbles. Time to stop and take a break!'
 
 ## STATS SYSTEM
 
@@ -89,17 +89,15 @@
 
 ## BUGS
 
-1.  need better system for randomTrainer difficulty - a trainer on loop 1 had a butterfree, which will be quite a tough fight. Might be OK if it's their only Pokemon, but if their random pokemonCount was 2 or 3 it would be a likely party wipe. Maybe calculate trainer difficulty, taking into account pokemon rarity AND count -- ALSO encountered a charizard on loop 2. Only once in many tests, but yikes, full party wipe
+B1. need better system for randomTrainer difficulty - a trainer on loop 1 had a butterfree, which will be quite a tough fight. Might be OK if it's their only Pokemon, but if their random pokemonCount was 2 or 3 it would be a likely party wipe. Maybe calculate trainer difficulty, taking into account pokemon rarity AND count -- ALSO encountered a charizard on loop 2. Only once in many tests, but yikes, full party wipe
 
-2.  setCurrentPokeballs - see comment in function about issue with pokemon being incorrectly marked 'already out'
+B8. setCurrentPokeballs - see comment in function about issue with pokemon being incorrectly marked 'already out'
 
-3.  in randomTrainer, trainer.messages and trainer.defeatMessages are returned as a single item in an array. Is there any reason for this?
+B9. in randomTrainer, trainer.messages and trainer.defeatMessages are returned as a single item in an array. Is there any reason for this?
 
-4.  in doEndOfBattle, activeEffects that don't have staysAfterBattle property are deleted for each pokemon. However, this doesn't undo any stat changes. To undo the exact change and only that change for each move (e.g. in case multiple moves have lowered defence, each by a different amount), resolveStatusMove will need to keep track of the amount the stat was lowered by and add it to the activeEffect, so that when doEndOfBattle is iterating through activeEffects it can add that amount back on to the stat
+B10. in doEndOfBattle, activeEffects that don't have staysAfterBattle property are deleted for each pokemon. However, this doesn't undo any stat changes. To undo the exact change and only that change for each move (e.g. in case multiple moves have lowered defence, each by a different amount), resolveStatusMove will need to keep track of the amount the stat was lowered by and add it to the activeEffect, so that when doEndOfBattle is iterating through activeEffects it can add that amount back on to the stat
 
-5.  crashed after first town, loaded most recent save (auto-save when leaving town). Town name was correctly saved and replicated, but PokeMart stock is generated fresh. Should this be stored? maybe townsVisited array stores a copy? Quite a lot of unnecessary data to store for very little reason tbh
-
-6.  player battle loss not handled in game loop
+B11. crashed after first town, loaded most recent save (auto-save when leaving town). Town name was correctly saved and replicated, but PokeMart stock is generated fresh. Should this be stored? maybe townsVisited array stores a copy? Quite a lot of unnecessary data to store for very little reason tbh
 
 =====
 DONE:
@@ -183,3 +181,5 @@ B5. tested a full game-loop, all working. However, second town I came to had the
 B7. able to use potions on fainted pokemon
 
 B13. tail whip seems much more effective than growl in the introRivalBattle - will probably be true of other attack/defence reducing moves too. see if damage formula can be tweaked
+
+B12. player battle loss not handled in game loop

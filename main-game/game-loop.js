@@ -9,15 +9,18 @@ const {
 } = require('./trainers/random-trainer');
 const { Battle } = require('./scenes/battle');
 const { mainMenu } = require('./scenes/menu');
+const inquirer = require('inquirer');
+
+let currentLoopNum;
+let currentPlayerData;
+let currentRivalData;
 
 function gameLoop(
   loopNum,
-  currentPlayerData,
-  currentRivalData,
+  initialPlayerData,
+  initialRivalData,
   exitGame = false
 ) {
-  const { stageToLoad } = currentPlayerData;
-
   function randomUnvisitedTownName() {
     const unvisitedTownNames = Object.keys(townsData).filter(
       (townName) => !currentPlayerData.townsVisited.includes(townName)
@@ -31,9 +34,15 @@ function gameLoop(
     return unvisitedTownNames[townIndex];
   }
 
-  // town encounter
+  currentLoopNum = loopNum;
+  currentPlayerData = initialPlayerData;
+  currentRivalData = initialRivalData;
+  const { stageToLoad } = currentPlayerData;
+
+  // skip if loading later stage
   if (stageToLoad.startsWith('battle')) return Promise.resolve();
 
+  // reload the same town if town in this loopNum was previously visited
   if (!currentPlayerData.townsVisited[loopNum - 1]) {
     currentPlayerData.townsVisited[loopNum - 1] = randomUnvisitedTownName();
   }
@@ -91,12 +100,14 @@ function gameLoop(
         ]);
       })
       // === MENU ===
-      .then(([defeatMessage]) => {
+      .then(([defeatMessage, battleResult]) => {
         // skip block if loading game
         const stageID = `wildBattle${loopNum}`;
         const { stageToLoad } = currentPlayerData;
         if (stageToLoad !== stageID) return Promise.resolve();
         /////
+        if (battleResult.isBlackedOut)
+          return handleBlackout('trainer', defeatMessage.split(':')[0]);
 
         console.log(`\n${defeatMessage}\n`);
         return mainMenu(currentPlayerData, currentRivalData);
@@ -139,7 +150,8 @@ function gameLoop(
       //   currentPlayerData.stageToLoad = 'introGoodbyeConv';
       //   return randomBattle.startBattle();
       // })
-      .then(() => {
+      .then((battleResult) => {
+        if (battleResult.isBlackedOut) return handleBlackout('wild');
         // set currentPlayerData.player and currentPlayerData.PC etc.
         /////
         return gameLoop(loopNum + 1, currentPlayerData, currentRivalData);
@@ -149,6 +161,41 @@ function gameLoop(
       })
   );
   /////
+}
+
+function handleBlackout(battleType, winningTrainerName) {
+  const lostMoney = Math.max(0, currentLoopNum * currentLoopNum * 10);
+  const moneyMessage =
+    battleType === 'wild'
+      ? `${currentPlayerData.player.name} dropped ${lostMoney} in panic!`
+      : `${currentPlayerData.player.name} gave ${winningTrainerName} ${lostMoney}₽.`;
+  const blackoutPrompts = [
+    {
+      type: 'input',
+      name: 'moneyConfirm',
+      message: moneyMessage,
+    },
+    {
+      type: 'list',
+      name: 'blackoutChoice',
+      message: 'What will you do?',
+      choices: ['Return to last town', 'Quit'],
+    },
+  ];
+  currentPlayerData.player.inventory.Money -= lostMoney;
+  currentPlayerData.stageToLoad = `town${currentLoopNum}`;
+  currentPlayerData.player.belt.forEach((ball) => ball.storage.healToFull());
+  return saveGame({
+    playerData: currentPlayerData,
+    rivalData: currentRivalData,
+  })
+    .then(() => inquirer.prompt(blackoutPrompts))
+    .then(({ blackoutChoice }) => {
+      if (blackoutChoice === 'Quit') throw new Error('quit');
+      else {
+        return gameLoop(currentLoopNum, currentPlayerData, currentRivalData);
+      }
+    });
 }
 
 module.exports = { gameLoop };
