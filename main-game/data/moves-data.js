@@ -1,4 +1,9 @@
 const movesData = {
+  confusionSelfAttack: {
+    name: 'confusionSelfAttack',
+    doesDamage: true,
+    damageMultiplier: 1,
+  },
   Tackle: {
     name: 'Tackle',
     type: 'normal',
@@ -219,7 +224,12 @@ const movesData = {
     doesDamage: true,
     damageMultiplier: 1.4,
     critMultiplier: 1,
-    effectOnSelf: null,
+    effectOnSelf: {
+      stat: 'attack',
+      modifier: 1,
+      staysAfterBattle: false,
+      statChance: 0.1,
+    },
     effectOnTarget: null,
   },
   'Heat Wave': {
@@ -232,6 +242,20 @@ const movesData = {
     critMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: null,
+  },
+  Confusion: {
+    name: 'Confusion',
+    type: 'psychic',
+    uses: 25,
+    accuracy: 100,
+    doesDamage: true,
+    damageMultiplier: 1.4,
+    critMultiplier: 1,
+    effectOnSelf: null,
+    effectOnTarget: {
+      status: 'confused',
+      statusChance: '0.1', // 10%
+    },
   },
   'Poison Powder': {
     name: 'Poison Powder',

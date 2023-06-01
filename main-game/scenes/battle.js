@@ -66,6 +66,8 @@ class Battle {
             const stageOfStat = stat / 4;
             return stat + stageOfStat * stagesToModBy;
           }
+          const statusResult = this.doStatusEffect(this.opponentPokemon, false);
+          if (statusResult === 'skip') return Promise.resolve();
 
           // CHOOSE A RANDOM MOVE FOR THE OPPONENT'S POKEMON
           const moves = this.opponentPokemon.moves;
@@ -108,6 +110,7 @@ class Battle {
 
           console.log('\n----------');
           this.fight(randomMove, this.opponentPokemon, this.playerPokemon);
+          this.doStatusEffect(this.opponentPokemon, true);
           return Promise.resolve();
         }
       })
@@ -224,17 +227,23 @@ class Battle {
         if (answers.action === 'Fight') {
           if (answers.move === '--CANCEL--') return this.doBattle();
           else {
-            this.fight(
-              movesData[answers.move],
-              this.playerPokemon,
-              this.opponentPokemon
-            );
+            const statusResult = this.doStatusEffect(this.playerPokemon, false);
+            if (statusResult !== 'skip')
+              this.fight(
+                movesData[answers.move],
+                this.playerPokemon,
+                this.opponentPokemon
+              );
+            this.doStatusEffect(this.playerPokemon, true);
             return this.resolveTurn();
           }
         } else if (answers.action === 'Pokemon') {
           return this.choosePokemon(this.player).then((choice) => {
-            if (choice) return this.resolveTurn();
-            else return this.doBattle();
+            if (choice) {
+              this.doStatusEffect(this.playerPokemon, false);
+              this.doStatusEffect(this.playerPokemon, true);
+              return this.resolveTurn();
+            } else return this.doBattle();
           });
         }
         if (answers.action === 'Item') {
@@ -259,7 +268,11 @@ class Battle {
                     this.doEndOfBattle()
                   );
                 } else if (result === 'cancel') return this.doBattle();
-                else return this.resolveTurn();
+                else {
+                  this.doStatusEffect(this.playerPokemon, false);
+                  this.doStatusEffect(this.playerPokemon, true);
+                  return this.resolveTurn();
+                }
               });
           }
         }
@@ -445,9 +458,15 @@ class Battle {
       const stageOfStat = stat / 4;
       return stat + stageOfStat * stagesToModBy;
     }
+    let effectAlreadyApplied = false;
     const targetsSelf = target === user;
     const effect = targetsSelf ? move.effectOnSelf : move.effectOnTarget;
-    if (effect.stat) {
+    if (
+      effect.stat ||
+      effect.status === 'paralysed' ||
+      effect.status === 'burning'
+    ) {
+      if (Math.random() <= effect.statChance) return;
       const effectMessage =
         effect.modifier === 1
           ? 'rose!'
@@ -457,31 +476,39 @@ class Battle {
           ? 'fell!'
           : 'fell sharply!';
 
+      const affectedStat =
+        effect.status === 'paralysed'
+          ? 'speed'
+          : effect.status === 'burning'
+          ? 'attack'
+          : effect.stat;
       const statAfterMod = +modBy50(
-        target[effect.stat].current,
-        effect.modifier
+        target[affectedStat].current,
+        effect.modifier || -2
       ).toFixed(2);
       if (
-        statAfterMod <= target[effect.stat].max * 0.25 ||
+        statAfterMod <= target[affectedStat].max * 0.25 ||
         statAfterMod <= target.level
       ) {
         console.log(
-          `${target.name}'s ${effect.stat} is already too low. ${move.name} had no effect!`
+          `${target.name}'s ${affectedStat} is already too low. ${move.name} had no effect!`
         );
         return;
       }
       if (
-        statAfterMod >= target[effect.stat].max * 1.75 ||
+        statAfterMod >= target[affectedStat].max * 1.75 ||
         statAfterMod >= 500
       ) {
         console.log(
-          `${target.name}'s ${effect.stat} is already too high. ${move.name} had no effect!`
+          `${target.name}'s ${affectedStat} is already too high. ${move.name} had no effect!`
         );
         return;
       }
-      target[effect.stat].current = statAfterMod;
-      target.activeEffects[move.name] = effect;
-      console.log(`${target.name}'s ${effect.stat} ${effectMessage}`);
+      target[affectedStat].current = statAfterMod;
+      if (!['paralysed', 'burning'].includes(effect.status))
+        target.activeEffects[move.name] = effect;
+      effectAlreadyApplied = true;
+      console.log(`${target.name}'s ${affectedStat} ${effectMessage}`);
     }
     if (effect.status) {
       if (Math.random() > effect.statusChance) {
@@ -489,12 +516,26 @@ class Battle {
           console.log(`${user.name}'s ${move.name} failed!`);
         return;
       } else {
-        const alreadyAffected = Object.values(target.activeEffects).find(
-          (activeEffect) => activeEffect.status === effect.status
+        const activeStatus = Object.entries(target.activeEffects).find(
+          (activeEffect) => activeEffect[1].status
         );
-        const innerMessage = alreadyAffected ? 'is already' : 'is';
+        const innerMessage =
+          activeStatus?.[1]?.status === effect.status
+            ? 'is already'
+            : activeStatus
+            ? `is no longer ${activeStatus[1].status}. ${target.name} is now`
+            : 'is';
         console.log(`${target.name} ${innerMessage} ${effect.status}!`);
+        if (activeStatus) delete target.activeEffects[activeStatus[0]];
         target.activeEffects[move.name] = effect;
+        if (effect.status === 'asleep') {
+          const sleepTurns = Math.round(Math.random() * 2 + 1);
+          target.activeEffects[move.name].sleepTurns = sleepTurns;
+        }
+        if (effect.status === 'confused') {
+          const confusedTurns = Math.round(Math.random() * 3 + 1);
+          target.activeEffects[move.name].confusedTurns = confusedTurns;
+        }
       }
     }
   }
@@ -567,10 +608,66 @@ class Battle {
       );
     }
   }
+
+  doStatusEffect(pokemon, isEndOfTurn) {
+    const effects = Object.entries(pokemon.activeEffects);
+
+    const statusEffect = effects.find((effect) => effect[1].status);
+    const status = statusEffect?.[1].status;
+    const tickDamage = pokemon.hitPoints.max / 16;
+
+    if (status === 'paralysed' && !isEndOfTurn) {
+      const skipTurnChance = Math.random();
+      if (skipTurnChance <= 0.25) {
+        console.log(`${pokemon.name} is fully paralysed and can't attack!`);
+        return 'skip';
+      }
+    }
+    if (status === 'burning' && isEndOfTurn) {
+      console.log(`${pokemon.name} is hurt by its burn!`);
+      console.log(`${pokemon.name} took ${tickDamage} damage.`);
+      pokemon.takeDamage(tickDamage);
+    }
+    if (status === 'poisoned' && isEndOfTurn) {
+      console.log(`${pokemon.name} is hurt by poison!`);
+      console.log(`${pokemon.name} took ${tickDamage} damage.`);
+      pokemon.takeDamage(tickDamage);
+    }
+    if (status === 'asleep' && !isEndOfTurn) {
+      if (pokemon.activeEffects[statusEffect[0]].sleepTurns) {
+        pokemon.activeEffects[statusEffect[0]].sleepTurns -= 1;
+        console.log(`${pokemon.name} is fast asleep!`);
+        return 'skip';
+      } else {
+        console.log(`${pokemon.name} woke up!`);
+        delete pokemon.activeEffects[statusEffect[0]];
+      }
+    }
+    if (status === 'confused' && !isEndOfTurn) {
+      if (pokemon.activeEffects[statusEffect[0]].confusedTurns) {
+        pokemon.activeEffects[statusEffect[0]].confusedTurns -= 1;
+        console.log(`${pokemon.name} is confused!`);
+        const selfAttackChance = Math.random();
+        if (selfAttackChance <= 0.5) {
+          console.log(`It hurt itself in its confusion!`);
+          const selfDamage = pokemon.useMove(
+            movesData.confusionSelfAttack,
+            pokemon
+          );
+          pokemon.takeDamage(selfDamage);
+          console.log(`${pokemon.name} took ${selfDamage} damage.`);
+          return 'skip';
+        }
+      } else {
+        console.log(`${pokemon.name} is no longer confused!`);
+        delete pokemon.activeEffects[statusEffect[0]];
+      }
+    }
+  }
 }
 
-// const gerty = create.pokemon('Charmander', 'Charmander', 15);
-// const maude = create.pokemon('Weedle', 'Maude', 6);
+const gerty = create.pokemon('Butterfree', 'PLAYER BUT', 15);
+const maude = create.pokemon('Weedle', 'Maude', 6);
 // console.log(
 //   'GERTY | current XP:',
 //   gerty.xp,
@@ -586,35 +683,35 @@ class Battle {
 // gerty.xp = 595;
 // maude.xp = 85;
 
-// const sq1 = create.pokemon('Squirtle', 'sq1', 6);
-// const sq2 = create.pokemon('Squirtle', 'sq2', 6);
-// const sq3 = create.pokemon('Squirtle', 'sq3', 6);
-// const sq4 = create.pokemon('Squirtle', 'sq4', 6);
-// const jeb = new Player('Jebediah', [gerty, maude, sq1, sq2, sq3, sq4]);
+const sq1 = create.pokemon('Squirtle', 'sq1', 6);
+const sq2 = create.pokemon('Squirtle', 'sq2', 6);
+const sq3 = create.pokemon('Squirtle', 'sq3', 6);
+const sq4 = create.pokemon('Squirtle', 'sq4', 6);
+const jeb = new Player('Jebediah', [gerty, maude, sq1, sq2, sq3, sq4]);
 
-// const phil = create.pokemon('Charmander', 'Phil', 5);
-// const paula = create.pokemon('Charmander', 'Paula', 5);
-// const butch = new Trainer('Butch', [phil, paula]);
+const phil = create.pokemon('Weedle', 'Phil', 5);
+const paula = create.pokemon('Butterfree', 'Paula', 5);
+const butch = new Trainer('Butch', [phil, paula]);
 
-// const wild = randomWildPokemon(10, 'Rattata');
-// jeb.inventory['Poke Ball'] = 3;
-// jeb.inventory['Great Ball'] = 1;
-// jeb.inventory['Potion'] = 2;
-// jeb.inventory['Protein'] = 1;
+const wild = randomWildPokemon(15, 'Butterfree');
+jeb.inventory['Poke Ball'] = 3;
+jeb.inventory['Great Ball'] = 1;
+jeb.inventory['Potion'] = 2;
+jeb.inventory['Protein'] = 1;
 
-// let currentPlayerData;
-// // LOAD GAME
-// loadGame()
-//   // INIT currentPlayerData
-//   .then(({ playerData, rivalData }) => {
-//     currentPlayerData = playerData;
-//     currentPlayer = currentPlayerData.player;
-//     return createDelay(100);
-//   })
-//   .then(() => {
-//     const testBattle = new Battle(jeb, wild.battleTrainer, currentPlayerData);
-//     return testBattle.startBattle();
-//   })
-//   .then(({ currentPlayerData }) => {});
+let currentPlayerData;
+// LOAD GAME
+loadGame()
+  // INIT currentPlayerData
+  .then(({ playerData, rivalData }) => {
+    currentPlayerData = playerData;
+    currentPlayer = currentPlayerData.player;
+    return createDelay(100);
+  })
+  .then(() => {
+    const testBattle = new Battle(jeb, wild.battleTrainer, currentPlayerData);
+    return testBattle.startBattle();
+  })
+  .then(({ currentPlayerData }) => {});
 
 module.exports = { Battle };

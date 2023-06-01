@@ -113,7 +113,8 @@ class Pokemon {
   }
 
   useMove(move, target, outsideBattle) {
-    console.log(`\n${this.name} used ${move.name}!`);
+    if (move.name !== 'confusionSelfAttack')
+      console.log(`\n${this.name} used ${move.name}!`);
 
     if (move.doesDamage && !outsideBattle) {
       const random = Math.random() * 0.2 + 0.4;
