@@ -173,11 +173,7 @@ Speed: ${pokemon.speed.max}
 }
 
 function pokemonMoves(pokemon) {
-  const movesChoices = pokemon.moves.map((move) =>
-    movesData[move].effectOutsideBattle
-      ? move
-      : { name: move, disabled: 'Cannot be used outside of battle.' }
-  );
+  const movesChoices = pokemon.getMoveChoices(true);
 
   const pokemonMovesPrompt = {
     type: 'list',
@@ -189,9 +185,10 @@ ${pokemon.name}'s moves:`,
   return inquirer.prompt([pokemonMovesPrompt]).then(({ pokemonMove }) => {
     if (pokemonMove === '--BACK--') return pokemonMenu();
     else {
-      pokemon.useMove(movesData[pokemonMove], null, true);
+      const moveName = answers.move.split(' |')[0].trimEnd();
+      pokemon.useMove(movesData[moveName], null, true);
       currentPlayerData.effectOutsideBattle =
-        movesData[pokemonMove].effectOutsideBattle;
+        movesData[moveName].effectOutsideBattle;
       return mainMenu();
     }
   });

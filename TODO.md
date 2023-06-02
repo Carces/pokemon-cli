@@ -10,8 +10,6 @@ T6. FINISH randomTrainer/pokemon - generate random moves based on level, account
 
 T7. added some misc items that should console log a message when used from the menu outside of battle, they have an effect.message property for this.
 
-T8. Moves have a uses property - currently uses game values which are very high (30 for tackle). useMove needs to reduce this by 1 (currently the property is only in movesData, needs storing separately. Maybe an array of length 4 where each number represents the num of uses of the move in that slot? if so, will need to be refreshed when an old move is replaced with a new one on level up)
-
 T9. Currently, when a pokemon is created, the for...in loop in their species constructor iterates through their moveTable in reverse order and for each entry where the pokemon's starting level is equal to or greater than the required level for those moves, it pushes the moves onto their moves array until it reaches capacity at 4 moves.
 However,
 The issue with this is that every pokemon will keep their level 1 starting moves, even when created at very high levels. For species with two or three level1 moves, this could mean they are quite underpowered when created at high levels. Some more complex logic might be needed to replace lower level moves with higher level ones. so....
@@ -104,6 +102,8 @@ B10. in doEndOfBattle, activeEffects that don't have staysAfterBattle property a
 
 B11. crashed after first town, loaded most recent save (auto-save when leaving town). Town name was correctly saved and replicated, but PokeMart stock is generated fresh. Should this be stored? maybe townsVisited array stores a copy? Quite a lot of unnecessary data to store for very little reason tbh
 
+B12. in introRivalBattle, rival squirtle's tail whip is still far more effective than player charmander's growl. damage formula was changed so that in a vacuum, lowering target def one stage has the exact same effect as raising attacker's atk and vice versa. Probably because lowering by a stage lowers by 25%, so final difference to damage will be greater if the stat is higher. Is squirtle just stronger than charmander? test by temporarily giving squirtle growl instead of tail whip and vice versa
+
 =====
 DONE:
 =====
@@ -190,3 +190,5 @@ B13. tail whip seems much more effective than growl in the introRivalBattle - wi
 B12. player battle loss not handled in game loop
 
 T2. status effect conditions should now be correctly applied by moves and removed by remove items, but no status conditions have actual tangible effects yet. do some kind of check at start of round to see if activeEffects includes an effect object with a status property.
+
+T8. Moves have a uses property - currently uses game values which are very high (30 for tackle). useMove needs to reduce this by 1 (currently the property is only in movesData, needs storing separately. Maybe an array of length 4 where each number represents the num of uses of the move in that slot? if so, will need to be refreshed when an old move is replaced with a new one on level up)

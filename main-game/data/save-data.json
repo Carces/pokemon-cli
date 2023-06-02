@@ -2,7 +2,7 @@
   "playerData": {
     "stageToLoad": "town1",
     "townsVisited": [
-      "Eterna City"
+      "Striaton City"
     ],
     "player": {
       "name": "Ash",
@@ -13,20 +13,32 @@
             "level": 1,
             "type": "fire",
             "moves": [
-              "Scratch",
-              "Growl"
+              {
+                "name": "Scratch",
+                "uses": {
+                  "current": 34,
+                  "max": 35
+                }
+              },
+              {
+                "name": "Growl",
+                "uses": {
+                  "current": 29,
+                  "max": 30
+                }
+              }
             ],
             "hitPoints": {
-              "current": 0,
-              "max": 13.25
+              "current": 6.33,
+              "max": 12
             },
             "attack": {
-              "current": 15.75,
-              "max": 15.75
+              "current": 15,
+              "max": 15
             },
             "defence": {
-              "current": 12.75,
-              "max": 12.75
+              "current": 9,
+              "max": 12
             },
             "speed": {
               "current": null,
@@ -37,10 +49,10 @@
               "max": 100
             },
             "catchDifficulty": 6,
-            "xpThreshold": 12,
-            "xp": 5,
+            "xpThreshold": 4,
+            "xp": 3,
             "activeEffects": {},
-            "id": "c0b744b6-2817-4262-a547-9ed658c83180",
+            "id": "b4c80836-3363-46b0-b969-5c71488ec1f5",
             "species": "Charmander",
             "evolvesTo": {
               "species": "Charmeleon",
@@ -61,28 +73,40 @@
         },
         {
           "storage": {
-            "name": "Heb",
+            "name": "Rattata",
             "level": 1,
             "type": "normal",
             "moves": [
-              "Tackle",
-              "Tail Whip"
+              {
+                "name": "Tackle",
+                "uses": {
+                  "current": 34,
+                  "max": 35
+                }
+              },
+              {
+                "name": "Tail Whip",
+                "uses": {
+                  "current": 29,
+                  "max": 30
+                }
+              }
             ],
             "hitPoints": {
-              "current": 0,
+              "current": 5.37,
               "max": 10
             },
             "attack": {
-              "current": 15,
+              "current": 11.25,
               "max": 15
             },
             "defence": {
-              "current": 3.48,
+              "current": 11,
               "max": 11
             },
             "speed": {
-              "current": null,
-              "max": null
+              "current": 18,
+              "max": 18
             },
             "accuracy": {
               "current": 100,
@@ -92,7 +116,7 @@
             "xpThreshold": 4,
             "xp": 1,
             "activeEffects": {},
-            "id": "55bca826-ab07-47e7-b934-2a2cae7724be",
+            "id": "100448a7-c949-4400-a37d-00d0a203a39a",
             "species": "Rattata",
             "moveTable": {
               "level4": [
@@ -110,7 +134,7 @@
       ],
       "pokemonList": [
         "Charmander",
-        "Heb"
+        "Rattata"
       ],
       "currentPokeball": {
         "storage": {
@@ -118,20 +142,32 @@
           "level": 1,
           "type": "fire",
           "moves": [
-            "Scratch",
-            "Growl"
+            {
+              "name": "Scratch",
+              "uses": {
+                "current": 34,
+                "max": 35
+              }
+            },
+            {
+              "name": "Growl",
+              "uses": {
+                "current": 29,
+                "max": 30
+              }
+            }
           ],
           "hitPoints": {
-            "current": 0,
-            "max": 13.25
+            "current": 6.33,
+            "max": 12
           },
           "attack": {
-            "current": 15.75,
-            "max": 15.75
+            "current": 15,
+            "max": 15
           },
           "defence": {
-            "current": 12.75,
-            "max": 12.75
+            "current": 9,
+            "max": 12
           },
           "speed": {
             "current": null,
@@ -142,10 +178,10 @@
             "max": 100
           },
           "catchDifficulty": 6,
-          "xpThreshold": 12,
-          "xp": 5,
+          "xpThreshold": 4,
+          "xp": 3,
           "activeEffects": {},
-          "id": "c0b744b6-2817-4262-a547-9ed658c83180",
+          "id": "b4c80836-3363-46b0-b969-5c71488ec1f5",
           "species": "Charmander",
           "evolvesTo": {
             "species": "Charmeleon",
@@ -166,7 +202,7 @@
       },
       "isPlayer": true,
       "inventory": {
-        "Money": 460,
+        "Money": 500,
         "Potion": 1,
         "Poke Ball": 2
       }
@@ -183,15 +219,27 @@
             "level": 1,
             "type": "water",
             "moves": [
-              "Tackle",
-              "Tail Whip"
+              {
+                "name": "Tackle",
+                "uses": {
+                  "current": 32,
+                  "max": 35
+                }
+              },
+              {
+                "name": "Tail Whip",
+                "uses": {
+                  "current": 27,
+                  "max": 30
+                }
+              }
             ],
             "hitPoints": {
-              "current": 0,
+              "current": 2.76,
               "max": 12
             },
             "attack": {
-              "current": 5.91,
+              "current": 10.5,
               "max": 14
             },
             "defence": {
@@ -216,7 +264,7 @@
                 "staysAfterBattle": false
               }
             },
-            "id": "2c8d4d86-beea-418b-b55c-99c8f756043c",
+            "id": "fdc9b9d5-6345-441d-a00c-25c7324581b1",
             "species": "Squirtle",
             "moveTable": {
               "level3": [
@@ -241,15 +289,27 @@
           "level": 1,
           "type": "water",
           "moves": [
-            "Tackle",
-            "Tail Whip"
+            {
+              "name": "Tackle",
+              "uses": {
+                "current": 32,
+                "max": 35
+              }
+            },
+            {
+              "name": "Tail Whip",
+              "uses": {
+                "current": 27,
+                "max": 30
+              }
+            }
           ],
           "hitPoints": {
-            "current": 0,
+            "current": 2.76,
             "max": 12
           },
           "attack": {
-            "current": 5.91,
+            "current": 10.5,
             "max": 14
           },
           "defence": {
@@ -274,7 +334,7 @@
               "staysAfterBattle": false
             }
           },
-          "id": "2c8d4d86-beea-418b-b55c-99c8f756043c",
+          "id": "fdc9b9d5-6345-441d-a00c-25c7324581b1",
           "species": "Squirtle",
           "moveTable": {
             "level3": [

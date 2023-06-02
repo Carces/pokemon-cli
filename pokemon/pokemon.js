@@ -1,11 +1,12 @@
 const inquirer = require('inquirer');
+const { movesData } = require('../main-game/data/moves-data');
 
 class Pokemon {
   constructor(
     name,
     level = 1,
     type = 'normal',
-    moves = [tackle],
+    moves = [],
     hitPoints = 10 + level * 2,
     attack = 10 + level * 2,
     defence = 10 + level * 2,
@@ -14,10 +15,17 @@ class Pokemon {
     catchDifficulty = 5,
     isEvolving
   ) {
+    const movesWithUses = moves.map((moveName) => {
+      const uses = movesData[moveName].uses;
+      return {
+        name: moveName,
+        uses: { current: uses, max: uses },
+      };
+    });
     this.name = name;
     this.level = level;
     this.type = type;
-    this.moves = moves;
+    this.moves = movesWithUses;
     this.hitPoints = { current: hitPoints, max: hitPoints };
     this.attack = { current: attack, max: attack };
     this.defence = { current: defence, max: defence };
@@ -113,14 +121,19 @@ class Pokemon {
   }
 
   useMove(move, target, outsideBattle) {
+    const moveData = movesData[move.name];
+    const moveIndex = this.moves.findIndex(
+      (pokeMove) => pokeMove.name === move.name
+    );
+    this.moves[moveIndex].uses.current--;
     if (move.name !== 'confusionSelfAttack')
       console.log(`\n${this.name} used ${move.name}!`);
 
-    if (move.doesDamage && !outsideBattle) {
+    if (moveData.doesDamage && !outsideBattle) {
       const random = Math.random() * 0.2 + 0.4;
       const damage =
         random * 5 + (this.attack.current - target.defence.current) * 0.5;
-      const moveDamage = damage * move.damageMultiplier;
+      const moveDamage = damage * moveData.damageMultiplier;
       const damageToReturn = Math.max(this.level, +moveDamage.toFixed(2));
       return damageToReturn;
     }
@@ -237,29 +250,53 @@ Level ${this.level} |${xpBar}| Level ${this.level + 1}
     });
   }
 
-  addMoves(moves) {
+  getMoveChoices(isOutsideBattle, namesOnly) {
+    const namePadding = [...this.moves].sort(
+      (a, b) => b.name.length - a.name.length
+    )[0].name.length;
+    return this.moves.map((move) =>
+      namesOnly
+        ? move.name
+        : isOutsideBattle && movesData[move.name].effectOutsideBattle
+        ? {
+            name:
+              move.name.padEnd(namePadding + 1) +
+              `| PP: ${move.uses.current}/${move.uses.max}`,
+            disabled: 'Cannot be used outside of battle.',
+          }
+        : move.name.padEnd(namePadding + 1) +
+          `| PP: ${move.uses.current}/${move.uses.max}`
+    );
+  }
+
+  addMoves(newMoves) {
     const movesQuestions = [];
-    const forgetChoices = [...this.moves, `--DON'T LEARN--`];
+    const moveNames = this.getMoveNames();
+    const forgetChoices = [...moveNames, `--DON'T LEARN--`];
     let qCount = 0;
 
-    moves.forEach((move) => {
+    newMoves.forEach((newMove) => {
       if (this.moves.length === 4) {
         qCount++;
         movesQuestions.push({
           type: 'list',
-          name: move,
-          message: `${this.name} is trying to learn ${move}, but it already has 4 moves. Forget a move to make room for ${move}?`,
+          name: newMove,
+          message: `${this.name} is trying to learn ${newMove}, but it already has 4 moves. Forget a move to make room for ${newMove}?`,
           choices: (answers) => {
             if (answers[`moveToForget${qCount - 1}`] !== `--DON'T LEARN--`) {
               const forgetIndex = forgetChoices.indexOf(answers.moveToForget1);
-              forgetChoices[forgetIndex] = move;
+              forgetChoices[forgetIndex] = newMove;
             }
             return forgetChoices;
           },
         });
       } else {
-        this.moves.push(move);
-        console.log(`${this.name} learned ${move}!`);
+        const uses = movesData[newMove].uses;
+        this.moves.push({
+          name: newMove,
+          uses: { current: uses, max: uses },
+        });
+        console.log(`${this.name} learned ${newMove}!`);
       }
     });
     return !movesQuestions[0]
@@ -267,8 +304,12 @@ Level ${this.level} |${xpBar}| Level ${this.level + 1}
       : inquirer.prompt(movesQuestions).then((answers) => {
           for (const move in answers) {
             if (move !== `--DON'T LEARN--`) {
-              const indexToReplace = this.moves.indexOf(answers[move]);
-              this.moves[indexToReplace] = move;
+              const indexToReplace = this.moveNames.indexOf(answers[move]);
+              const uses = movesData[move].uses;
+              this.moves[indexToReplace] = {
+                name: move,
+                uses: { current: uses, max: uses },
+              };
             }
           }
         });
@@ -286,6 +327,10 @@ Level ${this.level} |${xpBar}| Level ${this.level + 1}
       if (!this.activeEffects[effect].permanent)
         delete this.activeEffects[effect];
     }
+    this.moves.forEach((move, index) => {
+      console.log(this.moves[index], '<<< move at ind from heal');
+      this.moves[index].uses.current = this.moves[index].uses.max;
+    });
   }
 
   generateMoves() {
@@ -296,7 +341,12 @@ Level ${this.level} |${xpBar}| Level ${this.level + 1}
         const movesLevel = movesEntry[0].replace('level', '');
         if (this.level >= movesLevel && this.moves.length < 4) {
           movesEntry[1].forEach((move) => {
-            if (this.moves.length < 4) this.moves.push(move);
+            const uses = movesData[move].uses;
+            if (this.moves.length < 4)
+              this.moves.push({
+                name: move,
+                uses: { current: uses, max: uses },
+              });
           });
         }
       });
