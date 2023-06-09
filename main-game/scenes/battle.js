@@ -34,6 +34,8 @@ class Battle {
     this.winner = null;
     this.loser = null;
     this.participatingPokemon = [this.playerPokemonIndex];
+    this.escapeAttempts = 0;
+    this.isEscaped = false;
   }
 
   startBattle() {
@@ -223,6 +225,12 @@ class Battle {
           choices: itemChoices,
           when: (answers) => answers.action === 'Item',
         },
+        {
+          type: 'confirm',
+          name: 'runConfirm',
+          message: `Attempt to run from battle?`,
+          when: (answers) => answers.action === 'Run' && this.opponent.isWild,
+        },
       ])
       .then((answers) => {
         if (answers.action === 'Fight') {
@@ -239,7 +247,8 @@ class Battle {
             this.doStatusEffect(this.playerPokemon, true);
             return this.resolveTurn();
           }
-        } else if (answers.action === 'Pokemon') {
+        }
+        if (answers.action === 'Pokemon') {
           return this.choosePokemon(this.player).then((choice) => {
             if (choice) {
               this.doStatusEffect(this.playerPokemon, false);
@@ -271,6 +280,55 @@ class Battle {
                   );
                 } else if (result === 'cancel') return this.doBattle();
                 else {
+                  this.doStatusEffect(this.playerPokemon, false);
+                  this.doStatusEffect(this.playerPokemon, true);
+                  return this.resolveTurn();
+                }
+              });
+          }
+        }
+        if (answers.action === 'Run') {
+          if (!answers.runConfirm) return this.doBattle();
+          if (!this.opponent.isWild) {
+            return inquirer
+              .prompt([
+                {
+                  type: 'input',
+                  name: 'unableToRun',
+                  message: 'Cannot run from a trainer battle!',
+                },
+              ])
+              .then(() => this.doBattle());
+          } else {
+            const playerSpeed = this.playerPokemon.speed.current;
+            const opponentSpeed = this.opponentPokemon.speed.current;
+            const speedDifference = opponentSpeed - playerSpeed;
+            const scalingFactor = 0.025;
+            const runDifficulty =
+              playerSpeed > opponentSpeed
+                ? 0
+                : 1 +
+                  speedDifference * scalingFactor -
+                  this.escapeAttempts * 0.75;
+            const runChance = Math.random() + 0.5;
+            const isRunSuccess = runChance >= runDifficulty;
+            return inquirer
+              .prompt([
+                {
+                  type: 'input',
+                  name: 'runResult',
+                  message: isRunSuccess
+                    ? 'Successfully escaped from battle!'
+                    : `The wild ${this.opponentPokemon.name} caught you! Escape failed.`,
+                },
+              ])
+              .then(() => {
+                if (isRunSuccess) {
+                  this.isEscaped = true;
+                  this.loser = this.opponent;
+                  return this.doEndOfBattle();
+                } else {
+                  this.escapeAttempts++;
                   this.doStatusEffect(this.playerPokemon, false);
                   this.doStatusEffect(this.playerPokemon, true);
                   return this.resolveTurn();
@@ -345,7 +403,7 @@ class Battle {
     /////
     this.currentPlayerData.player = this.player;
     if (this.loser.isWild) {
-      console.log('\nYou won!');
+      if (!this.isEscaped) console.log('\nYou won!');
       return { isBlackedOut: false, currentPlayerData: this.currentPlayerData };
     } else if (this.loser.isPlayer) {
       if (this.specialBattleType === 'introRival') {
@@ -685,35 +743,35 @@ const maude = create.pokemon('Weedle', 'Maude', 6);
 // gerty.xp = 595;
 // maude.xp = 85;
 
-// const sq1 = create.pokemon('Squirtle', 'sq1', 6);
-// const sq2 = create.pokemon('Squirtle', 'sq2', 6);
-// const sq3 = create.pokemon('Squirtle', 'sq3', 6);
-// const sq4 = create.pokemon('Squirtle', 'sq4', 6);
-// const jeb = new Player('Jebediah', [gerty, maude, sq1, sq2, sq3, sq4]);
+const sq1 = create.pokemon('Squirtle', 'sq1', 6);
+const sq2 = create.pokemon('Squirtle', 'sq2', 6);
+const sq3 = create.pokemon('Squirtle', 'sq3', 6);
+const sq4 = create.pokemon('Squirtle', 'sq4', 6);
+const jeb = new Player('Jebediah', [gerty, maude, sq1, sq2, sq3, sq4]);
 
-// const phil = create.pokemon('Weedle', 'Phil', 5);
-// const paula = create.pokemon('Butterfree', 'Paula', 5);
-// const butch = new Trainer('Butch', [phil, paula]);
+const phil = create.pokemon('Weedle', 'Phil', 5);
+const paula = create.pokemon('Butterfree', 'Paula', 5);
+const butch = new Trainer('Butch', [phil, paula]);
 
-// const wild = randomWildPokemon(15, 'Butterfree');
-// jeb.inventory['Poke Ball'] = 3;
-// jeb.inventory['Great Ball'] = 1;
-// jeb.inventory['Full Restore'] = 2;
-// jeb.inventory['Antidote'] = 1;
+const wild = randomWildPokemon(15, 'Butterfree');
+jeb.inventory['Poke Ball'] = 3;
+jeb.inventory['Great Ball'] = 1;
+jeb.inventory['Full Restore'] = 2;
+jeb.inventory['Antidote'] = 1;
 
-// let currentPlayerData;
-// // LOAD GAME
-// loadGame()
-//   // INIT currentPlayerData
-//   .then(({ playerData, rivalData }) => {
-//     currentPlayerData = playerData;
-//     currentPlayer = currentPlayerData.player;
-//     return createDelay(100);
-//   })
-//   .then(() => {
-//     const testBattle = new Battle(jeb, wild.battleTrainer, currentPlayerData);
-//     return testBattle.startBattle();
-//   })
-//   .then(({ currentPlayerData }) => {});
+let currentPlayerData;
+// LOAD GAME
+loadGame()
+  // INIT currentPlayerData
+  .then(({ playerData, rivalData }) => {
+    currentPlayerData = playerData;
+    currentPlayer = currentPlayerData.player;
+    return createDelay(100);
+  })
+  .then(() => {
+    const testBattle = new Battle(jeb, wild.battleTrainer, currentPlayerData);
+    return testBattle.startBattle();
+  })
+  .then(({ currentPlayerData }) => {});
 
 module.exports = { Battle };

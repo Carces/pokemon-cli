@@ -6,8 +6,6 @@ T4. multiple save slots (maybe undermines roguelike concept? somehow limit to no
 
 T6. FINISH randomTrainer/pokemon - generate random moves based on level, account for typePreferences and typeExclusive (maybe reorganise species so they're group by type on the exports object of species-data, then have two getRandoms - one to choose type, where their preferences are added an additional time to the array chosen from to weight in their favour, and the other to choose species within that type)
 
-T7. added some misc items that should console log a message when used from the menu outside of battle, they have an effect.message property for this.
-
 T9. Currently, when a pokemon is created, the for...in loop in their species constructor iterates through their moveTable in reverse order and for each entry where the pokemon's starting level is equal to or greater than the required level for those moves, it pushes the moves onto their moves array until it reaches capacity at 4 moves.
 However,
 The issue with this is that every pokemon will keep their level 1 starting moves, even when created at very high levels. For species with two or three level1 moves, this could mean they are quite underpowered when created at high levels. Some more complex logic might be needed to replace lower level moves with higher level ones. so....
@@ -34,8 +32,6 @@ T12. implement special/physical attacks
 T13. implement evasion - in-game, accuracy and speed always start at 100 and attacks always hit until evasion or accuracy are increased/decreased
 
 T14. restructuring battle to avoid deeply nested then blocks - can checkIfBattleOver be refactored to only need calling once? It would help the nesting situation in resolveTurn if so. Can other promise-based functions be refactored to return out promises and chain .then blocks on the same level rather than nesting?
-
-T15. implement logic to run option - should only work on wild pokemon.
 
 T16. implement rewards for winning battles. random amount of money based on (total xp of enemies defeated? loopNum? trainer difficulty rating discussed above [factors in pokemonCount and rarity of each pokemon]?) NPCs have specific item rewards, but nothing that actually gives them to the player (I think?). In games, items are not normally gained at end of battle. When it does happen, it's in a conversation afterwards, not part of the actual battle like money reward. However, here there will be less specific scripted battles with NPCs and therefore less chance to get items as rewards. Also no items found in world or given during story. Maybe randomTrainer should have a small chance to generate item reward for defeating that trainer, like NPCs do?
 
@@ -83,6 +79,8 @@ T32. paralysed and burning condition also affect affect stats. currently impleme
 T33. in games, switching pokemon in battle resets stat changes (but not status conditions). adds a layer of tactics to things like roar and whirlwind to force an enemy to switch out a highly buffed pokemon. Maybe makes status moves less worth it though?
 
 T34. poison condition should damage outside of battle, burn should not
+
+T35. Allow viewing pokemon details in battle like in menu.js. Battle decisions may depend on knowing if a pokemon has a certain move, has pp left for that move, has a certain speed, higher atk or phys atk etc., so should be checkable.
 
 ## STATS SYSTEM
 
@@ -192,3 +190,7 @@ T2. status effect conditions should now be correctly applied by moves and remove
 T8. Moves have a uses property - currently uses game values which are very high (30 for tackle). useMove needs to reduce this by 1 (currently the property is only in movesData, needs storing separately. Maybe an array of length 4 where each number represents the num of uses of the move in that slot? if so, will need to be refreshed when an old move is replaced with a new one on level up)
 
 T5. item type property - currently is just a string, which has been fine so far. Full Restore now added which heals AND removes condition. left it as type: 'heal' for now so it's correctly handled by useItem, but probably should be converted to an array of types to allow for multiple types like ['heal', 'remove']
+
+T7. added some misc items that should console log a message when used from the menu outside of battle, they have an effect.message property for this.
+
+T15. implement logic to run option - should only work on wild pokemon.
