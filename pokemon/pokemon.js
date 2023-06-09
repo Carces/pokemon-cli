@@ -328,7 +328,6 @@ Level ${this.level} |${xpBar}| Level ${this.level + 1}
         delete this.activeEffects[effect];
     }
     this.moves.forEach((move, index) => {
-      console.log(this.moves[index], '<<< move at ind from heal');
       this.moves[index].uses.current = this.moves[index].uses.max;
     });
   }

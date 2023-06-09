@@ -668,8 +668,8 @@ class Battle {
   }
 }
 
-// const gerty = create.pokemon('Butterfree', 'PLAYER BUT', 15);
-// const maude = create.pokemon('Weedle', 'Maude', 6);
+const gerty = create.pokemon('Butterfree', 'PLAYER BUT', 15);
+const maude = create.pokemon('Weedle', 'Maude', 6);
 // console.log(
 //   'GERTY | current XP:',
 //   gerty.xp,
@@ -685,35 +685,35 @@ class Battle {
 // gerty.xp = 595;
 // maude.xp = 85;
 
-// const sq1 = create.pokemon('Squirtle', 'sq1', 6);
-// const sq2 = create.pokemon('Squirtle', 'sq2', 6);
-// const sq3 = create.pokemon('Squirtle', 'sq3', 6);
-// const sq4 = create.pokemon('Squirtle', 'sq4', 6);
-// const jeb = new Player('Jebediah', [gerty, maude, sq1, sq2, sq3, sq4]);
+const sq1 = create.pokemon('Squirtle', 'sq1', 6);
+const sq2 = create.pokemon('Squirtle', 'sq2', 6);
+const sq3 = create.pokemon('Squirtle', 'sq3', 6);
+const sq4 = create.pokemon('Squirtle', 'sq4', 6);
+const jeb = new Player('Jebediah', [gerty, maude, sq1, sq2, sq3, sq4]);
 
-// const phil = create.pokemon('Weedle', 'Phil', 5);
-// const paula = create.pokemon('Butterfree', 'Paula', 5);
-// const butch = new Trainer('Butch', [phil, paula]);
+const phil = create.pokemon('Weedle', 'Phil', 5);
+const paula = create.pokemon('Butterfree', 'Paula', 5);
+const butch = new Trainer('Butch', [phil, paula]);
 
-// const wild = randomWildPokemon(15, 'Butterfree');
-// jeb.inventory['Poke Ball'] = 3;
-// jeb.inventory['Great Ball'] = 1;
-// jeb.inventory['Potion'] = 2;
-// jeb.inventory['Protein'] = 1;
+const wild = randomWildPokemon(15, 'Butterfree');
+jeb.inventory['Poke Ball'] = 3;
+jeb.inventory['Great Ball'] = 1;
+jeb.inventory['Full Restore'] = 2;
+jeb.inventory['Antidote'] = 1;
 
-// let currentPlayerData;
-// // LOAD GAME
-// loadGame()
-//   // INIT currentPlayerData
-//   .then(({ playerData, rivalData }) => {
-//     currentPlayerData = playerData;
-//     currentPlayer = currentPlayerData.player;
-//     return createDelay(100);
-//   })
-//   .then(() => {
-//     const testBattle = new Battle(jeb, wild.battleTrainer, currentPlayerData);
-//     return testBattle.startBattle();
-//   })
-//   .then(({ currentPlayerData }) => {});
+let currentPlayerData;
+// LOAD GAME
+loadGame()
+  // INIT currentPlayerData
+  .then(({ playerData, rivalData }) => {
+    currentPlayerData = playerData;
+    currentPlayer = currentPlayerData.player;
+    return createDelay(100);
+  })
+  .then(() => {
+    const testBattle = new Battle(jeb, wild.battleTrainer, currentPlayerData);
+    return testBattle.startBattle();
+  })
+  .then(({ currentPlayerData }) => {});
 
 module.exports = { Battle };

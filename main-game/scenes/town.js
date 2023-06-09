@@ -173,7 +173,7 @@ function pokemonCentre() {
 
 function buy(alreadyBought) {
   const items = Object.values(itemsData).filter(
-    (item) => item.type !== 'money'
+    (item) => !item.types.includes('money')
   );
   const stock = pokeMartStock || [];
   if (!stock[0]) {

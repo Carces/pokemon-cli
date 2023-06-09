@@ -1,7 +1,7 @@
 const itemsData = {
   Money: {
     name: 'Money',
-    type: 'money',
+    types: ['money'],
     price: 1,
     rarity: 1,
     description: 'Money can be exchanged for goods and services.',
@@ -10,7 +10,7 @@ const itemsData = {
   },
   'Poke Ball': {
     name: 'Poke Ball',
-    type: 'ball',
+    types: ['ball'],
     price: 200,
     rarity: 1,
     description:
@@ -20,7 +20,7 @@ const itemsData = {
   },
   'Great Ball': {
     name: 'Great Ball',
-    type: 'ball',
+    types: ['ball'],
     price: 600,
     rarity: 3,
     description:
@@ -30,7 +30,7 @@ const itemsData = {
   },
   'Ultra Ball': {
     name: 'Ultra Ball',
-    type: 'ball',
+    types: ['ball'],
     price: 1200,
     rarity: 5,
     description:
@@ -40,7 +40,7 @@ const itemsData = {
   },
   'Master Ball': {
     name: 'Master Ball',
-    type: 'ball',
+    types: ['ball'],
     price: null,
     rarity: 10,
     description:
@@ -50,7 +50,7 @@ const itemsData = {
   },
   Potion: {
     name: 'Potion',
-    type: 'heal',
+    types: ['heal'],
     price: 300,
     rarity: 1,
     description: 'A basic potion. Restores up to 10 HP',
@@ -64,7 +64,7 @@ const itemsData = {
   },
   'Super Potion': {
     name: 'Super Potion',
-    type: 'heal',
+    types: ['heal'],
     price: 700,
     rarity: 3,
     description: 'A more potent potion. Restores up to 25 HP',
@@ -78,7 +78,7 @@ const itemsData = {
   },
   'Hyper Potion': {
     name: 'Hyper Potion',
-    type: 'heal',
+    types: ['heal'],
     price: 1200,
     rarity: 5,
     description: 'A cutting-edge new potion. Restores up to 50 HP',
@@ -92,7 +92,7 @@ const itemsData = {
   },
   'Max Potion': {
     name: 'Max Potion',
-    type: 'heal',
+    types: ['heal'],
     price: 2500,
     rarity: 10,
     description:
@@ -107,7 +107,7 @@ const itemsData = {
   },
   'Full Restore': {
     name: 'Full Restore',
-    type: 'heal',
+    types: ['heal', 'remove'],
     price: 3000,
     rarity: 15,
     description:
@@ -123,7 +123,7 @@ const itemsData = {
   },
   Antidote: {
     name: 'Antidote',
-    type: 'remove',
+    types: ['remove'],
     price: 100,
     rarity: 0,
     description: 'Cures poisoned Pokemon.',
@@ -135,7 +135,7 @@ const itemsData = {
   },
   Protein: {
     name: 'Protein',
-    type: 'boost',
+    types: ['boost'],
     price: 9800,
     rarity: 5,
     description: `Vitamins: These are good for your strength. Permanently boost a Pokemon's attack by 2.`,
@@ -150,7 +150,7 @@ const itemsData = {
   },
   Shorts: {
     name: 'Shorts',
-    type: 'misc',
+    types: ['misc'],
     price: 200,
     rarity: 100,
     description: `Apparently they're comfy and easy to wear.`,
@@ -162,7 +162,7 @@ const itemsData = {
   },
   Sunglasses: {
     name: 'Sunglasses',
-    type: 'misc',
+    types: ['misc'],
     price: 500,
     rarity: 100,
     description: `They're Squirtle-sized. Will they fit?`,

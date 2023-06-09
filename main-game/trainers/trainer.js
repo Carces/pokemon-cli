@@ -68,7 +68,7 @@ class Trainer {
         ? capturedPokemon
         : this.getPokemon(pokeName).pokemonObj;
       const paddedName = `${pokeName}:`.padEnd(namePadding + 1);
-      const pokemonWithHp = `${paddedName} Level ${pokemon.level
+      let pokemonWithHp = `${paddedName} Level ${pokemon.level
         .toString()
         .padEnd(levelPadding)} | HP - ${pokemon.hitPoints.current}/${
         pokemon.hitPoints.max
@@ -78,6 +78,7 @@ class Trainer {
         if (effect.status && !pokemonConditions.includes(effect.status))
           pokemonConditions.push(effect.status);
       });
+      if (pokemonConditions[0]) pokemonWithHp += ` [${pokemonConditions}]`;
       const pokemonChoice = isCapturedPoke
         ? `${pokemonWithHp} - NEW`
         : !pokemon.hitPoints.current && (isBattleChoose || itemType === 'heal')
@@ -87,25 +88,24 @@ class Trainer {
         : pokemon.id === this.currentPokeball.storage.id && isBattleChoose
         ? { name: pokemonWithHp, disabled: 'already out' }
         : pokemonWithHp;
-      return pokemonConditions[0]
-        ? `${pokemonChoice} (${pokemonConditions})`
-        : pokemonChoice;
+      return pokemonChoice;
     });
     return pokemonChoices;
   }
 
   useItem(item, trainer, opponent, opponentPokemon, currentPlayerData) {
     const itemData = itemsData[item];
-    const pokemonChoices =
-      itemData.type === 'heal'
-        ? this.getPokemonChoices(null, null, null, 'heal')
-        : this.getPokemonChoices();
+    const pokemonChoices = itemData.types.includes('heal')
+      ? this.getPokemonChoices(null, null, null, 'heal')
+      : this.getPokemonChoices();
     const targets =
-      itemData.type === 'ball' && opponent?.isWild
+      itemData.types.includes('ball') && opponent?.isWild
         ? [opponentPokemon]
-        : itemData.type === 'ball'
+        : itemData.types.includes('ball')
         ? [{ name: ' ', disabled: 'Only wild Pokemon can be caught!' }]
-        : ['boost', 'heal', 'remove'].includes(itemData.type)
+        : itemData.types.some((type) =>
+            ['boost', 'heal', 'remove'].includes(type)
+          )
         ? pokemonChoices
         : [{ name: ' ', disabled: 'No valid targets!' }];
     targets.push('--CANCEL--');
@@ -155,7 +155,7 @@ class Trainer {
     this.inventory[item]--;
     if (this.inventory[item] === 0) delete this.inventory[item];
 
-    if (itemData.type === 'ball') {
+    if (itemData.types.includes('ball')) {
       const ball = create.ball(itemData.name);
       const capturedPokemon = ball.throw(target);
       if (capturedPokemon) {
@@ -238,16 +238,19 @@ class Trainer {
             return 'captureSuccess';
           });
       } else return Promise.resolve(false);
-    } else if (itemData.type === 'heal') {
+    }
+    if (itemData.types.includes('heal')) {
       target.hitPoints.current = +Math.min(
         target.hitPoints.max,
         target.hitPoints.current + effect.modifier
       ).toFixed(2);
       console.log(
-        `${target.name} regained ${effect.modifier} hit points! ${target.name} now has ${target.hitPoints.current}/${target.hitPoints.max} HP`
+        effect.modifier > 100
+          ? `${target.name}'s hit points were fully restored! ${target.name} now has ${target.hitPoints.current}/${target.hitPoints.max} HP`
+          : `${target.name} regained ${effect.modifier} hit points! ${target.name} now has ${target.hitPoints.current}/${target.hitPoints.max} HP`
       );
-      return Promise.resolve();
-    } else if (itemData.type === 'boost') {
+    }
+    if (itemData.types.includes('boost')) {
       const effectMessage = effect.modifier === 1 ? 'rose!' : 'rose sharply!';
       const statAfterMod = +modBy50(
         target[effect.stat.max].current,
@@ -261,13 +264,14 @@ class Trainer {
         console.log(
           `${target.name}'s ${effect.stat} is already too high. ${item} had no effect!`
         );
-      } else {
+      }
+      {
         target[effect.stat].current = statAfterMod;
         target.activeEffects[item] = effect;
         console.log(`${target.name}'s ${effect.stat} ${effectMessage}`);
       }
-      return Promise.resolve();
-    } else if (itemData.type === 'remove') {
+    }
+    if (itemData.types.includes('remove')) {
       let effectRemoved = false;
       for (const activeEffect in target.activeEffects) {
         const activeEffObj = target.activeEffects[activeEffect];
@@ -276,16 +280,16 @@ class Trainer {
           (activeEffObj.status && effect.remove === 'all')
         ) {
           delete target.activeEffects[activeEffect];
-          effectRemoved = true;
+          effectRemoved = activeEffObj.status;
         }
       }
       console.log(
         effectRemoved
-          ? `${target.name} is no longer ${effect.remove}.`
+          ? `${target.name} is no longer ${effectRemoved}.`
           : `It had no effect! ${target.name} is not ${effect.remove}.`
       );
-      return Promise.resolve();
     }
+    return Promise.resolve();
   }
 }
 
