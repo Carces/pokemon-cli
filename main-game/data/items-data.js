@@ -157,7 +157,8 @@ const itemsData = {
     useInBattle: false,
     useInMenu: true,
     effect: {
-      message: `You put the shorts on\n...\nHey, they are pretty comfy!`,
+      message1: 'You put the shorts on...',
+      message2: 'Hey, they ARE pretty comfy!',
     },
   },
   Sunglasses: {
@@ -169,7 +170,8 @@ const itemsData = {
     useInBattle: false,
     useInMenu: true,
     effect: {
-      message: `You've never looked cooler.`,
+      message1: 'You put the sunglasses on...',
+      message2: `You've never looked cooler.`,
     },
   },
 };

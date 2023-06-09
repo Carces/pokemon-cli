@@ -4,8 +4,6 @@ T3. new game save overwrite warning - when new game is started from main menu, l
 
 T4. multiple save slots (maybe undermines roguelike concept? somehow limit to not being able to save same character/run to multiple files?)- only needs implementing for manual saves in menu.js. extra prompt when menuAction === 'save' that lists 3 slots and if they have datta or not. auto-saves would need a way to track save slot loaded in from so they auto-save to the right slot
 
-T5. item type property - currently is just a string, which has been fine so far. Full Restore now added which heals AND removes condition. left it as type: 'heal' for now so it's correctly handled by useItem, but probably should be converted to an array of types to allow for multiple types like ['heal', 'remove']
-
 T6. FINISH randomTrainer/pokemon - generate random moves based on level, account for typePreferences and typeExclusive (maybe reorganise species so they're group by type on the exports object of species-data, then have two getRandoms - one to choose type, where their preferences are added an additional time to the array chosen from to weight in their favour, and the other to choose species within that type)
 
 T7. added some misc items that should console log a message when used from the menu outside of battle, they have an effect.message property for this.
@@ -192,3 +190,5 @@ B12. player battle loss not handled in game loop
 T2. status effect conditions should now be correctly applied by moves and removed by remove items, but no status conditions have actual tangible effects yet. do some kind of check at start of round to see if activeEffects includes an effect object with a status property.
 
 T8. Moves have a uses property - currently uses game values which are very high (30 for tackle). useMove needs to reduce this by 1 (currently the property is only in movesData, needs storing separately. Maybe an array of length 4 where each number represents the num of uses of the move in that slot? if so, will need to be refreshed when an old move is replaced with a new one on level up)
+
+T5. item type property - currently is just a string, which has been fine so far. Full Restore now added which heals AND removes condition. left it as type: 'heal' for now so it's correctly handled by useItem, but probably should be converted to an array of types to allow for multiple types like ['heal', 'remove']

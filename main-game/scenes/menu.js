@@ -66,6 +66,23 @@ Items:`,
     if (itemChoice === '--BACK--') return mainMenu();
     else {
       const itemToUse = itemChoice.split(':')[0];
+      const itemToUseData = itemsData[itemToUse];
+      if (itemToUseData.types.includes('misc'))
+        return inquirer
+          .prompt([
+            {
+              type: 'input',
+              name: 'itemMessage1',
+              message: itemToUseData.effect.message1,
+            },
+            {
+              type: 'input',
+              name: 'itemMessage2',
+              message: itemToUseData.effect.message2,
+              when: () => itemToUseData.effect.message2,
+            },
+          ])
+          .then(() => itemsMenu());
       return currentPlayerData.player
         .useItem(
           itemToUse,

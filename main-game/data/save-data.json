@@ -11,7 +11,7 @@
         {
           "storage": {
             "name": "Charmander",
-            "level": 2,
+            "level": 1,
             "type": "fire",
             "moves": [
               {
@@ -53,7 +53,7 @@
             "xpThreshold": 12,
             "xp": 9,
             "activeEffects": {},
-            "id": "b5d3d670-5042-4896-be27-c548a09396c8",
+            "id": "76413f4f-4ee4-4b27-b0c4-e4afe7fda1a5",
             "species": "Charmander",
             "evolvesTo": {
               "species": "Charmeleon",
@@ -117,7 +117,7 @@
             "xpThreshold": 4,
             "xp": 1,
             "activeEffects": {},
-            "id": "6948b6c1-9749-4b03-baab-e6c98458ebd2",
+            "id": "ca0ae375-8852-4947-b57f-d6bce0466ced",
             "species": "Rattata",
             "moveTable": {
               "level4": [
@@ -140,7 +140,7 @@
       "currentPokeball": {
         "storage": {
           "name": "Charmander",
-          "level": 2,
+          "level": 1,
           "type": "fire",
           "moves": [
             {
@@ -182,7 +182,7 @@
           "xpThreshold": 12,
           "xp": 9,
           "activeEffects": {},
-          "id": "b5d3d670-5042-4896-be27-c548a09396c8",
+          "id": "76413f4f-4ee4-4b27-b0c4-e4afe7fda1a5",
           "species": "Charmander",
           "evolvesTo": {
             "species": "Charmeleon",
@@ -205,7 +205,9 @@
       "inventory": {
         "Money": 500,
         "Potion": 1,
-        "Poke Ball": 2
+        "Poke Ball": 2,
+        "Sunglasses": 1,
+        "Shorts": 1
       }
     },
     "PC": []
@@ -259,7 +261,7 @@
             "xpThreshold": 4,
             "xp": 1,
             "activeEffects": {},
-            "id": "37618f14-9392-4f66-93c7-d21a42a64b61",
+            "id": "6b8ced46-12ae-4ba5-92cc-1bd26ee59b4c",
             "species": "Squirtle",
             "moveTable": {
               "level3": [
@@ -323,7 +325,7 @@
           "xpThreshold": 4,
           "xp": 1,
           "activeEffects": {},
-          "id": "37618f14-9392-4f66-93c7-d21a42a64b61",
+          "id": "6b8ced46-12ae-4ba5-92cc-1bd26ee59b4c",
           "species": "Squirtle",
           "moveTable": {
             "level3": [
