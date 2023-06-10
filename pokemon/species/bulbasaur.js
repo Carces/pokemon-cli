@@ -1,7 +1,7 @@
-const { Grass } = require('../types/grass');
+const { Pokemon } = require('../pokemon');
 const { movesData } = require('../../main-game/data/moves-data.js');
 
-class Bulbasaur extends Grass {
+class Bulbasaur extends Pokemon {
   constructor(
     name = 'Bulbasaur',
     level,
@@ -17,13 +17,15 @@ class Bulbasaur extends Grass {
     super(
       name,
       level,
+      ['grass', 'poison'],
       moves,
       hitPoints,
       attack,
       defence,
       speed,
       accuracy,
-      catchDifficulty
+      catchDifficulty,
+      isEvolving
     );
     this.species = 'Bulbasaur';
     this.isEvolving = isEvolving;

@@ -1,7 +1,7 @@
-const { Normal } = require('../../pokemon/types/normal.js');
+const { Pokemon } = require('../pokemon');
 const { movesData } = require('../../main-game/data/moves-data.js');
 
-class Rattata extends Normal {
+class Rattata extends Pokemon {
   constructor(
     name = 'Rattata',
     level,
@@ -17,13 +17,15 @@ class Rattata extends Normal {
     super(
       name,
       level,
+      ['normal'],
       moves,
       hitPoints,
       attack,
       defence,
       speed,
       accuracy,
-      catchDifficulty
+      catchDifficulty,
+      isEvolving
     );
     this.species = 'Rattata';
     this.isEvolving = isEvolving;

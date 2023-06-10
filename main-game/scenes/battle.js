@@ -510,7 +510,7 @@ class Battle {
   }
 
   getCriticalHit() {
-    return Math.floor(Math.random() + 0.2);
+    return Math.floor(Math.random() + 0.075);
   }
 
   resolveStatusMove(move, user, target) {
@@ -604,8 +604,7 @@ class Battle {
     const attacker = attackingPokemon.name;
     const defender = defendingPokemon.name;
     let hasValidTarget = defendingPokemon.hitPoints.current > 0;
-    const baseDamage = attackingPokemon.useMove(move, defendingPokemon);
-
+    let damage = attackingPokemon.useMove(move, defendingPokemon);
     // CALCULATE HIT CHANCE HERE
 
     if (move.effectOnSelf)
@@ -615,15 +614,23 @@ class Battle {
     if (!move.doesDamage) return;
 
     // Calculate attacking pokemon's damage,
-    let damage = defendingPokemon.isWeakTo(move)
-      ? 1.25 * baseDamage
-      : defendingPokemon.isResistantTo(move)
-      ? 0.75 * baseDamage
-      : baseDamage;
+    const isImmune = defendingPokemon.isImmuneTo(move);
+    const effectiveness =
+      0 +
+      defendingPokemon.getWeakness(move) +
+      defendingPokemon.getResistance(move);
+    damage =
+      effectiveness > 0
+        ? (1 + 0.25 * effectiveness) * damage
+        : effectiveness < 0
+        ? (1 - 0.25 * effectiveness) * damage
+        : isImmune
+        ? 0
+        : damage;
     // accounting for type weaknesses
 
     const isCriticalHit = this.getCriticalHit();
-    damage += isCriticalHit * 2;
+    if (isCriticalHit && !isImmune) damage = damage * 2;
     const finalDamage = +damage.toFixed(2);
 
     if (hasValidTarget) {
@@ -633,10 +640,12 @@ class Battle {
         defendingPokemon.hitPoints.current / defendingPokemon.hitPoints.max;
       // and calculate how badly damaged it is now
 
-      if (defendingPokemon.isWeakTo(move)) console.log("It's super effective!");
-      if (defendingPokemon.isResistantTo(move))
-        console.log("It's not very effective...");
-      if (isCriticalHit) console.log("It's a critical hit!");
+      if (isImmune) console.log('It had no effect!');
+      else {
+        if (effectiveness > 0) console.log("It's super effective!");
+        if (effectiveness < 0) console.log("It's not very effective...");
+        if (isCriticalHit) console.log("It's a critical hit!");
+      }
 
       // Separator for clearer output
       console.log('\n');
@@ -726,7 +735,11 @@ class Battle {
   }
 }
 
-const gerty = create.pokemon('Butterfree', 'PLAYER BUT', 15);
+const gerty = create.pokemon('Butterfree', 'PLAYER BUT', 15, [
+  'steelTest',
+  'waterTest',
+  'psychicTest',
+]);
 const maude = create.pokemon('Weedle', 'Maude', 6);
 // console.log(
 //   'GERTY | current XP:',
@@ -753,7 +766,7 @@ const phil = create.pokemon('Weedle', 'Phil', 5);
 const paula = create.pokemon('Butterfree', 'Paula', 5);
 const butch = new Trainer('Butch', [phil, paula]);
 
-const wild = randomWildPokemon(15, 'Butterfree');
+const wild = randomWildPokemon(15, 'Geodude');
 jeb.inventory['Poke Ball'] = 3;
 jeb.inventory['Great Ball'] = 1;
 jeb.inventory['Full Restore'] = 2;

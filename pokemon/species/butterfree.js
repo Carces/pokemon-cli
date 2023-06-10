@@ -1,6 +1,6 @@
-const { Bug } = require('../types/bug.js');
+const { Pokemon } = require('../pokemon.js');
 
-class Butterfree extends Bug {
+class Butterfree extends Pokemon {
   constructor(
     name = 'Butterfree',
     level,
@@ -16,13 +16,15 @@ class Butterfree extends Bug {
     super(
       name,
       level,
+      ['bug', 'flying'],
       moves,
       hitPoints,
       attack,
       defence,
       speed,
       accuracy,
-      catchDifficulty
+      catchDifficulty,
+      isEvolving
     );
     this.species = 'Butterfree';
     this.isEvolving = isEvolving;

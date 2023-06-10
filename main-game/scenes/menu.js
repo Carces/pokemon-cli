@@ -158,6 +158,9 @@ ${pokeName}:`,
 }
 
 function pokemonDetails(pokemon) {
+  const typesString = pokemon.types
+    .map((type) => type[0].toUpperCase() + type.slice(1, type.length))
+    .join(', ');
   const pokemonDetailsPrompts = [
     {
       type: 'input',
@@ -170,10 +173,7 @@ Experience Points to next level: ${pokemon.xpThreshold - pokemon.xp}
 ${pokemon.showXpBar()}
 
 Species: ${pokemon.species}
-Type: ${
-        pokemon.type[0].toUpperCase() +
-        pokemon.type.slice(1, pokemon.type.length)
-      }
+Type(s): ${typesString}
 ----------------------
 Attack: ${pokemon.attack.max}
 Defence: ${pokemon.defence.max}

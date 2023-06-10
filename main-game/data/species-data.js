@@ -10,6 +10,7 @@ const { Metapod } = require('../../pokemon/species/metapod.js');
 const { Butterfree } = require('../../pokemon/species/butterfree.js');
 const { Pidgey } = require('../../pokemon/species/pidgey.js');
 const { Weedle } = require('../../pokemon/species/weedle.js');
+const { Geodude } = require('../../pokemon/species/geodude.js');
 
 module.exports = {
   Charmander: { class: Charmander, rarity: 5 },
@@ -24,4 +25,5 @@ module.exports = {
   Butterfree: { class: Butterfree, rarity: 7 },
   Pidgey: { class: Pidgey, rarity: 2 },
   Weedle: { class: Weedle, rarity: 1 },
+  Geodude: { class: Geodude, rarity: 4 },
 };

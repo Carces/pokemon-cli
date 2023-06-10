@@ -1,7 +1,7 @@
-const { Water } = require('../types/water');
+const { Pokemon } = require('../pokemon');
 const { movesData } = require('../../main-game/data/moves-data.js');
 
-class Squirtle extends Water {
+class Squirtle extends Pokemon {
   constructor(
     name = 'Squirtle',
     level,
@@ -17,13 +17,15 @@ class Squirtle extends Water {
     super(
       name,
       level,
+      ['water'],
       moves,
       hitPoints,
       attack,
       defence,
       speed,
       accuracy,
-      catchDifficulty
+      catchDifficulty,
+      isEvolving
     );
     this.species = 'Squirtle';
     this.isEvolving = isEvolving;

@@ -27,9 +27,6 @@ function loadGame() {
       function loadTrainerInstance(trainer) {
         const newTrainerInstance =
           trainer === player ? newPlayerInstance : newRivalInstance;
-
-        //
-
         ({
           name: newTrainerInstance.name,
           pokemonList: newTrainerInstance.pokemonList,
@@ -42,15 +39,20 @@ function loadGame() {
           const ballTypeName = ball.ballType.name;
           const newBallInstance = new ballsData[ballTypeName + 'Ball']();
           const speciesName = ball.storage.species;
-          const newPokemonInstance = create.pokemon(speciesName, pokemon.level);
+          const newPokemonInstance = create.pokemon(
+            speciesName,
+            pokemon.name,
+            pokemon.level
+          );
 
           ({
-            name: newPokemonInstance.name,
-            type: newPokemonInstance.type,
+            types: newPokemonInstance.types,
             moves: newPokemonInstance.moves,
             hitPoints: newPokemonInstance.hitPoints,
             attack: newPokemonInstance.attack,
             defence: newPokemonInstance.defence,
+            speed: newPokemonInstance.speed,
+            accuracy: newPokemonInstance.accuracy,
             catchDifficulty: newPokemonInstance.catchDifficulty,
             xpThreshold: newPokemonInstance.xpThreshold,
             xp: newPokemonInstance.xp,

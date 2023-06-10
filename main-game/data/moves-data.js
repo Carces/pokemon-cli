@@ -135,7 +135,7 @@ const movesData = {
   },
   Harden: {
     name: 'Harden',
-    type: 'bug',
+    type: 'normal',
     uses: 30,
     accuracy: 100,
     doesDamage: false,
@@ -329,6 +329,70 @@ const movesData = {
     effectOutsideBattle: {
       lureType: 'flying',
     },
+  },
+  'Defence Curl': {
+    // DOUBLES DAMAGE OF ROLLOUT - not yet implemented
+    name: 'Defence Curl',
+    type: 'normal',
+    uses: 40,
+    accuracy: 100,
+    doesDamage: false,
+    damageMultiplier: 0,
+    critMultiplier: 0,
+    effectOnSelf: {
+      stat: 'defence',
+      modifier: 1,
+      staysAfterBattle: false,
+    },
+    effectOnTarget: null,
+  },
+  'Mud Sport': {
+    // LOWERS POWER OF ELECTRIC MOVES - 50% reduction for all pokemon on both sides for next 5 turns, even after swapping out
+    name: 'Mud Sport',
+    type: 'ground',
+    uses: 15,
+    accuracy: 100,
+    doesDamage: false,
+    damageMultiplier: 0,
+    critMultiplier: 0,
+    effectOnSelf: null,
+    effectOnTarget: null,
+    effectOnBattle: {
+      //depower electric
+    },
+  },
+  steelTest: {
+    name: 'steelTest',
+    type: 'steel',
+    uses: 25,
+    accuracy: 100,
+    doesDamage: true,
+    damageMultiplier: 1,
+    critMultiplier: 1,
+    effectOnSelf: null,
+    effectOnTarget: null,
+  },
+  waterTest: {
+    name: 'waterTest',
+    type: 'water',
+    uses: 25,
+    accuracy: 100,
+    doesDamage: true,
+    damageMultiplier: 1,
+    critMultiplier: 1,
+    effectOnSelf: null,
+    effectOnTarget: null,
+  },
+  psychicTest: {
+    name: 'psychicTest',
+    type: 'psychic',
+    uses: 25,
+    accuracy: 100,
+    doesDamage: true,
+    damageMultiplier: 1,
+    critMultiplier: 1,
+    effectOnSelf: null,
+    effectOnTarget: null,
   },
 };
 

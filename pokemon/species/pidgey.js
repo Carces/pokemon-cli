@@ -1,7 +1,7 @@
-const { Flying } = require('../types/flying.js');
+const { Pokemon } = require('../pokemon.js');
 const { movesData } = require('../../main-game/data/moves-data.js');
 
-class Pidgey extends Flying {
+class Pidgey extends Pokemon {
   constructor(
     name = 'Pidgey',
     level,
@@ -17,13 +17,15 @@ class Pidgey extends Flying {
     super(
       name,
       level,
+      ['normal', 'flying'],
       moves,
       hitPoints,
       attack,
       defence,
       speed,
       accuracy,
-      catchDifficulty
+      catchDifficulty,
+      isEvolving
     );
     this.species = 'Pidgey';
     this.isEvolving = isEvolving;

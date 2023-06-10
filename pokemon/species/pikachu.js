@@ -1,7 +1,7 @@
-const { Electric } = require('../types/electric');
+const { Pokemon } = require('../pokemon');
 const { movesData } = require('../../main-game/data/moves-data.js');
 
-class Pikachu extends Electric {
+class Pikachu extends Pokemon {
   constructor(
     name = 'Pikachu',
     level,
@@ -17,13 +17,15 @@ class Pikachu extends Electric {
     super(
       name,
       level,
+      ['electric'],
       moves,
       hitPoints,
       attack,
       defence,
       speed,
       accuracy,
-      catchDifficulty
+      catchDifficulty,
+      isEvolving
     );
     this.species = 'Pikachu';
     this.isEvolving = isEvolving;

@@ -35,16 +35,6 @@ T14. restructuring battle to avoid deeply nested then blocks - can checkIfBattle
 
 T16. implement rewards for winning battles. random amount of money based on (total xp of enemies defeated? loopNum? trainer difficulty rating discussed above [factors in pokemonCount and rarity of each pokemon]?) NPCs have specific item rewards, but nothing that actually gives them to the player (I think?). In games, items are not normally gained at end of battle. When it does happen, it's in a conversation afterwards, not part of the actual battle like money reward. However, here there will be less specific scripted battles with NPCs and therefore less chance to get items as rewards. Also no items found in world or given during story. Maybe randomTrainer should have a small chance to generate item reward for defeating that trainer, like NPCs do?
 
-T17. First dual-type pokemon added in Pidgey. Types system currently not really set up for this, so it's just a flying type currently, should be flying and normal.
-
-    > May be the time to take out the type classes, as all they currently do is set the type and call super
-    > Then, this.type can be an array of types
-    > Will need to then update pokemon.js isWeakTo etc., check this.types.includes(...)
-    > Any other things to change/update that make use of pokemon type directly? Will affect randomTrainer typePreferences, but those haven't been implemented yet
-    > Will affect type display in menu>pokemonDetails, will need to list multiple types
-
-T18. pokemon.js now has isImmuneTo method, but not called/checked for in battle.js fight method
-
 T19. movesData - accuracy almost all at 100%. In games, most moves have 95% or less. Is accuracy checked/used anywhere? battle.js fight may not take it into account at all, so needs implementing. Pokemon also now all have an accuracy stat, at 100 for all species. Can be lowered by enemy moves and should be taken into account along with move base accuracy
 
 T20. because species are completely randomised and only selector will be rarity, whereas in games it's based on area, it will be much harder to find a specific pokemon:
@@ -194,3 +184,13 @@ T5. item type property - currently is just a string, which has been fine so far.
 T7. added some misc items that should console log a message when used from the menu outside of battle, they have an effect.message property for this.
 
 T15. implement logic to run option - should only work on wild pokemon.
+
+T17. First dual-type pokemon added in Pidgey. Types system currently not really set up for this, so it's just a flying type currently, should be flying and normal.
+
+    > May be the time to take out the type classes, as all they currently do is set the type and call super
+    > Then, this.type can be an array of types
+    > Will need to then update pokemon.js isWeakTo etc., check this.types.includes(...)
+    > Any other things to change/update that make use of pokemon type directly? Will affect randomTrainer typePreferences, but those haven't been implemented yet
+    > Will affect type display in menu>pokemonDetails, will need to list multiple types
+
+T18. pokemon.js now has isImmuneTo method, but not called/checked for in battle.js fight method

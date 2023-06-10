@@ -5,7 +5,7 @@ class Pokemon {
   constructor(
     name,
     level = 1,
-    type = 'normal',
+    types = ['normal'],
     moves = [],
     hitPoints = 10 + level * 2,
     attack = 10 + level * 2,
@@ -24,7 +24,7 @@ class Pokemon {
     });
     this.name = name;
     this.level = level;
-    this.type = type;
+    this.types = types;
     this.moves = movesWithUses;
     this.hitPoints = { current: hitPoints, max: hitPoints };
     this.attack = { current: attack, max: attack };
@@ -42,7 +42,7 @@ class Pokemon {
     this.id = crypto.randomUUID();
   }
 
-  isResistantTo(move) {
+  getResistance(move) {
     const strengths = {
       fighting: ['rock', 'bug', 'dark'],
       flying: ['fighting', 'bug', 'grass'],
@@ -73,7 +73,11 @@ class Pokemon {
       grass: ['grass', 'water', 'ground', 'electric'],
       water: ['water', 'fire', 'steel', 'ice'],
     };
-    return strengths[this.type]?.includes(move.type);
+    let resistLevel = false;
+    this.types.forEach((type) => {
+      if (strengths[type]?.includes(move.type)) resistLevel++;
+    });
+    return resistLevel;
   }
 
   isImmuneTo(move) {
@@ -86,10 +90,14 @@ class Pokemon {
       dark: ['psychic'],
       fairy: ['dragon'],
     };
-    return immunities[this.type]?.includes(move.type);
+    let isImmune = false;
+    this.types.forEach((type) => {
+      if (immunities[type]?.includes(move.type)) isImmune = true;
+    });
+    return isImmune;
   }
 
-  isWeakTo(move) {
+  getWeakness(move) {
     const weaknesses = {
       normal: ['fighting'],
       fighting: ['psychic', 'flying', 'fairy'],
@@ -110,7 +118,11 @@ class Pokemon {
       dark: ['fighting', 'bug', 'fairy'],
       fairy: ['poison', 'steel'],
     };
-    return weaknesses[this.type]?.includes(move.type);
+    let weakLevel = 0;
+    this.types.forEach((type) => {
+      if (weaknesses[type]?.includes(move.type)) weakLevel++;
+    });
+    return weakLevel;
   }
 
   takeDamage(damage) {
@@ -131,11 +143,11 @@ class Pokemon {
 
     if (moveData.doesDamage && !outsideBattle) {
       const random = Math.random() * 0.2 + 0.4;
-      const damage =
-        random * 5 + (this.attack.current - target.defence.current) * 0.5;
-      const moveDamage = damage * moveData.damageMultiplier;
-      const damageToReturn = Math.max(this.level, +moveDamage.toFixed(2));
-      return damageToReturn;
+      const power = 30 * moveData.damageMultiplier;
+      const atkRatio = this.attack.current / target.defence.current;
+      const baseDamage = (this.level / 5 + 2) * power * atkRatio;
+      const finalDamage = +((baseDamage / 5) * random + 1).toFixed(2);
+      return finalDamage;
     }
   }
 

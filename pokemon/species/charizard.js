@@ -1,7 +1,7 @@
-const { Fire } = require('../types/fire');
+const { Pokemon } = require('../pokemon');
 const { movesData } = require('../../main-game/data/moves-data.js');
 
-class Charizard extends Fire {
+class Charizard extends Pokemon {
   constructor(
     name = 'Charizard',
     level,
@@ -17,13 +17,15 @@ class Charizard extends Fire {
     super(
       name,
       level,
+      ['fire', 'flying'],
       moves,
       hitPoints,
       attack,
       defence,
       speed,
       accuracy,
-      catchDifficulty
+      catchDifficulty,
+      isEvolving
     );
     this.species = 'Charizard';
     this.isEvolving = isEvolving;
