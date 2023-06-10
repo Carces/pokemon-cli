@@ -7,9 +7,11 @@ class Pokemon {
     level = 1,
     types = ['normal'],
     moves = [],
-    hitPoints = 10 + level * 2,
+    hitPoints = 10 + level * 4,
     attack = 10 + level * 2,
     defence = 10 + level * 2,
+    spAttack = 10 + level * 2,
+    spDefence = 10 + level * 2,
     speed = 10 + level * 2,
     accuracy = 100,
     catchDifficulty = 5,
@@ -29,6 +31,8 @@ class Pokemon {
     this.hitPoints = { current: hitPoints, max: hitPoints };
     this.attack = { current: attack, max: attack };
     this.defence = { current: defence, max: defence };
+    this.spAttack = { current: spAttack, max: spAttack };
+    this.spDefence = { current: spDefence, max: spDefence };
     this.speed = { current: speed, max: speed };
     this.accuracy = { current: accuracy, max: accuracy };
     this.isEvolving = isEvolving;
@@ -73,11 +77,11 @@ class Pokemon {
       grass: ['grass', 'water', 'ground', 'electric'],
       water: ['water', 'fire', 'steel', 'ice'],
     };
-    let resistLevel = false;
+    let effectiveness = false;
     this.types.forEach((type) => {
-      if (strengths[type]?.includes(move.type)) resistLevel++;
+      if (strengths[type]?.includes(move.type)) effectiveness--;
     });
-    return resistLevel;
+    return effectiveness;
   }
 
   isImmuneTo(move) {
@@ -118,11 +122,11 @@ class Pokemon {
       dark: ['fighting', 'bug', 'fairy'],
       fairy: ['poison', 'steel'],
     };
-    let weakLevel = 0;
+    let effectiveness = 0;
     this.types.forEach((type) => {
-      if (weaknesses[type]?.includes(move.type)) weakLevel++;
+      if (weaknesses[type]?.includes(move.type)) effectiveness++;
     });
-    return weakLevel;
+    return effectiveness;
   }
 
   takeDamage(damage) {
@@ -144,8 +148,11 @@ class Pokemon {
     if (moveData.doesDamage && !outsideBattle) {
       const random = Math.random() * 0.2 + 0.4;
       const power = 30 * moveData.damageMultiplier;
-      const atkRatio = this.attack.current / target.defence.current;
-      const baseDamage = (this.level / 5 + 2) * power * atkRatio;
+      const atkRatio = moveData.isSpAttack
+        ? this.spAttack.current / target.spDefence.current
+        : this.attack.current / target.defence.current;
+
+      const baseDamage = (this.level / 4 + 2) * power * atkRatio;
       const finalDamage = +((baseDamage / 5) * random + 1).toFixed(2);
       return finalDamage;
     }
@@ -175,12 +182,12 @@ Level ${this.level} |${xpBar}| Level ${this.level + 1}
     if (this.xp >= this.xpThreshold) {
       this.level++;
       isLevelUp = true;
-      this.hitPoints.max += 1.25;
-      this.hitPoints.current += 1.25;
-      this.attack.max += 0.75;
-      this.attack.current += 0.75;
-      this.defence.max += 0.75;
-      this.defence.current += 0.75;
+      this.hitPoints.max += 4;
+      this.hitPoints.current += 4;
+      this.attack.max += 2;
+      this.attack.current += 2;
+      this.defence.max += 2;
+      this.defence.current += 2;
       this.xpThreshold = Math.floor(
         (this.level + 1) ** 2.3 * Math.pow(1.001, this.level)
       );

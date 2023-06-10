@@ -1,8 +1,10 @@
 const movesData = {
   confusionSelfAttack: {
     name: 'confusionSelfAttack',
+    accuracy: 100,
     doesDamage: true,
     damageMultiplier: 1,
+    critChanceMod: -1,
   },
   Tackle: {
     name: 'Tackle',
@@ -11,7 +13,6 @@ const movesData = {
     accuracy: 100,
     doesDamage: true,
     damageMultiplier: 1,
-    critMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: null,
   },
@@ -21,8 +22,7 @@ const movesData = {
     uses: 35,
     accuracy: 100,
     doesDamage: true,
-    damageMultiplier: 1.1,
-    critMultiplier: 1,
+    damageMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: null,
   },
@@ -33,7 +33,6 @@ const movesData = {
     accuracy: 100,
     doesDamage: false,
     damageMultiplier: 0,
-    critMultiplier: 0,
     effectOnSelf: null,
     effectOnTarget: {
       stat: 'attack',
@@ -48,7 +47,6 @@ const movesData = {
     accuracy: 100,
     doesDamage: false,
     damageMultiplier: 0,
-    critMultiplier: 0,
     effectOnSelf: null,
     effectOnTarget: {
       stat: 'defence',
@@ -63,7 +61,6 @@ const movesData = {
     accuracy: 100,
     doesDamage: true,
     damageMultiplier: 1,
-    critMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: null,
     priority: 1, // TO ADD: currently unimplemented, in-game moves have 0 priority by default, move with higher priority goes first if both choose Fight. When implementing, consider that pokemon speed is also still unimplemented
@@ -75,7 +72,6 @@ const movesData = {
     accuracy: 100,
     doesDamage: true,
     damageMultiplier: 1.2,
-    critMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: null,
   },
@@ -85,8 +81,8 @@ const movesData = {
     uses: 25,
     accuracy: 100,
     doesDamage: true,
+    isSpAttack: true,
     damageMultiplier: 1,
-    critMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: {
       status: 'burning',
@@ -99,8 +95,8 @@ const movesData = {
     uses: 25,
     accuracy: 100,
     doesDamage: true,
+    isSpAttack: true,
     damageMultiplier: 1.2,
-    critMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: null,
   },
@@ -110,8 +106,8 @@ const movesData = {
     uses: 30,
     accuracy: 100,
     doesDamage: true,
+    isSpAttack: true,
     damageMultiplier: 1.2,
-    critMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: {
       status: 'paralysed',
@@ -125,7 +121,6 @@ const movesData = {
     accuracy: 100,
     doesDamage: false,
     damageMultiplier: 0,
-    critMultiplier: 0,
     effectOnSelf: null,
     effectOnTarget: {
       stat: 'speed',
@@ -140,7 +135,6 @@ const movesData = {
     accuracy: 100,
     doesDamage: false,
     damageMultiplier: 0,
-    critMultiplier: 0,
     effectOnSelf: {
       stat: 'defence',
       modifier: 1,
@@ -155,7 +149,6 @@ const movesData = {
     accuracy: 100,
     doesDamage: true,
     damageMultiplier: 0.4,
-    critMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: {
       status: 'poisoned',
@@ -169,7 +162,6 @@ const movesData = {
     accuracy: 100,
     doesDamage: false,
     damageMultiplier: 0,
-    critMultiplier: 0,
     effectOnSelf: null,
     effectOnTarget: {
       stat: 'accuracy',
@@ -184,8 +176,8 @@ const movesData = {
     uses: 35,
     accuracy: 100,
     doesDamage: true,
+    isSpAttack: true,
     damageMultiplier: 1.2,
-    critMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: null,
   },
@@ -201,7 +193,6 @@ const movesData = {
     accuracy: 100,
     doesDamage: false,
     damageMultiplier: null,
-    critMultiplier: null,
     effectOnSelf: null,
     effectOnTarget: null,
   },
@@ -212,7 +203,6 @@ const movesData = {
     accuracy: 100,
     doesDamage: true,
     damageMultiplier: 1.8,
-    critMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: null,
   },
@@ -223,7 +213,6 @@ const movesData = {
     accuracy: 100,
     doesDamage: true,
     damageMultiplier: 1.4,
-    critMultiplier: 1,
     effectOnSelf: {
       stat: 'attack',
       modifier: 1,
@@ -238,8 +227,8 @@ const movesData = {
     uses: 10,
     accuracy: 100,
     doesDamage: true,
+    isSpAttack: true,
     damageMultiplier: 2.8,
-    critMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: null,
   },
@@ -249,8 +238,8 @@ const movesData = {
     uses: 25,
     accuracy: 100,
     doesDamage: true,
+    isSpAttack: true,
     damageMultiplier: 1.4,
-    critMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: {
       status: 'confused',
@@ -264,7 +253,6 @@ const movesData = {
     accuracy: 75,
     doesDamage: false,
     damageMultiplier: null,
-    critMultiplier: null,
     effectOnSelf: null,
     effectOnTarget: {
       status: 'poisoned',
@@ -278,7 +266,6 @@ const movesData = {
     accuracy: 75,
     doesDamage: false,
     damageMultiplier: null,
-    critMultiplier: null,
     effectOnSelf: null,
     effectOnTarget: {
       status: 'paralysed',
@@ -292,7 +279,6 @@ const movesData = {
     accuracy: 75,
     doesDamage: false,
     damageMultiplier: null,
-    critMultiplier: null,
     effectOnSelf: null,
     effectOnTarget: {
       status: 'asleep',
@@ -306,7 +292,6 @@ const movesData = {
     accuracy: 55,
     doesDamage: false,
     damageMultiplier: null,
-    critMultiplier: null,
     effectOnSelf: null,
     effectOnTarget: {
       status: 'confused',
@@ -320,7 +305,6 @@ const movesData = {
     accuracy: 95,
     doesDamage: true,
     damageMultiplier: 1.75,
-    critMultiplier: null,
     effectOnSelf: {
       turn1Effect: 'fly',
       turn2Effect: 'fly',
@@ -338,7 +322,6 @@ const movesData = {
     accuracy: 100,
     doesDamage: false,
     damageMultiplier: 0,
-    critMultiplier: 0,
     effectOnSelf: {
       stat: 'defence',
       modifier: 1,
@@ -347,52 +330,18 @@ const movesData = {
     effectOnTarget: null,
   },
   'Mud Sport': {
-    // LOWERS POWER OF ELECTRIC MOVES - 50% reduction for all pokemon on both sides for next 5 turns, even after swapping out
+    // SHOULD LOWER POWER OF ELECTRIC MOVES - 50% reduction for all pokemon on both sides for next 5 turns, even after swapping out. effectOnBattle added as an example implementation, but not yet functioning
     name: 'Mud Sport',
     type: 'ground',
     uses: 15,
     accuracy: 100,
     doesDamage: false,
     damageMultiplier: 0,
-    critMultiplier: 0,
     effectOnSelf: null,
     effectOnTarget: null,
     effectOnBattle: {
-      //depower electric
+      modTypePower: { type: 'electric', modifier: 0.5 },
     },
-  },
-  steelTest: {
-    name: 'steelTest',
-    type: 'steel',
-    uses: 25,
-    accuracy: 100,
-    doesDamage: true,
-    damageMultiplier: 1,
-    critMultiplier: 1,
-    effectOnSelf: null,
-    effectOnTarget: null,
-  },
-  waterTest: {
-    name: 'waterTest',
-    type: 'water',
-    uses: 25,
-    accuracy: 100,
-    doesDamage: true,
-    damageMultiplier: 1,
-    critMultiplier: 1,
-    effectOnSelf: null,
-    effectOnTarget: null,
-  },
-  psychicTest: {
-    name: 'psychicTest',
-    type: 'psychic',
-    uses: 25,
-    accuracy: 100,
-    doesDamage: true,
-    damageMultiplier: 1,
-    critMultiplier: 1,
-    effectOnSelf: null,
-    effectOnTarget: null,
   },
 };
 

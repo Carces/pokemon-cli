@@ -27,8 +27,6 @@ It seems that if the player pokemon is slower and acts second, this won't be the
 
 T11. implement pokemon speed stat and move priority (e.g. quick attack)
 
-T12. implement special/physical attacks
-
 T13. implement evasion - in-game, accuracy and speed always start at 100 and attacks always hit until evasion or accuracy are increased/decreased
 
 T14. restructuring battle to avoid deeply nested then blocks - can checkIfBattleOver be refactored to only need calling once? It would help the nesting situation in resolveTurn if so. Can other promise-based functions be refactored to return out promises and chain .then blocks on the same level rather than nesting?
@@ -71,6 +69,10 @@ T33. in games, switching pokemon in battle resets stat changes (but not status c
 T34. poison condition should damage outside of battle, burn should not
 
 T35. Allow viewing pokemon details in battle like in menu.js. Battle decisions may depend on knowing if a pokemon has a certain move, has pp left for that move, has a certain speed, higher atk or phys atk etc., so should be checkable.
+
+T36. Add abilities - randomly generated on pokemon creation, unique positive or negative passive effect, either in battle, out of battle or both. evolution changes ability based on previous form's ability
+
+T37. Make move display more useful when selecting one to use. At the very least, needs to show type.
 
 ## STATS SYSTEM
 
@@ -194,3 +196,5 @@ T17. First dual-type pokemon added in Pidgey. Types system currently not really 
     > Will affect type display in menu>pokemonDetails, will need to list multiple types
 
 T18. pokemon.js now has isImmuneTo method, but not called/checked for in battle.js fight method
+
+T12. implement special/physical attacks

@@ -112,11 +112,11 @@ function chooseStarter() {
 function createPlayerData(playerName, starter, pokemonName) {
   const starterPokemon =
     starter === 'Bulbasaur'
-      ? new Bulbasaur(pokemonName, 1)
+      ? new Bulbasaur(pokemonName, 5)
       : starter === 'Squirtle'
-      ? new Squirtle(pokemonName, 1)
+      ? new Squirtle(pokemonName, 5)
       : starter === 'Charmander'
-      ? new Charmander(pokemonName, 1)
+      ? new Charmander(pokemonName, 5)
       : null;
 
   playerData = new PlayerData(playerName, starterPokemon);
@@ -138,11 +138,11 @@ function createRivalData(rivalName) {
   const starter = playerData.player.belt[0].storage.species;
   const rivalPokemon =
     starter === 'Bulbasaur'
-      ? new Charmander(undefined, 1)
+      ? new Charmander(undefined, 5)
       : starter === 'Squirtle'
-      ? new Bulbasaur(undefined, 1)
+      ? new Bulbasaur(undefined, 5)
       : starter === 'Charmander'
-      ? new Squirtle(undefined, 1)
+      ? new Squirtle(undefined, 5)
       : null;
 
   rivalData = new RivalData(rivalName, rivalPokemon);
