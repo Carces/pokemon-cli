@@ -25,8 +25,6 @@ The trainer whose pokemon was downed immediately chooses a pokemon to bring out.
 The next round now begins. If the player had higher speed than the downed pokemon, acted first last round and downed the opponent before they could attack, and their pokemon also has higher speed than the replacement pokemon sent out, they can act twice in a row.
 It seems that if the player pokemon is slower and acts second, this won't be the case, as the round fully ends (? unconfirmed)
 
-T11. implement pokemon speed stat and move priority (e.g. quick attack)
-
 T13. implement evasion - in-game, accuracy and speed always start at 100 and attacks always hit until evasion or accuracy are increased/decreased
 
 T14. restructuring battle to avoid deeply nested then blocks - can checkIfBattleOver be refactored to only need calling once? It would help the nesting situation in resolveTurn if so. Can other promise-based functions be refactored to return out promises and chain .then blocks on the same level rather than nesting?
@@ -73,6 +71,10 @@ T35. Allow viewing pokemon details in battle like in menu.js. Battle decisions m
 T36. Add abilities - randomly generated on pokemon creation, unique positive or negative passive effect, either in battle, out of battle or both. evolution changes ability based on previous form's ability
 
 T37. Make move display more useful when selecting one to use. At the very least, needs to show type.
+
+T38. implement roaming pokemon. normally these are legendary or very rare pokemon that move around between areas and will try to flee battle. battle checks its specialBattleType param, if it = 'roaming', the opponent has a chance of selecting the Run action. (in games this is either 10% or 50% depending on the pokemon, for the rare regular wild pokemon. For actual roaming legendaries/shinies they always try to flee on first turn). When they try to flee, it happens immediately before it would use its move, meaning the move priority and pokemon speed affect whether or not you get a chance to use a move first. Item use always happens before moves so always get a chance to catch in a ball. Fast ball could be implemented here (in games it just has a higher catch rate against pokemon with over 100 speed, but maybe could have an effect specifically for roaming?). Fleeing is prevented by 'trapping' moves like Wrap and Mean Look, or by sleep/freeze conditions. Maybe paralyse should also prevent when its full paralysis triggers. These moves/conditions should set the battle's opponentEscapePrevented prop to true, logic in setOpponentAction should already prevent them from choosing Run as action if that's true, and they will always be wild if roaming, so pokemon and item will be skipped, meaning their action will be fight.
+
+T39. Give opponent trainers randomly generated inventory. They currently have a chance to choose Item as their action, but only start with money in inventory. If no other items a new random action is chosen.
 
 ## STATS SYSTEM
 
@@ -198,3 +200,5 @@ T17. First dual-type pokemon added in Pidgey. Types system currently not really 
 T18. pokemon.js now has isImmuneTo method, but not called/checked for in battle.js fight method
 
 T12. implement special/physical attacks
+
+T11. implement pokemon speed stat and move priority (e.g. quick attack)

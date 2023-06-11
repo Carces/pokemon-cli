@@ -15,6 +15,7 @@ const movesData = {
     damageMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: null,
+    priority: 0,
   },
   Scratch: {
     name: 'Scratch',
@@ -25,6 +26,7 @@ const movesData = {
     damageMultiplier: 1,
     effectOnSelf: null,
     effectOnTarget: null,
+    priority: 0,
   },
   Growl: {
     name: 'Growl',
@@ -39,6 +41,7 @@ const movesData = {
       modifier: -1,
       staysAfterBattle: false,
     },
+    priority: 0,
   },
   'Tail Whip': {
     name: 'Tail Whip',
@@ -53,6 +56,7 @@ const movesData = {
       modifier: -1,
       staysAfterBattle: false,
     },
+    priority: 0,
   },
   'Quick Attack': {
     name: 'Quick Attack',
@@ -74,6 +78,7 @@ const movesData = {
     damageMultiplier: 1.2,
     effectOnSelf: null,
     effectOnTarget: null,
+    priority: 0,
   },
   Ember: {
     name: 'Ember',
@@ -88,6 +93,7 @@ const movesData = {
       status: 'burning',
       statusChance: '0.1', // 10%
     },
+    priority: 0,
   },
   'Water Gun': {
     name: 'Water Gun',
@@ -99,6 +105,7 @@ const movesData = {
     damageMultiplier: 1.2,
     effectOnSelf: null,
     effectOnTarget: null,
+    priority: 0,
   },
   'Thunder Shock': {
     name: 'Thunder Shock',
@@ -113,6 +120,7 @@ const movesData = {
       status: 'paralysed',
       statusChance: '0.1', // 10%
     },
+    priority: 0,
   },
   'String Shot': {
     name: 'String Shot',
@@ -127,6 +135,7 @@ const movesData = {
       modifier: -1,
       staysAfterBattle: false,
     },
+    priority: 0,
   },
   Harden: {
     name: 'Harden',
@@ -141,6 +150,7 @@ const movesData = {
       staysAfterBattle: false,
     },
     effectOnTarget: null,
+    priority: 0,
   },
   'Poison Sting': {
     name: 'Poison Sting',
@@ -154,6 +164,7 @@ const movesData = {
       status: 'poisoned',
       statusChance: '0.2', // 20%
     },
+    priority: 0,
   },
   'Sand Attack': {
     name: 'Sand Attack',
@@ -168,6 +179,7 @@ const movesData = {
       modifier: -1,
       staysAfterBattle: false,
     },
+    priority: 0,
   },
   Gust: {
     // SHOULD HIT ENEMIES USING FLY, DEAL DOUBLE DMG WHEN IT DOES
@@ -180,6 +192,7 @@ const movesData = {
     damageMultiplier: 1.2,
     effectOnSelf: null,
     effectOnTarget: null,
+    priority: 0,
   },
   Whirlwind: {
     // NOT YET IMPLEMENTED
@@ -195,6 +208,7 @@ const movesData = {
     damageMultiplier: null,
     effectOnSelf: null,
     effectOnTarget: null,
+    priority: -6,
   },
   'Wing Attack': {
     name: 'Wing Attack',
@@ -205,6 +219,7 @@ const movesData = {
     damageMultiplier: 1.8,
     effectOnSelf: null,
     effectOnTarget: null,
+    priority: 0,
   },
   'Metal Claw': {
     name: 'Metal Claw',
@@ -220,6 +235,7 @@ const movesData = {
       statChance: 0.1,
     },
     effectOnTarget: null,
+    priority: 0,
   },
   'Heat Wave': {
     name: 'Heat Wave',
@@ -231,6 +247,7 @@ const movesData = {
     damageMultiplier: 2.8,
     effectOnSelf: null,
     effectOnTarget: null,
+    priority: 0,
   },
   Confusion: {
     name: 'Confusion',
@@ -245,6 +262,7 @@ const movesData = {
       status: 'confused',
       statusChance: '0.1', // 10%
     },
+    priority: 0,
   },
   'Poison Powder': {
     name: 'Poison Powder',
@@ -258,6 +276,7 @@ const movesData = {
       status: 'poisoned',
       statusChance: '1', // 100%
     },
+    priority: 0,
   },
   'Stun Spore': {
     name: 'Stun Spore',
@@ -271,6 +290,7 @@ const movesData = {
       status: 'paralysed',
       statusChance: '1', // 100%
     },
+    priority: 0,
   },
   'Sleep Powder': {
     name: 'Sleep Powder',
@@ -284,6 +304,7 @@ const movesData = {
       status: 'asleep',
       statusChance: '1', // 100%
     },
+    priority: 0,
   },
   Supersonic: {
     name: 'Supersonic',
@@ -297,6 +318,7 @@ const movesData = {
       status: 'confused',
       statusChance: '1', // 100%
     },
+    priority: 0,
   },
   Fly: {
     name: 'Fly',
@@ -313,6 +335,7 @@ const movesData = {
     effectOutsideBattle: {
       lureType: 'flying',
     },
+    priority: 0,
   },
   'Defence Curl': {
     // DOUBLES DAMAGE OF ROLLOUT - not yet implemented
@@ -328,6 +351,7 @@ const movesData = {
       staysAfterBattle: false,
     },
     effectOnTarget: null,
+    priority: 0,
   },
   'Mud Sport': {
     // SHOULD LOWER POWER OF ELECTRIC MOVES - 50% reduction for all pokemon on both sides for next 5 turns, even after swapping out. effectOnBattle added as an example implementation, but not yet functioning
@@ -342,6 +366,7 @@ const movesData = {
     effectOnBattle: {
       modTypePower: { type: 'electric', modifier: 0.5 },
     },
+    priority: 0,
   },
 };
 

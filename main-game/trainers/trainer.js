@@ -3,7 +3,7 @@ const create = require('../data/create.js');
 const inquirer = require('inquirer');
 
 class Trainer {
-  constructor(name, pokemonArr) {
+  constructor(name, pokemonArr, inventory = {}) {
     this.name = name;
     this.belt = [];
     this.pokemonArr = pokemonArr;
@@ -17,9 +17,7 @@ class Trainer {
     }
     this.currentPokeball = this.belt[0];
     this.isPlayer = false;
-    this.inventory = {
-      Money: 500,
-    };
+    this.inventory = inventory;
   }
 
   getPokemon(pokeName) {
@@ -142,6 +140,11 @@ class Trainer {
           }
         }
       });
+  }
+
+  useNPCItem(item, target) {
+    console.log(`${this.name} used ${item} on ${target.name}!`);
+    return this.resolveItem(item, target);
   }
 
   resolveItem(item, target, PC) {
@@ -283,10 +286,17 @@ class Trainer {
           effectRemoved = activeEffObj.status;
         }
       }
+
       console.log(
         effectRemoved
           ? `${target.name} is no longer ${effectRemoved}.`
-          : `It had no effect! ${target.name} is not ${effect.remove}.`
+          : itemData.types.includes('heal')
+          ? ''
+          : `It had no effect! ${target.name} is not ${
+              effect.remove === 'all'
+                ? 'affected by any conditions'
+                : effectRemoved
+            }.`
       );
     }
     return Promise.resolve();

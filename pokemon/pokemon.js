@@ -141,18 +141,19 @@ class Pokemon {
     const moveIndex = this.moves.findIndex(
       (pokeMove) => pokeMove.name === move.name
     );
-    this.moves[moveIndex].uses.current--;
-    if (move.name !== 'confusionSelfAttack')
+    if (move.name !== 'confusionSelfAttack') {
+      this.moves[moveIndex].uses.current--;
       console.log(`\n${this.name} used ${move.name}!`);
+    }
 
     if (moveData.doesDamage && !outsideBattle) {
       const random = Math.random() * 0.2 + 0.4;
-      const power = 30 * moveData.damageMultiplier;
+      const power = 40 * moveData.damageMultiplier;
       const atkRatio = moveData.isSpAttack
         ? this.spAttack.current / target.spDefence.current
         : this.attack.current / target.defence.current;
 
-      const baseDamage = (this.level / 4 + 2) * power * atkRatio;
+      const baseDamage = (this.level / 7) * power * atkRatio;
       const finalDamage = +((baseDamage / 5) * random + 1).toFixed(2);
       return finalDamage;
     }
@@ -213,9 +214,8 @@ Level ${this.level} |${xpBar}| Level ${this.level + 1}
     ];
     return inquirer.prompt(xpPrompts).then(() => {
       const newMoves = this.moveTable['level' + this.level];
-      const returnPromise = !newMoves
-        ? Promise.resolve()
-        : this.addMoves(newMoves);
+      const returnPromise =
+        !newMoves || !isLevelUp ? Promise.resolve() : this.addMoves(newMoves);
       return returnPromise.then(() => {
         if (this.evolvesTo && this.level >= this.evolvesTo.level)
           return this.evolve();
@@ -290,7 +290,7 @@ Level ${this.level} |${xpBar}| Level ${this.level + 1}
 
   addMoves(newMoves) {
     const movesQuestions = [];
-    const moveNames = this.getMoveNames();
+    const moveNames = this.getMoveChoices(false, true);
     const forgetChoices = [...moveNames, `--DON'T LEARN--`];
     let qCount = 0;
 

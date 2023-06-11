@@ -1,10 +1,16 @@
-const { Trainer } = require('./trainer.js')
+const { Trainer } = require('./trainer.js');
 
 class Player extends Trainer {
-    constructor(name, pokemonArr) {
-        super(name, pokemonArr);
-        this.isPlayer = true;
+  constructor(
+    name,
+    pokemonArr,
+    inventory = {
+      Money: 500,
     }
+  ) {
+    super(name, pokemonArr, inventory);
+    this.isPlayer = true;
+  }
 }
 
-module.exports = { Player }
+module.exports = { Player };
